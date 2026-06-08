@@ -129,7 +129,7 @@
     <div class="key-sub">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
 
     <div class="key-label">🔑 ใส่ Google Gemini API Key</div>
-    <input id="apiKeyInput" type="password" placeholder="AIzaSy..."
+    <input id="apiKeyInput" type="password" placeholder="วาง Gemini API Key ที่นี่..."
       onkeydown="if(event.key==='Enter')saveKey()"/>
     <div id="keyError"></div>
     <button class="key-btn" onclick="saveKey()">เริ่มใช้งาน →</button>
@@ -250,7 +250,7 @@ function sysPrompt() {
 // ---- Init ----
 window.onload = () => {
   const k = localStorage.getItem('gkey');
-  if (k && k.startsWith('AIza')) {
+  if (k && k.length > 10) {
     GKEY = k;
     showApp();
   }
@@ -258,8 +258,8 @@ window.onload = () => {
 
 function saveKey() {
   const k = document.getElementById('apiKeyInput').value.trim();
-  if (!k.startsWith('AIza')) {
-    document.getElementById('keyError').textContent = '❌ Key ไม่ถูกต้อง ต้องขึ้นต้นด้วย AIza';
+  if (k.length < 10) {
+    document.getElementById('keyError').textContent = '❌ Key สั้นเกินไป ลองวางใหม่อีกครั้ง';
     return;
   }
   GKEY = k;
