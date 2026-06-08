@@ -6,486 +6,136 @@
 <title>AI Math Coach — เซต ม.4</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap');
-
   :root {
-    --bg: #0a0e1a;
-    --surface: #111827;
-    --surface2: #1a2235;
-    --border: #1e2d45;
-    --accent: #00d4ff;
-    --accent2: #7c3aed;
-    --accent3: #10b981;
-    --warn: #f59e0b;
-    --danger: #ef4444;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --glow: 0 0 20px rgba(0,212,255,0.15);
+    --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--border:#1e2d45;
+    --accent:#00d4ff;--accent2:#7c3aed;--accent3:#10b981;
+    --warn:#f59e0b;--danger:#ef4444;--text:#e2e8f0;--muted:#64748b;
+    --glow:0 0 20px rgba(0,212,255,0.15);
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* KEY MODAL */
+  #keyModal{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:999;display:flex;align-items:center;justify-content:center;}
+  .key-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;width:90%;max-width:440px;box-shadow:0 0 40px rgba(0,212,255,0.15);}
+  .key-logo{font-size:32px;text-align:center;margin-bottom:8px;}
+  .key-title{font-family:'Space Mono',monospace;color:var(--accent);font-size:14px;text-align:center;margin-bottom:4px;}
+  .key-sub{color:var(--muted);font-size:12px;text-align:center;margin-bottom:24px;}
+  .key-label{font-size:14px;color:var(--text);margin-bottom:8px;}
+  #apiKeyInput{width:100%;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;margin-bottom:6px;}
+  #apiKeyInput:focus{border-color:var(--accent);}
+  #keyError{color:var(--danger);font-size:12px;min-height:18px;margin-bottom:12px;}
+  .key-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;cursor:pointer;}
+  .key-note{margin-top:16px;padding:12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.7;}
+  .key-note a{color:var(--accent);text-decoration:none;}
 
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Grid bg */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .app {
-    position: relative;
-    z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    width: 100%;
-    padding: 20px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 100vh;
-  }
+  /* APP */
+  #appWrap{position:relative;z-index:1;display:none;flex-direction:column;flex:1;}
+  .app{max-width:900px;margin:0 auto;width:100%;padding:20px 16px;display:flex;flex-direction:column;gap:16px;min-height:100vh;}
 
   /* Header */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: var(--glow);
-  }
+  .header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--glow);}
+  .logo{display:flex;align-items:center;gap:12px;}
+  .logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 15px rgba(0,212,255,0.3);}
+  .logo-text{font-family:'Space Mono',monospace;font-size:14px;color:var(--accent);letter-spacing:1px;}
+  .logo-sub{font-size:11px;color:var(--muted);margin-top:1px;}
+  .passport-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(0,212,255,0.1));border:1px solid rgba(124,58,237,0.4);border-radius:8px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;}
+  .passport-btn:hover{background:linear-gradient(135deg,rgba(124,58,237,0.35),rgba(0,212,255,0.2));}
 
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+  /* Passport */
+  .passport-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:center;justify-content:center;}
+  .passport-overlay.open{display:flex;}
+  .passport-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:90%;max-width:500px;box-shadow:0 0 40px rgba(124,58,237,0.2);}
+  .passport-title{font-size:18px;font-weight:700;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+  .topic-row{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;margin-bottom:8px;background:var(--surface2);border:1px solid var(--border);}
+  .topic-name{font-size:14px;}
+  .badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;font-family:'Space Mono',monospace;}
+  .badge.pass{background:rgba(16,185,129,0.15);color:var(--accent3);border:1px solid rgba(16,185,129,0.3);}
+  .badge.fail{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);}
+  .badge.current{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.3);}
+  .close-btn{margin-top:20px;width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;cursor:pointer;}
 
-  .logo-icon {
-    width: 40px; height: 40px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 0 15px rgba(0,212,255,0.3);
-  }
-
-  .logo-text {
-    font-family: 'Space Mono', monospace;
-    font-size: 14px;
-    color: var(--accent);
-    letter-spacing: 1px;
-  }
-
-  .logo-sub {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 1px;
-  }
-
-  .passport-btn {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(0,212,255,0.1));
-    border: 1px solid rgba(124,58,237,0.4);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Sarabun', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .passport-btn:hover { background: linear-gradient(135deg, rgba(124,58,237,0.35), rgba(0,212,255,0.2)); }
-
-  /* Passport overlay */
-  .passport-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.8);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-  }
-  .passport-overlay.open { display: flex; }
-
-  .passport-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 28px;
-    width: 90%; max-width: 500px;
-    box-shadow: 0 0 40px rgba(124,58,237,0.2);
-  }
-
-  .passport-title {
-    font-size: 18px; font-weight: 700;
-    margin-bottom: 20px;
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .topic-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px;
-    border-radius: 10px;
-    margin-bottom: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-  }
-
-  .topic-name { font-size: 14px; }
-
-  .badge {
-    font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 20px;
-    font-family: 'Space Mono', monospace;
-  }
-  .badge.pass { background: rgba(16,185,129,0.15); color: var(--accent3); border: 1px solid rgba(16,185,129,0.3); }
-  .badge.fail { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
-  .badge.current { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
-
-  .close-btn {
-    margin-top: 20px; width: 100%;
-    padding: 10px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: 'Sarabun', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-  }
-
-  /* Main layout */
-  .main {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 16px;
-    flex: 1;
-  }
-
-  @media (max-width: 600px) {
-    .main { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-  }
+  /* Main */
+  .main{display:grid;grid-template-columns:220px 1fr;gap:16px;flex:1;}
+  @media(max-width:600px){.main{grid-template-columns:1fr;}.sidebar{display:none;}}
 
   /* Sidebar */
-  .sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .sidebar{display:flex;flex-direction:column;gap:10px;}
+  .sidebar-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;}
+  .section-label{font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+  .topic-btn{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:13px;text-align:left;cursor:pointer;margin-bottom:6px;transition:all .2s;display:flex;align-items:center;gap:8px;}
+  .topic-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .topic-btn.active{border-color:var(--accent);background:rgba(0,212,255,0.08);color:var(--accent);}
+  .topic-btn .dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;}
+  .topic-btn.active .dot{background:var(--accent);box-shadow:0 0 6px var(--accent);}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-val{font-family:'Space Mono',monospace;color:var(--accent);font-size:13px;}
 
-  .sidebar-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px;
-  }
-
-  .section-label {
-    font-size: 10px;
-    font-family: 'Space Mono', monospace;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .topic-btn {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Sarabun', sans-serif;
-    font-size: 13px;
-    text-align: left;
-    cursor: pointer;
-    margin-bottom: 6px;
-    transition: all 0.2s;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .topic-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .topic-btn.active { border-color: var(--accent); background: rgba(0,212,255,0.08); color: var(--accent); }
-  .topic-btn .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
-  .topic-btn.active .dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
-
-  /* Stats */
-  .stat-row {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 6px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 12px;
-  }
-  .stat-row:last-child { border-bottom: none; }
-  .stat-val { font-family: 'Space Mono', monospace; color: var(--accent); font-size: 13px; }
-
-  /* Chat area */
-  .chat-area {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .chat-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 12px;
-    background: var(--surface2);
-  }
-
-  .ai-avatar {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-    position: relative;
-  }
-  .ai-avatar::after {
-    content: '';
-    position: absolute;
-    bottom: 1px; right: 1px;
-    width: 8px; height: 8px;
-    background: var(--accent3);
-    border-radius: 50%;
-    border: 2px solid var(--surface2);
-  }
-
-  .ai-info .ai-name { font-size: 14px; font-weight: 600; }
-  .ai-info .ai-status { font-size: 11px; color: var(--accent3); }
-
-  .topic-tag {
-    margin-left: auto;
-    font-size: 11px;
-    padding: 4px 10px;
-    background: rgba(0,212,255,0.1);
-    border: 1px solid rgba(0,212,255,0.2);
-    border-radius: 6px;
-    color: var(--accent);
-    font-family: 'Space Mono', monospace;
-  }
-
-  /* Messages */
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-height: 380px;
-    max-height: 420px;
-  }
-
-  .messages::-webkit-scrollbar { width: 4px; }
-  .messages::-webkit-scrollbar-track { background: transparent; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  .msg { display: flex; gap: 10px; max-width: 85%; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-  .msg.user { flex-direction: row-reverse; align-self: flex-end; }
-  .msg.ai { align-self: flex-start; }
-
-  .msg-avatar {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-    flex-shrink: 0;
-    margin-top: 2px;
-  }
-  .msg.ai .msg-avatar { background: linear-gradient(135deg, var(--accent), var(--accent2)); }
-  .msg.user .msg-avatar { background: linear-gradient(135deg, var(--accent2), #9333ea); }
-
-  .msg-bubble {
-    padding: 12px 16px;
-    border-radius: 14px;
-    font-size: 14px;
-    line-height: 1.6;
-  }
-  .msg.ai .msg-bubble {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-top-left-radius: 4px;
-  }
-  .msg.user .msg-bubble {
-    background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(0,212,255,0.15));
-    border: 1px solid rgba(124,58,237,0.3);
-    border-top-right-radius: 4px;
-  }
-
-  .msg-bubble .math {
-    font-family: 'Space Mono', monospace;
-    background: rgba(0,212,255,0.08);
-    border: 1px solid rgba(0,212,255,0.15);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 13px;
-    color: var(--accent);
-    display: inline-block;
-    margin: 2px 0;
-  }
-
-  .msg-bubble .hint {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.2);
-    border-radius: 8px;
-    font-size: 12px;
-    color: var(--warn);
-  }
-
-  .msg-bubble .correct {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: rgba(16,185,129,0.08);
-    border: 1px solid rgba(16,185,129,0.2);
-    border-radius: 8px;
-    font-size: 12px;
-    color: var(--accent3);
-  }
-
-  .choice-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .choice-btn {
-    padding: 10px 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: 'Sarabun', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.2s;
-    font-family: 'Space Mono', monospace;
-  }
-  .choice-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.05); }
-  .choice-btn.correct-ans { border-color: var(--accent3); color: var(--accent3); background: rgba(16,185,129,0.08); pointer-events: none; }
-  .choice-btn.wrong-ans { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.05); pointer-events: none; }
-  .choice-btn.disabled { pointer-events: none; opacity: 0.5; }
-
-  /* Typing indicator */
-  .typing {
-    display: flex; gap: 4px; align-items: center;
-    padding: 12px 16px;
-  }
-  .typing span {
-    width: 6px; height: 6px;
-    background: var(--accent);
-    border-radius: 50%;
-    animation: bounce 1.2s infinite;
-  }
-  .typing span:nth-child(2) { animation-delay: 0.2s; }
-  .typing span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce {
-    0%, 60%, 100% { transform: translateY(0); }
-    30% { transform: translateY(-6px); }
-  }
-
-  /* Input */
-  .input-area {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border);
-    display: flex; gap: 10px; align-items: flex-end;
-    background: var(--surface2);
-  }
-
-  .input-wrap { flex: 1; position: relative; }
-
-  textarea {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 16px;
-    color: var(--text);
-    font-family: 'Sarabun', sans-serif;
-    font-size: 14px;
-    resize: none;
-    outline: none;
-    line-height: 1.5;
-    transition: border-color 0.2s;
-    min-height: 46px;
-    max-height: 120px;
-  }
-  textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(0,212,255,0.1); }
-  textarea::placeholder { color: var(--muted); }
-
-  .send-btn {
-    width: 46px; height: 46px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.2s;
-    flex-shrink: 0;
-    box-shadow: 0 0 15px rgba(0,212,255,0.2);
-  }
-  .send-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(0,212,255,0.35); }
-  .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  /* Quick replies */
-  .quick-replies {
-    padding: 10px 20px 0;
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
-
-  .quick-btn {
-    padding: 6px 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    color: var(--muted);
-    font-family: 'Sarabun', sans-serif;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .quick-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Loading */
-  .loading-bar {
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    width: 0%;
-    transition: width 0.3s;
-  }
+  /* Chat */
+  .chat-area{background:var(--surface);border:1px solid var(--border);border-radius:16px;display:flex;flex-direction:column;overflow:hidden;}
+  .loading-bar{height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width .3s;}
+  .chat-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface2);}
+  .ai-avatar{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;position:relative;}
+  .ai-avatar::after{content:'';position:absolute;bottom:1px;right:1px;width:8px;height:8px;background:var(--accent3);border-radius:50%;border:2px solid var(--surface2);}
+  .ai-info .ai-name{font-size:14px;font-weight:600;}
+  .ai-info .ai-status{font-size:11px;color:var(--accent3);}
+  .topic-tag{margin-left:auto;font-size:11px;padding:4px 10px;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.2);border-radius:6px;color:var(--accent);font-family:'Space Mono',monospace;}
+  .messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;min-height:380px;max-height:420px;}
+  .messages::-webkit-scrollbar{width:4px;}
+  .messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  .msg{display:flex;gap:10px;max-width:85%;animation:fadeIn .3s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .msg.user{flex-direction:row-reverse;align-self:flex-end;}
+  .msg.ai{align-self:flex-start;}
+  .msg-avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px;}
+  .msg.ai .msg-avatar{background:linear-gradient(135deg,var(--accent),var(--accent2));}
+  .msg.user .msg-avatar{background:linear-gradient(135deg,var(--accent2),#9333ea);}
+  .msg-bubble{padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.7;}
+  .msg.ai .msg-bubble{background:var(--surface2);border:1px solid var(--border);border-top-left-radius:4px;}
+  .msg.user .msg-bubble{background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(0,212,255,0.15));border:1px solid rgba(124,58,237,0.3);border-top-right-radius:4px;}
+  .msg-bubble .math-inline{font-family:'Space Mono',monospace;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.15);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--accent);}
+  .typing{display:flex;gap:4px;align-items:center;padding:12px 16px;}
+  .typing span{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:bounce 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:.2s;}
+  .typing span:nth-child(3){animation-delay:.4s;}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
+  .quick-replies{padding:10px 20px 0;display:flex;gap:8px;flex-wrap:wrap;}
+  .quick-btn{padding:6px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
+  .quick-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .input-area{padding:16px 20px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:flex-end;background:var(--surface2);}
+  .input-wrap{flex:1;}
+  textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;resize:none;outline:none;line-height:1.5;transition:border-color .2s;min-height:46px;max-height:120px;}
+  textarea:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(0,212,255,0.1);}
+  textarea::placeholder{color:var(--muted);}
+  .send-btn{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:white;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;box-shadow:0 0 15px rgba(0,212,255,0.2);}
+  .send-btn:hover{transform:scale(1.05);}
+  .send-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
 </style>
 </head>
 <body>
+
+<!-- API KEY MODAL -->
+<div id="keyModal">
+  <div class="key-card">
+    <div class="key-logo">🧮</div>
+    <div class="key-title">AI MATH COACH</div>
+    <div class="key-sub">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
+    <div class="key-label">🔑 ใส่ Anthropic API Key เพื่อเริ่มใช้งาน</div>
+    <input id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')saveKey()"/>
+    <div id="keyError"></div>
+    <button class="key-btn" onclick="saveKey()">เริ่มใช้งาน →</button>
+    <div class="key-note">
+      💡 Key เก็บในเครื่องเท่านั้น ไม่ได้ส่งที่ไหน<br>
+      สมัครได้ที่ <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a><br>
+      ใช้ model claude-haiku (ประหยัด ใช้สอนได้)
+    </div>
+  </div>
+</div>
+
+<!-- APP WRAP -->
+<div id="appWrap">
 <div class="app">
 
   <!-- Header -->
@@ -497,62 +147,42 @@
         <div class="logo-sub">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
       </div>
     </div>
-    <button class="passport-btn" onclick="togglePassport()">
-      📋 Learning Passport
-    </button>
+    <button class="passport-btn" onclick="togglePassport()">📋 Learning Passport</button>
   </div>
 
   <!-- Passport Overlay -->
   <div class="passport-overlay" id="passportOverlay">
     <div class="passport-card">
       <div class="passport-title">📋 Learning Passport — เซต ม.4</div>
-      <div class="topic-row">
-        <span class="topic-name">ความหมายของเซต</span>
-        <span class="badge pass">✅ ผ่านแล้ว</span>
-      </div>
-      <div class="topic-row">
-        <span class="topic-name">สับเซตและเพาเวอร์เซต</span>
-        <span class="badge current">🔵 กำลังเรียน</span>
-      </div>
-      <div class="topic-row">
-        <span class="topic-name">การดำเนินการของเซต</span>
-        <span class="badge fail">🔒 ยังไม่ผ่าน</span>
-      </div>
-      <div class="topic-row">
-        <span class="topic-name">แผนภาพเวนน์-ออยเลอร์</span>
-        <span class="badge fail">🔒 ยังไม่ผ่าน</span>
-      </div>
-      <div class="topic-row">
-        <span class="topic-name">จำนวนสมาชิกของเซต</span>
-        <span class="badge fail">🔒 ยังไม่ผ่าน</span>
-      </div>
+      <div class="topic-row"><span class="topic-name">ความหมายของเซต</span><span class="badge pass">✅ ผ่านแล้ว</span></div>
+      <div class="topic-row"><span class="topic-name">สับเซตและเพาเวอร์เซต</span><span class="badge current">🔵 กำลังเรียน</span></div>
+      <div class="topic-row"><span class="topic-name">การดำเนินการของเซต</span><span class="badge fail">🔒 ยังไม่ผ่าน</span></div>
+      <div class="topic-row"><span class="topic-name">แผนภาพเวนน์-ออยเลอร์</span><span class="badge fail">🔒 ยังไม่ผ่าน</span></div>
+      <div class="topic-row"><span class="topic-name">จำนวนสมาชิกของเซต</span><span class="badge fail">🔒 ยังไม่ผ่าน</span></div>
       <button class="close-btn" onclick="togglePassport()">ปิด</button>
     </div>
   </div>
 
   <!-- Main -->
   <div class="main">
-
-    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="section-label">หัวข้อเซต ม.4</div>
-        <button class="topic-btn" onclick="selectTopic(this, 'ความหมายของเซต')"><span class="dot"></span>ความหมายของเซต</button>
-        <button class="topic-btn active" onclick="selectTopic(this, 'สับเซต')"><span class="dot"></span>สับเซตและเพาเวอร์เซต</button>
-        <button class="topic-btn" onclick="selectTopic(this, 'การดำเนินการ')"><span class="dot"></span>การดำเนินการของเซต</button>
-        <button class="topic-btn" onclick="selectTopic(this, 'แผนภาพ')"><span class="dot"></span>แผนภาพเวนน์-ออยเลอร์</button>
-        <button class="topic-btn" onclick="selectTopic(this, 'จำนวนสมาชิก')"><span class="dot"></span>จำนวนสมาชิกของเซต</button>
+        <button class="topic-btn" onclick="selectTopic(this,'ความหมายของเซต')"><span class="dot"></span>ความหมายของเซต</button>
+        <button class="topic-btn active" onclick="selectTopic(this,'สับเซตและเพาเวอร์เซต')"><span class="dot"></span>สับเซตและเพาเวอร์เซต</button>
+        <button class="topic-btn" onclick="selectTopic(this,'การดำเนินการของเซต')"><span class="dot"></span>การดำเนินการของเซต</button>
+        <button class="topic-btn" onclick="selectTopic(this,'แผนภาพเวนน์-ออยเลอร์')"><span class="dot"></span>แผนภาพเวนน์-ออยเลอร์</button>
+        <button class="topic-btn" onclick="selectTopic(this,'จำนวนสมาชิกของเซต')"><span class="dot"></span>จำนวนสมาชิกของเซต</button>
       </div>
       <div class="sidebar-section">
         <div class="section-label">สถิติวันนี้</div>
-        <div class="stat-row"><span>โจทย์ที่ทำ</span><span class="stat-val" id="statQ">3</span></div>
-        <div class="stat-row"><span>ตอบถูก</span><span class="stat-val" id="statC">2</span></div>
-        <div class="stat-row"><span>ความแม่น</span><span class="stat-val" id="statA">67%</span></div>
-        <div class="stat-row"><span>ระดับ</span><span class="stat-val">⭐⭐</span></div>
+        <div class="stat-row"><span>โจทย์ที่ทำ</span><span class="stat-val" id="statQ">0</span></div>
+        <div class="stat-row"><span>ตอบถูก</span><span class="stat-val" id="statC">0</span></div>
+        <div class="stat-row"><span>ความแม่น</span><span class="stat-val" id="statA">—</span></div>
+        <div class="stat-row"><span>ระดับ</span><span class="stat-val" id="statLv">⭐</span></div>
       </div>
     </div>
 
-    <!-- Chat -->
     <div class="chat-area">
       <div class="loading-bar" id="loadingBar"></div>
       <div class="chat-header">
@@ -563,28 +193,12 @@
         </div>
         <div class="topic-tag" id="topicTag">สับเซต</div>
       </div>
-
       <div class="quick-replies" id="quickReplies">
         <button class="quick-btn" onclick="sendQuick('ไม่เข้าใจเลย ช่วยอธิบายก่อน')">ไม่เข้าใจเลย</button>
         <button class="quick-btn" onclick="sendQuick('ขอทำโจทย์เลย')">ขอทำโจทย์เลย</button>
         <button class="quick-btn" onclick="sendQuick('ขอดูตัวอย่างก่อน')">ขอดูตัวอย่างก่อน</button>
       </div>
-
-      <div class="messages" id="messages">
-        <!-- Initial message -->
-        <div class="msg ai">
-          <div class="msg-avatar">🤖</div>
-          <div class="msg-bubble">
-            สวัสดีครับ! วันนี้เราจะเรียนเรื่อง <strong>สับเซตและเพาเวอร์เซต</strong> กันนะครับ 🎯<br><br>
-            อยากเริ่มยังไงดีครับ?
-            <div class="choice-grid">
-              <button class="choice-btn" onclick="sendQuick('ไม่เข้าใจเลย ช่วยอธิบายก่อน')">📖 อธิบายก่อน</button>
-              <button class="choice-btn" onclick="sendQuick('ขอทำโจทย์เลย')">✏️ ทำโจทย์เลย</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <div class="messages" id="messages"></div>
       <div class="input-area">
         <div class="input-wrap">
           <textarea id="userInput" placeholder="พิมพ์คำตอบหรือคำถามที่นี่..." rows="1"
@@ -595,181 +209,195 @@
     </div>
   </div>
 </div>
+</div>
 
 <script>
-const API_URL = "https://api.anthropic.com/v1/messages";
-
+// ---- State ----
 let conversationHistory = [];
-let questionCount = 3;
-let correctCount = 2;
+let questionCount = 0;
+let correctCount = 0;
 let isLoading = false;
 let currentTopic = "สับเซตและเพาเวอร์เซต";
+let API_KEY = "";
 
-const SYSTEM_PROMPT = `คุณคือ AI Math Coach สำหรับนักเรียน ม.4 วิชาคณิตศาสตร์ เรื่องเซต
+const PROXY = "https://corsproxy.io/?" + encodeURIComponent("https://api.anthropic.com/v1/messages");
+
+function getSystemPrompt() {
+  return `คุณคือ AI Math Coach สำหรับนักเรียนมัธยมปลาย วิชาคณิตศาสตร์ เรื่องเซต
 สไตล์การสอน:
-- ใช้ภาษาไทยที่เป็นกันเอง พูดกับนักเรียน ม.4
-- ถามทีละขั้น ไม่บอกคำตอบตรงๆ ให้นักเรียนคิดเอง
-- เมื่อนักเรียนตอบผิด ให้ hint ทีละนิด ไม่ดุ ให้กำลังใจ
-- เมื่อตอบถูก ชมเชย แล้วสร้างโจทย์ยากขึ้นอีกนิด
-- ใช้สัญลักษณ์คณิตศาสตร์: ⊆ ⊂ ∈ ∉ ∅ ∪ ∩ A' P(A)
-- โจทย์ต้องหลากหลาย ไม่ซ้ำกัน สร้างใหม่ทุกครั้ง
-- วิเคราะห์วิธีคิดของนักเรียนจากคำตอบ บอกว่าติดตรงไหน
-- ตอบสั้นกระชับ ไม่เกิน 4-5 บรรทัด
-- หัวข้อปัจจุบัน: ${currentTopic}`;
+- ใช้ภาษาไทยกันเอง เหมาะกับนักเรียน ม.4
+- ถามทีละขั้น ไม่บอกคำตอบตรงๆ ให้นักเรียนคิดก่อน
+- ถ้าตอบผิด ให้ hint ทีละนิด ไม่ดุ ให้กำลังใจ
+- ถ้าตอบถูก ชมเชย แล้วสร้างโจทย์ยากขึ้นอีกนิด
+- ใช้สัญลักษณ์: ⊆ ⊂ ∈ ∉ ∅ ∪ ∩ A' P(A) n(A)
+- สร้างโจทย์ใหม่ทุกครั้ง ไม่ซ้ำกัน
+- วิเคราะห์วิธีคิดของนักเรียน บอกว่าติดตรงไหน
+- ตอบสั้นกระชับ ไม่เกิน 5 บรรทัด
+- หัวข้อที่เรียนตอนนี้: ${currentTopic}`;
+}
 
-async function callAI(userMessage) {
-  conversationHistory.push({ role: "user", content: userMessage });
+// ---- Key Setup ----
+window.onload = function() {
+  const saved = localStorage.getItem('mathcoach_key');
+  if (saved && saved.startsWith('sk-ant-')) {
+    API_KEY = saved;
+    document.getElementById('keyModal').style.display = 'none';
+    document.getElementById('appWrap').style.display = 'flex';
+    initChat();
+  }
+};
 
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+function saveKey() {
+  const k = document.getElementById('apiKeyInput').value.trim();
+  if (!k.startsWith('sk-ant-')) {
+    document.getElementById('keyError').textContent = '❌ Key ไม่ถูกต้อง ต้องขึ้นต้นด้วย sk-ant-';
+    return;
+  }
+  API_KEY = k;
+  localStorage.setItem('mathcoach_key', k);
+  document.getElementById('keyModal').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'flex';
+  initChat();
+}
+
+function initChat() {
+  addMessage('ai', 'สวัสดีครับ! 👋 วันนี้เรียนเรื่อง **สับเซตและเพาเวอร์เซต** กันนะครับ\n\nอยากเริ่มยังไงดีครับ? อธิบายก่อน หรือทำโจทย์เลย?');
+}
+
+// ---- AI Call ----
+async function callAI(msg) {
+  conversationHistory.push({ role:"user", content:msg });
+  const res = await fetch(PROXY, {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key": API_KEY,
+      "x-anthropic-version":"2023-06-01"
+    },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 1000,
-      system: SYSTEM_PROMPT,
+      model:"claude-haiku-4-5-20251001",
+      max_tokens:600,
+      system: getSystemPrompt(),
       messages: conversationHistory
     })
   });
-
-  const data = await response.json();
+  if (!res.ok) {
+    const e = await res.json().catch(()=>({}));
+    throw new Error(e?.error?.message || "HTTP "+res.status);
+  }
+  const data = await res.json();
   const reply = data.content[0].text;
-  conversationHistory.push({ role: "assistant", content: reply });
+  conversationHistory.push({ role:"assistant", content:reply });
   return reply;
 }
 
-function addMessage(role, content, isHTML = false) {
+// ---- UI Helpers ----
+function formatText(t) {
+  return t
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/`(.+?)`/g,'<span class="math-inline">$1</span>')
+    .replace(/\n/g,'<br>');
+}
+
+function addMessage(role, content) {
   const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-
-  const avatar = document.createElement('div');
-  avatar.className = 'msg-avatar';
-  avatar.textContent = role === 'ai' ? '🤖' : '👤';
-
-  const bubble = document.createElement('div');
-  bubble.className = 'msg-bubble';
-
-  if (isHTML) {
-    bubble.innerHTML = content;
-  } else {
-    // Format math symbols
-    const formatted = content
-      .replace(/`([^`]+)`/g, '<span class="math">$1</span>')
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/\n/g, '<br>');
-    bubble.innerHTML = formatted;
-  }
-
-  div.appendChild(avatar);
-  div.appendChild(bubble);
-  msgs.appendChild(div);
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  const av = document.createElement('div');
+  av.className = 'msg-avatar';
+  av.textContent = role==='ai' ? '🤖' : '👤';
+  const bub = document.createElement('div');
+  bub.className = 'msg-bubble';
+  bub.innerHTML = formatText(content);
+  wrap.appendChild(av);
+  wrap.appendChild(bub);
+  msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
 }
 
 function addTyping() {
   const msgs = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'msg ai';
-  div.id = 'typingIndicator';
-
-  const avatar = document.createElement('div');
-  avatar.className = 'msg-avatar';
-  avatar.textContent = '🤖';
-
-  const bubble = document.createElement('div');
-  bubble.className = 'msg-bubble';
-  bubble.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
-
-  div.appendChild(avatar);
-  div.appendChild(bubble);
-  msgs.appendChild(div);
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai'; wrap.id = 'typing';
+  wrap.innerHTML = '<div class="msg-avatar">🤖</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(wrap);
   msgs.scrollTop = msgs.scrollHeight;
 }
 
 function removeTyping() {
-  const t = document.getElementById('typingIndicator');
-  if (t) t.remove();
+  const t = document.getElementById('typing');
+  if(t) t.remove();
 }
 
-function setLoading(state) {
-  isLoading = state;
-  document.getElementById('sendBtn').disabled = state;
+function setLoading(v) {
+  isLoading = v;
+  document.getElementById('sendBtn').disabled = v;
   const bar = document.getElementById('loadingBar');
-  bar.style.width = state ? '70%' : '0%';
-  if (!state) setTimeout(() => bar.style.width = '0%', 300);
+  bar.style.width = v ? '65%' : '100%';
+  if(!v) setTimeout(()=>bar.style.width='0%', 400);
 }
 
+function updateStats(wasCorrect) {
+  questionCount++;
+  if(wasCorrect) correctCount++;
+  document.getElementById('statQ').textContent = questionCount;
+  document.getElementById('statC').textContent = correctCount;
+  const acc = questionCount>0 ? Math.round(correctCount/questionCount*100) : 0;
+  document.getElementById('statA').textContent = acc+'%';
+  document.getElementById('statLv').textContent = acc>=80?'⭐⭐⭐':acc>=60?'⭐⭐':'⭐';
+}
+
+// ---- Send ----
 async function sendMessage() {
-  if (isLoading) return;
-  const input = document.getElementById('userInput');
-  const text = input.value.trim();
-  if (!text) return;
-
-  input.value = '';
-  autoResize(input);
+  if(isLoading) return;
+  const inp = document.getElementById('userInput');
+  const text = inp.value.trim();
+  if(!text) return;
+  inp.value = '';
+  autoResize(inp);
   document.getElementById('quickReplies').innerHTML = '';
-
   addMessage('user', text);
   setLoading(true);
   addTyping();
-
-  // Update stats
-  questionCount++;
-  document.getElementById('statQ').textContent = questionCount;
-
   try {
     const reply = await callAI(text);
     removeTyping();
     addMessage('ai', reply);
-
-    // Check if correct (simple heuristic)
-    if (reply.includes('ถูกต้อง') || reply.includes('เยี่ยม') || reply.includes('ดีมาก')) {
-      correctCount++;
-      document.getElementById('statC').textContent = correctCount;
-    }
-    const acc = Math.round((correctCount / questionCount) * 100);
-    document.getElementById('statA').textContent = acc + '%';
-
-  } catch (e) {
+    const isCorrect = /ถูกต้อง|เยี่ยม|ดีมาก|ถูกเลย|ใช่เลย/.test(reply);
+    updateStats(isCorrect);
+  } catch(e) {
     removeTyping();
-    addMessage('ai', 'ขออภัยครับ เกิดข้อผิดพลาด ลองใหม่อีกครั้งนะครับ');
+    addMessage('ai', '⚠️ เกิดข้อผิดพลาด: ' + e.message + '\n\nลองใหม่อีกครั้งนะครับ');
   }
-
   setLoading(false);
 }
 
-function sendQuick(text) {
-  document.getElementById('userInput').value = text;
+function sendQuick(t) {
+  document.getElementById('userInput').value = t;
   sendMessage();
 }
 
 function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
 }
 
 function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,120)+'px';
 }
 
 function selectTopic(btn, topic) {
-  document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.topic-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   currentTopic = topic;
-  document.getElementById('topicTag').textContent = topic;
-
-  // Clear chat and start new topic
+  document.getElementById('topicTag').textContent = topic.replace('และ',' & ').substring(0,10);
   document.getElementById('messages').innerHTML = '';
   conversationHistory = [];
   addMessage('ai', `เปลี่ยนหัวข้อเป็น **${topic}** แล้วครับ 📚\n\nอยากเริ่มยังไงดีครับ?`);
 }
 
 function togglePassport() {
-  const overlay = document.getElementById('passportOverlay');
-  overlay.classList.toggle('open');
+  document.getElementById('passportOverlay').classList.toggle('open');
 }
 </script>
 </body>
