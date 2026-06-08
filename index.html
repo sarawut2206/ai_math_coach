@@ -303,7 +303,7 @@ async function callAI(msg) {
       "X-Title": "AI Math Coach"
     },
     body: JSON.stringify({
-      model: "qwen/qwen3-next-80b-a3b-instruct:free",
+      model: "anthropic/claude-haiku-4.5",
       messages: msgs,
       max_tokens: 500,
       temperature: 0.7
