@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Math Diagnosis — วิเคราะห์ผู้เรียนคณิตศาสตร์</title>
+<title>MathScan AI — สแกนจุดอ่อน สร้างเส้นทางเรียนรู้เฉพาะตัว</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 :root{
@@ -147,6 +147,17 @@ body::before{content:'';position:fixed;inset:0;
   border:none;border-radius:14px;color:white;font-family:'Sarabun',sans-serif;
   font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;}
 .restart-btn:hover{opacity:.88;}
+.wrong-review{background:var(--s1);border:1px solid var(--border2);border-radius:16px;padding:20px;width:100%;}
+.wrong-review h3{font-size:13px;font-family:'Space Mono',monospace;color:var(--red);letter-spacing:1px;margin-bottom:12px;}
+.wrong-item{padding:12px 14px;background:var(--s2);border:1px solid rgba(239,68,68,0.2);border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.7;}
+.wrong-item .wi-q{color:var(--dim);margin-bottom:4px;}
+.wrong-item .wi-wrong{color:var(--red);font-size:12px;}
+.wrong-item .wi-correct{color:var(--green);font-size:12px;}
+.exercise-card{background:var(--s1);border:1px solid rgba(0,212,255,0.2);border-radius:16px;padding:20px;width:100%;}
+.exercise-card h3{font-size:13px;font-family:'Space Mono',monospace;color:var(--cyan);letter-spacing:1px;margin-bottom:12px;}
+.ex-item{padding:14px 16px;background:var(--s2);border:1px solid var(--border2);border-radius:10px;margin-bottom:8px;font-size:14px;line-height:1.75;position:relative;}
+.ex-item .ex-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;}
+.loading-ex{text-align:center;padding:20px;color:var(--muted);font-size:13px;}
 
 /* topic selector */
 .topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
@@ -165,8 +176,8 @@ body::before{content:'';position:fixed;inset:0;
 <div id="keyModal">
   <div class="km-card">
     <div class="km-icon">🧮</div>
-    <div class="km-title">AI MATH DIAGNOSIS</div>
-    <div class="km-sub">ระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ด้วย AI<br>ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
+    <div class="km-title">MathScan AI</div>
+    <div class="km-sub">สแกนจุดอ่อน สร้างเส้นทางเรียนรู้เฉพาะตัว<br>นวัตกรรมการศึกษาเพื่อผู้เรียนแห่งอนาคต</div>
     <div class="km-label">🔑 ใส่ OpenRouter API Key</div>
     <input id="apiKeyInput" class="km-input" type="password" placeholder="sk-or-v1-..."
       onkeydown="if(event.key==='Enter')saveKey()"/>
@@ -186,8 +197,8 @@ body::before{content:'';position:fixed;inset:0;
     <div class="tb-logo">
       <div class="tb-icon">🧮</div>
       <div>
-        <div class="tb-name">AI MATH DIAGNOSIS</div>
-        <div class="tb-sub">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
+        <div class="tb-name">MathScan AI</div>
+        <div class="tb-sub">นวัตกรรมการศึกษาเพื่อผู้เรียนแห่งอนาคต</div>
       </div>
     </div>
     <button class="tb-btn" onclick="changeKey()">🔑 เปลี่ยน Key</button>
@@ -221,6 +232,14 @@ body::before{content:'';position:fixed;inset:0;
       <div class="result-analysis" id="resAnalysis">
         <h3>🤖 AI วิเคราะห์</h3>
         <div id="resAnalysisText">กำลังวิเคราะห์...</div>
+      </div>
+      <div class="wrong-review" id="wrongReview" style="display:none;">
+        <h3>❌ ข้อที่ตอบผิด</h3>
+        <div id="wrongList"></div>
+      </div>
+      <div class="exercise-card" id="exerciseCard" style="display:none;">
+        <h3>📝 แบบฝึกหัดเฉพาะตัว</h3>
+        <div id="exerciseText"><div class="loading-ex">🤖 AI กำลังสร้างแบบฝึกหัดเฉพาะตัว...</div></div>
       </div>
       <button class="restart-btn" onclick="restart()">🔄 เริ่มใหม่</button>
     </div>
@@ -391,7 +410,7 @@ function updateProgress() {
 // ===== FLOW =====
 function greetUser() {
   phase = 'intro';
-  addMsg('ai', 'สวัสดีครับ! 👋 ผมคือ **AI Math Diagnosis** ระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ครับ\n\nก่อนเริ่ม ขอถามนิดนึงนะครับ **ชื่ออะไรครับ?**');
+  addMsg('ai', 'สวัสดีครับ! 👋 ผมคือ **MathScan AI** ระบบสแกนจุดอ่อนและสร้างเส้นทางเรียนรู้คณิตศาสตร์เฉพาะตัวครับ\n\nก่อนเริ่ม ขอถามนิดนึงนะครับ **ชื่ออะไรครับ?**');
   showInput("พิมพ์ชื่อของคุณ...");
 }
 
@@ -457,20 +476,23 @@ async function loadNextMCQ() {
   if (qIndex >= TOTAL_Q) { await showResult(); return; }
   addTyping();
   const levelName = ['ง่าย','ปานกลาง','ยาก'][mcqLevel-1];
-  const prompt = `สร้างโจทย์คณิตศาสตร์เรื่อง "${selectedTopic}" ระดับ ${selectedGrade} ระดับความยาก: ${levelName}
-อ้างอิงตัวชี้วัดแกนกลางการศึกษาขั้นพื้นฐาน 2560
+  const prompt = `คุณคือครูคณิตศาสตร์ผู้เชี่ยวชาญ สร้างโจทย์เรื่อง "${selectedTopic}" ระดับ ${selectedGrade} ความยาก: ${levelName}
+อิงตัวชี้วัดแกนกลาง 2560
 
-กฎสำคัญมาก:
-1. ตอบ JSON เท่านั้น ห้ามมีข้อความอื่น
-2. choices ต้องมี 4 ตัวเลือก (index 0,1,2,3)
-3. ans คือ index ของตัวเลือกที่ถูกต้อง (0=ก, 1=ข, 2=ค, 3=ง)
-4. ตรวจสอบให้แน่ใจว่า choices[ans] คือคำตอบที่ถูก
-5. ทุกอย่างเป็นภาษาไทย
+ขั้นตอนบังคับ (ทำในใจก่อน ห้ามข้าม):
+STEP 1: คิดโจทย์และกำหนดค่าตัวแปรทั้งหมดให้ชัดเจน
+STEP 2: คำนวณคำตอบที่ถูกต้องทีละขั้น จนได้ผลลัพธ์สุดท้าย
+STEP 3: ตรวจสอบคำตอบอีกครั้ง
+STEP 4: สร้างตัวเลือกผิด 3 ข้อที่สมเหตุสมผล (ไม่ใกล้เคียงกันเกินไป)
+STEP 5: วาง 4 ตัวเลือกในลำดับสุ่ม บันทึก index ของคำตอบถูก
 
-ตัวอย่าง JSON (ถ้าคำตอบถูกคือ ข.):
-{"q":"โจทย์","choices":["ก. ผิด","ข. ถูก","ค. ผิด","ง. ผิด"],"ans":1,"explain":"เพราะ..."}
+กฎเหล็ก:
+- choices[ans] ต้องเท่ากับคำตอบที่คำนวณได้จาก STEP 2 เท่านั้น
+- ห้ามใส่คำตอบผิดในตำแหน่ง ans
+- ตรวจสอบซ้ำก่อน output
 
-สร้าง JSON ใหม่สำหรับโจทย์นี้:`;
+ตอบเป็น JSON เท่านั้น ไม่มีข้อความอื่น:
+{"q":"โจทย์","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"แสดงการคำนวณทีละขั้น"}`;
   try {
     const raw = await callAI(prompt);
     const json = raw.match(/\{[\s\S]*\}/)?.[0];
@@ -506,7 +528,8 @@ function showMCQ(q) {
     });
     addMsg('user', c);
     // record
-    answers.push({correct:isCorrect, q:q.q, chosen:i, correctIdx:q.ans});
+    answers.push({correct:isCorrect, q:q.q, chosen:i, correctIdx:q.ans,
+      chosenText:q.choices[i], correctText:q.choices[q.ans]});
     if (isCorrect) {
       correct++; consCorrect++; consWrong=0;
       addMsg('ai', `✅ **ถูกต้องครับ ${studentName}!** ${q.explain}`);
@@ -610,29 +633,37 @@ async function showResult() {
   const pct = Math.round(correct/TOTAL_Q*100);
   addMsg('ai', `เสร็จแล้วครับ ${studentName}! 🎊 กำลังวิเคราะห์ผลให้นะครับ...`);
   addTyping();
-  const wrongList = answers.filter(a=>!a.correct).map(a=>`- "${a.q}"`).join('\n');
+
+  const wrongItems = answers.filter(a=>!a.correct);
+  const wrongSummary = wrongItems.map((a,i)=>`ข้อ${i+1}: "${a.q}" (เลือก index ${a.chosen} แต่ถูกคือ index ${a.correctIdx})`).join('\n');
+
   const prompt = `นักเรียนชื่อ ${studentName} ทำแบบทดสอบเรื่อง "${selectedTopic}" ระดับ ${selectedGrade}
 ผล: ถูก ${correct}/${TOTAL_Q} (${pct}%)
-โจทย์ที่ผิด:\n${wrongList||'ไม่มีข้อผิด'}
+โจทย์ที่ผิด:
+${wrongSummary||'ไม่มีข้อผิด'}
 
-วิเคราะห์ผลเป็นภาษาไทย 3-4 ประโยค:
-1. สรุประดับความเข้าใจ
-2. จุดที่ควรพัฒนา
-3. แนะนำหัวข้อที่ควรทบทวน
-4. ให้กำลังใจ
-ตอบสั้น กระชับ เป็นกันเอง`;
+วิเคราะห์ผลเป็นภาษาไทย 4-5 ประโยค:
+1. สรุประดับความเข้าใจของนักเรียน
+2. จุดอ่อนที่พบจากโจทย์ที่ผิด
+3. แนวคิดหรือทักษะที่ควรทบทวน
+4. คำแนะนำเฉพาะตัวสำหรับการพัฒนา
+5. ให้กำลังใจ
+ตอบกระชับ เป็นกันเอง ใช้ emoji ช่วยให้อ่านง่าย`;
+
   try {
     const analysis = await callAI(prompt);
     rmTyping();
     await delay(300);
-    showResultScreen(pct, analysis);
+    showResultScreen(pct, analysis, wrongItems);
+    // Load exercises after showing result
+    await generateExercises(wrongItems, pct);
   } catch(e) {
     rmTyping();
-    showResultScreen(pct, 'ขอบคุณที่ทำแบบทดสอบนะครับ! ทำได้ดีมากครับ');
+    showResultScreen(pct, 'ขอบคุณที่ทำแบบทดสอบนะครับ! ทำได้ดีมากครับ', wrongItems);
   }
 }
 
-function showResultScreen(pct, analysis) {
+function showResultScreen(pct, analysis, wrongItems) {
   document.getElementById('chatScreen').classList.remove('active');
   document.getElementById('resultScreen').classList.add('active');
   const trophy = pct>=80?'🏆':pct>=60?'🥈':'💪';
@@ -646,6 +677,63 @@ function showResultScreen(pct, analysis) {
   document.getElementById('st3').textContent = wrong;
   document.getElementById('resAnalysisText').innerHTML =
     analysis.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+
+  // Show wrong items review
+  if (wrongItems && wrongItems.length > 0) {
+    const wCard = document.getElementById('wrongReview');
+    const wList = document.getElementById('wrongList');
+    wCard.style.display = 'block';
+    wList.innerHTML = wrongItems.map((a,i) => `
+      <div class="wrong-item">
+        <div class="wi-q">❓ ${a.q}</div>
+        ${a.chosen !== undefined
+          ? `<div class="wi-wrong">❌ ที่เลือก: ${a.chosenText||'ข้อที่ '+a.chosen}</div>
+             <div class="wi-correct">✅ ถูกต้อง: ${a.correctText||'ข้อที่ '+a.correctIdx}</div>`
+          : `<div class="wi-wrong">❌ ตอบ: "${a.userAnswer||'-'}"</div>`}
+      </div>`).join('');
+  }
+
+  // Show exercise card placeholder
+  document.getElementById('exerciseCard').style.display = 'block';
+}
+
+async function generateExercises(wrongItems, pct) {
+  const exDiv = document.getElementById('exerciseText');
+  if (!wrongItems || wrongItems.length === 0) {
+    exDiv.innerHTML = '<div style="color:var(--green);padding:12px;">🌟 ทำได้ดีมากครับ! ไม่มีข้อที่ต้องฝึกเพิ่ม</div>';
+    return;
+  }
+  const weakTopics = wrongItems.slice(0,3).map(a=>a.q.substring(0,50)).join('; ');
+  const prompt = `นักเรียน ${selectedGrade} เรียนเรื่อง "${selectedTopic}" ทำผิดในโจทย์เหล่านี้:
+${weakTopics}
+
+สร้างแบบฝึกหัดเสริม 3 ข้อ เฉพาะจุดอ่อนที่พบ
+แต่ละข้อต้องมีการแสดงวิธีทำทีละขั้นด้วย
+รูปแบบ:
+ข้อ 1: [โจทย์]
+วิธีทำ: [แสดงขั้นตอน]
+คำตอบ: [คำตอบ]
+
+ข้อ 2: ...
+ข้อ 3: ...
+
+ตอบภาษาไทย กระชับ ระดับเหมาะสมกับ ${selectedGrade}`;
+
+  try {
+    const exercises = await callAI(prompt);
+    exDiv.innerHTML = exercises
+      .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+      .split('\n')
+      .map(line => {
+        if (line.startsWith('ข้อ')) return `<div class="ex-item"><div class="ex-num">โจทย์ฝึก</div>${line}</div>`;
+        if (line.startsWith('วิธีทำ')) return `<div style="font-size:12px;color:var(--cyan);padding:4px 14px;">${line}</div>`;
+        if (line.startsWith('คำตอบ')) return `<div style="font-size:12px;color:var(--green);padding:4px 14px 10px;">${line}</div>`;
+        if (!line.trim()) return '';
+        return `<div style="font-size:13px;padding:2px 14px;color:var(--dim);">${line}</div>`;
+      }).join('');
+  } catch(e) {
+    exDiv.innerHTML = '<div style="color:var(--muted);padding:12px;">ไม่สามารถสร้างแบบฝึกหัดได้ กรุณาลองใหม่</div>';
+  }
 }
 
 function restart() {
@@ -665,8 +753,8 @@ async function callAI(prompt) {
     headers:{
       "Content-Type":"application/json",
       "Authorization":`Bearer ${GKEY}`,
-      "HTTP-Referer":"https://sarawut2206.github.io/ai_math_coach/",
-      "X-Title":"AI Math Diagnosis"
+      "HTTP-Referer":"https://mathscan-ai.github.io/",
+      "X-Title":"MathScan AI"
     },
     body:JSON.stringify({
       model:"anthropic/claude-haiku-4.5",
