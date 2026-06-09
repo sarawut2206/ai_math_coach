@@ -3,259 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Math Coach — เซต ม.4</title>
+<title>AI Math Diagnosis — วิเคราะห์ผู้เรียนคณิตศาสตร์</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 :root{
-  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--border:#1e2d45;
-  --accent:#00d4ff;--accent2:#7c3aed;--accent3:#10b981;
-  --warn:#f59e0b;--danger:#ef4444;--text:#e2e8f0;--muted:#64748b;
+  --bg:#060910;--s1:#0d1117;--s2:#161b27;--s3:#1e2535;
+  --border:#1e2d45;--border2:#2a3a55;
+  --cyan:#00d4ff;--purple:#7c3aed;--green:#10b981;
+  --warn:#f59e0b;--red:#ef4444;
+  --text:#e2e8f0;--muted:#64748b;--dim:#94a3b8;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* GRID BG */
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,212,255,0.025) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,212,255,0.025) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;z-index:0;}
 
 /* KEY MODAL */
-#keyModal{position:fixed;inset:0;background:rgba(0,0,0,0.97);z-index:999;display:flex;align-items:center;justify-content:center;}
-.key-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;width:90%;max-width:440px;}
-.key-logo{font-size:40px;text-align:center;margin-bottom:8px;}
-.key-title{font-family:'Space Mono',monospace;color:var(--accent);font-size:15px;text-align:center;margin-bottom:4px;}
-.key-sub{color:var(--muted);font-size:12px;text-align:center;margin-bottom:24px;}
-.key-label{font-size:14px;color:var(--text);margin-bottom:8px;}
-#apiKeyInput{width:100%;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;margin-bottom:6px;}
-#apiKeyInput:focus{border-color:var(--accent);}
-#keyError{color:var(--danger);font-size:12px;min-height:18px;margin-bottom:12px;}
-.key-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
-.key-note{margin-top:16px;padding:12px;background:var(--bg);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.8;}
-.key-note a{color:var(--accent);text-decoration:none;}
+#keyModal{position:fixed;inset:0;background:rgba(0,0,0,0.98);z-index:999;
+  display:flex;align-items:center;justify-content:center;padding:16px;}
+.km-card{background:var(--s1);border:1px solid var(--border2);border-radius:24px;
+  padding:36px;width:100%;max-width:420px;
+  box-shadow:0 0 60px rgba(0,212,255,0.08),0 0 120px rgba(124,58,237,0.06);}
+.km-icon{font-size:44px;text-align:center;margin-bottom:12px;}
+.km-title{font-family:'Space Mono',monospace;color:var(--cyan);font-size:16px;
+  text-align:center;letter-spacing:2px;margin-bottom:4px;}
+.km-sub{color:var(--muted);font-size:12px;text-align:center;margin-bottom:28px;}
+.km-label{font-size:13px;color:var(--dim);margin-bottom:8px;}
+.km-input{width:100%;padding:13px 16px;background:var(--s2);border:1px solid var(--border);
+  border-radius:12px;color:var(--text);font-family:'Space Mono',monospace;
+  font-size:12px;outline:none;margin-bottom:6px;transition:border-color .2s;}
+.km-input:focus{border-color:var(--cyan);}
+.km-err{color:var(--red);font-size:12px;min-height:18px;margin-bottom:12px;}
+.km-btn{width:100%;padding:14px;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  border:none;border-radius:12px;color:white;
+  font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;
+  transition:opacity .2s;}
+.km-btn:hover{opacity:.88;}
+.km-note{margin-top:16px;padding:12px 14px;background:var(--bg);border-radius:10px;
+  font-size:11px;color:var(--muted);line-height:1.9;}
+.km-note a{color:var(--cyan);text-decoration:none;}
 
 /* APP */
-#appWrap{position:relative;z-index:1;display:none;flex-direction:column;flex:1;}
-.app{max-width:800px;margin:0 auto;width:100%;padding:20px 16px;display:flex;flex-direction:column;gap:16px;}
+#app{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:1;}
 
-/* HEADER */
-.header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--surface);border:1px solid var(--border);border-radius:16px;}
-.logo{display:flex;align-items:center;gap:12px;}
-.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
-.logo-text{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);}
-.logo-sub{font-size:11px;color:var(--muted);}
-.hdr-btn{padding:7px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:12px;cursor:pointer;}
-.hdr-btn:hover{border-color:var(--accent);color:var(--accent);}
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;border-bottom:1px solid var(--border);background:var(--s1);}
+.tb-logo{display:flex;align-items:center;gap:10px;}
+.tb-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--cyan),var(--purple));
+  border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+.tb-name{font-family:'Space Mono',monospace;font-size:12px;color:var(--cyan);letter-spacing:1px;}
+.tb-sub{font-size:10px;color:var(--muted);}
+.tb-btn{padding:6px 12px;background:var(--s2);border:1px solid var(--border);
+  border-radius:8px;color:var(--muted);font-family:'Sarabun',sans-serif;
+  font-size:11px;cursor:pointer;transition:all .2s;}
+.tb-btn:hover{border-color:var(--cyan);color:var(--cyan);}
 
-/* TOPIC TABS */
-.topic-tabs{display:flex;gap:8px;flex-wrap:wrap;}
-.tab{padding:8px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;}
-.tab:hover{border-color:var(--accent);color:var(--text);}
-.tab.active{border-color:var(--accent);background:rgba(0,212,255,0.1);color:var(--accent);}
+/* SCREENS */
+.screen{display:none;flex-direction:column;flex:1;}
+.screen.active{display:flex;}
 
-/* PROGRESS BAR */
-.progress-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 20px;}
-.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.prog-label{font-size:13px;color:var(--muted);}
-.prog-count{font-family:'Space Mono',monospace;font-size:18px;color:var(--accent);font-weight:700;}
-.prog-bar-wrap{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
-.prog-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .5s ease;}
-.prog-stats{display:flex;gap:20px;margin-top:10px;}
-.stat-item{font-size:12px;color:var(--muted);}
-.stat-item span{color:var(--text);font-weight:600;}
+/* ========= SCREEN: CHAT ========= */
+.chat-wrap{display:flex;flex-direction:column;max-width:700px;margin:0 auto;
+  width:100%;padding:20px 16px;flex:1;gap:0;}
 
-/* QUESTION CARD */
-.q-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;min-height:200px;display:flex;flex-direction:column;gap:16px;}
-.q-level{font-size:11px;font-family:'Space Mono',monospace;padding:3px 10px;border-radius:12px;display:inline-block;margin-bottom:4px;}
-.q-level.easy{background:rgba(16,185,129,0.1);color:var(--accent3);border:1px solid rgba(16,185,129,0.2);}
-.q-level.medium{background:rgba(245,158,11,0.1);color:var(--warn);border:1px solid rgba(245,158,11,0.2);}
-.q-level.hard{background:rgba(239,68,68,0.1);color:var(--danger);border:1px solid rgba(239,68,68,0.2);}
-.q-text{font-size:16px;line-height:1.8;font-weight:500;}
-.q-hint{font-size:12px;color:var(--muted);margin-top:-8px;}
+.messages{display:flex;flex-direction:column;gap:14px;flex:1;
+  overflow-y:auto;padding-bottom:16px;max-height:calc(100vh - 200px);}
+.messages::-webkit-scrollbar{width:3px;}
+.messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 
-/* CHOICES */
-.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-@media(max-width:500px){.choices{grid-template-columns:1fr;}}
-.choice{padding:14px 18px;background:var(--surface2);border:2px solid var(--border);border-radius:12px;font-family:'Sarabun',sans-serif;font-size:14px;color:var(--text);cursor:pointer;text-align:left;transition:all .2s;line-height:1.5;}
-.choice:hover:not(:disabled){border-color:var(--accent);background:rgba(0,212,255,0.05);}
-.choice.correct{border-color:var(--accent3);background:rgba(16,185,129,0.1);color:var(--accent3);}
-.choice.wrong{border-color:var(--danger);background:rgba(239,68,68,0.05);color:var(--danger);}
-.choice:disabled{cursor:not-allowed;}
-.choice-label{font-family:'Space Mono',monospace;font-size:11px;margin-right:8px;opacity:.6;}
+/* message bubbles */
+.msg{display:flex;gap:10px;max-width:85%;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.msg.ai{align-self:flex-start;}
+.msg.user{flex-direction:row-reverse;align-self:flex-end;}
+.m-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px;}
+.msg.ai .m-av{background:linear-gradient(135deg,var(--cyan),var(--purple));}
+.msg.user .m-av{background:linear-gradient(135deg,var(--purple),#9333ea);}
+.m-bub{padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.75;}
+.msg.ai .m-bub{background:var(--s2);border:1px solid var(--border);border-top-left-radius:4px;}
+.msg.user .m-bub{background:linear-gradient(135deg,rgba(124,58,237,0.3),rgba(0,212,255,0.15));
+  border:1px solid rgba(124,58,237,0.3);border-top-right-radius:4px;}
 
-/* FEEDBACK */
-.feedback{padding:14px 18px;border-radius:12px;font-size:14px;line-height:1.7;display:none;}
-.feedback.show{display:block;}
-.feedback.correct-fb{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);color:var(--accent3);}
-.feedback.wrong-fb{background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.15);color:#fca5a5;}
+/* typing */
+.typing{display:flex;gap:5px;align-items:center;padding:4px 2px;}
+.typing span{width:7px;height:7px;background:var(--cyan);border-radius:50%;animation:tdot 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
 
-/* NEXT BTN */
-.next-btn{padding:13px 32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;align-self:flex-end;display:none;transition:all .2s;}
-.next-btn:hover{opacity:.9;transform:translateY(-1px);}
-.next-btn.show{display:block;}
+/* choice buttons */
+.choices-wrap{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+.choice-btn{padding:11px 16px;background:var(--s1);border:1px solid var(--border2);
+  border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;
+  font-size:14px;text-align:left;cursor:pointer;transition:all .2s;line-height:1.5;}
+.choice-btn:hover:not(:disabled){border-color:var(--cyan);background:rgba(0,212,255,0.05);}
+.choice-btn.selected-correct{border-color:var(--green);background:rgba(16,185,129,0.08);color:var(--green);}
+.choice-btn.selected-wrong{border-color:var(--red);background:rgba(239,68,68,0.05);color:#fca5a5;}
+.choice-btn.reveal-correct{border-color:var(--green);color:var(--green);opacity:.7;}
+.choice-btn:disabled{cursor:not-allowed;}
 
-/* LOADING */
-.loading-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:48px;text-align:center;display:none;}
-.loading-card.show{display:block;}
-.loading-dots{display:flex;gap:8px;justify-content:center;margin-bottom:16px;}
-.loading-dots span{width:10px;height:10px;background:var(--accent);border-radius:50%;animation:ldot 1.2s infinite;}
-.loading-dots span:nth-child(2){animation-delay:.2s;}
-.loading-dots span:nth-child(3){animation-delay:.4s;}
-@keyframes ldot{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
-.loading-text{color:var(--muted);font-size:14px;}
+/* text input row */
+.input-row{display:flex;gap:10px;padding-top:12px;border-top:1px solid var(--border);margin-top:8px;}
+.chat-input{flex:1;background:var(--s2);border:1px solid var(--border);
+  border-radius:12px;padding:12px 16px;color:var(--text);
+  font-family:'Sarabun',sans-serif;font-size:14px;
+  outline:none;resize:none;min-height:46px;max-height:100px;transition:border-color .2s;}
+.chat-input:focus{border-color:var(--cyan);}
+.chat-input::placeholder{color:var(--muted);}
+.send-btn{width:46px;height:46px;background:linear-gradient(135deg,var(--cyan),var(--purple));
+  border:none;border-radius:12px;color:white;font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .2s;}
+.send-btn:hover{transform:scale(1.05);}
+.send-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
 
-/* RESULT CARD */
-.result-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;text-align:center;display:none;}
-.result-card.show{display:block;}
-.result-score{font-size:56px;font-weight:700;margin:16px 0;}
-.result-label{font-size:16px;color:var(--muted);margin-bottom:24px;}
-.result-breakdown{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;}
-.rb-item{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 20px;text-align:center;}
-.rb-num{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;}
-.rb-txt{font-size:11px;color:var(--muted);margin-top:4px;}
-.restart-btn{padding:13px 32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
+/* ========= PROGRESS ========= */
+.prog-bar-wrap{height:3px;background:var(--border);position:sticky;top:0;z-index:10;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .5s;}
 
-/* PASSPORT OVERLAY */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:center;justify-content:center;}
-.overlay.open{display:flex;}
-.passport-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px;width:90%;max-width:480px;}
-.passport-title{font-size:17px;font-weight:700;margin-bottom:20px;}
-.p-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:10px;margin-bottom:7px;background:var(--surface2);border:1px solid var(--border);}
-.badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Space Mono',monospace;}
-.badge.pass{background:rgba(16,185,129,0.12);color:var(--accent3);border:1px solid rgba(16,185,129,0.25);}
-.badge.now{background:rgba(0,212,255,0.1);color:var(--accent);border:1px solid rgba(0,212,255,0.25);}
-.badge.lock{background:rgba(100,116,139,0.1);color:var(--muted);border:1px solid rgba(100,116,139,0.2);}
-.close-btn{margin-top:18px;width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;cursor:pointer;}
+/* ========= RESULT ========= */
+.result-screen{display:flex;flex-direction:column;align-items:center;
+  padding:32px 16px;max-width:700px;margin:0 auto;width:100%;gap:20px;}
+.result-trophy{font-size:56px;text-align:center;}
+.result-score{font-size:52px;font-weight:800;text-align:center;}
+.result-title{font-size:18px;color:var(--dim);text-align:center;margin-top:-8px;}
+.result-analysis{background:var(--s1);border:1px solid var(--border2);border-radius:16px;
+  padding:20px;width:100%;font-size:14px;line-height:1.85;}
+.result-analysis h3{font-size:13px;font-family:'Space Mono',monospace;
+  color:var(--cyan);letter-spacing:1px;margin-bottom:12px;}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;}
+.stat-box{background:var(--s1);border:1px solid var(--border);border-radius:12px;
+  padding:14px;text-align:center;}
+.stat-num{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;}
+.restart-btn{padding:14px 40px;background:linear-gradient(135deg,var(--cyan),var(--purple));
+  border:none;border-radius:14px;color:white;font-family:'Sarabun',sans-serif;
+  font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;}
+.restart-btn:hover{opacity:.88;}
+
+/* topic selector */
+.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+@media(max-width:480px){.topic-grid{grid-template-columns:1fr;}}
+.topic-btn{padding:10px 14px;background:var(--s1);border:1px solid var(--border2);
+  border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;
+  font-size:13px;text-align:left;cursor:pointer;transition:all .2s;}
+.topic-btn:hover{border-color:var(--cyan);background:rgba(0,212,255,0.05);}
+.topic-btn .grade{font-size:10px;color:var(--muted);display:block;margin-bottom:2px;
+  font-family:'Space Mono',monospace;}
 </style>
 </head>
 <body>
 
 <!-- KEY MODAL -->
 <div id="keyModal">
-  <div class="key-card">
-    <div class="key-logo">🧮</div>
-    <div class="key-title">AI MATH COACH</div>
-    <div class="key-sub">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
-    <div class="key-label">🔑 ใส่ OpenRouter API Key</div>
-    <input id="apiKeyInput" type="password" placeholder="sk-or-v1-..." onkeydown="if(event.key==='Enter')saveKey()"/>
-    <div id="keyError"></div>
-    <button class="key-btn" onclick="saveKey()">เริ่มใช้งาน →</button>
-    <div class="key-note">
-      💡 Key เก็บในเครื่องเท่านั้น<br>
-      สมัครฟรีที่ <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> → Keys → Create Key
+  <div class="km-card">
+    <div class="km-icon">🧮</div>
+    <div class="km-title">AI MATH DIAGNOSIS</div>
+    <div class="km-sub">ระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ด้วย AI<br>ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
+    <div class="km-label">🔑 ใส่ OpenRouter API Key</div>
+    <input id="apiKeyInput" class="km-input" type="password" placeholder="sk-or-v1-..."
+      onkeydown="if(event.key==='Enter')saveKey()"/>
+    <div id="keyError" class="km-err"></div>
+    <button class="km-btn" onclick="saveKey()">เริ่มใช้งาน →</button>
+    <div class="km-note">
+      💡 Key เก็บในเครื่องเท่านั้น ไม่ส่งไปที่ใด<br>
+      สมัครฟรีที่ <a href="https://openrouter.ai" target="_blank">openrouter.ai</a> → Keys → Create Key<br>
+      แนะนำ: เติมเงิน $5 แล้วใช้ Claude Haiku ภาษาไทยดีที่สุด
     </div>
-  </div>
-</div>
-
-<!-- PASSPORT -->
-<div class="overlay" id="passportOverlay">
-  <div class="passport-card">
-    <div class="passport-title">📋 Learning Passport — เซต ม.4</div>
-    <div class="p-row"><span>ความหมายของเซต</span><span class="badge pass">✅ ผ่านแล้ว</span></div>
-    <div class="p-row"><span id="passTopicRow">สับเซตและเพาเวอร์เซต</span><span class="badge now" id="passTopicBadge">🔵 กำลังเรียน</span></div>
-    <div class="p-row"><span>การดำเนินการของเซต</span><span class="badge lock">🔒 ยังไม่ผ่าน</span></div>
-    <div class="p-row"><span>แผนภาพเวนน์-ออยเลอร์</span><span class="badge lock">🔒 ยังไม่ผ่าน</span></div>
-    <div class="p-row"><span>จำนวนสมาชิกของเซต</span><span class="badge lock">🔒 ยังไม่ผ่าน</span></div>
-    <button class="close-btn" onclick="togglePassport()">ปิด</button>
   </div>
 </div>
 
 <!-- APP -->
-<div id="appWrap">
-<div class="app">
-
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">
-      <div class="logo-icon">🧮</div>
+<div id="app">
+  <div class="topbar">
+    <div class="tb-logo">
+      <div class="tb-icon">🧮</div>
       <div>
-        <div class="logo-text">AI MATH COACH</div>
-        <div class="logo-sub">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
+        <div class="tb-name">AI MATH DIAGNOSIS</div>
+        <div class="tb-sub">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
       </div>
     </div>
-    <div style="display:flex;gap:8px;">
-      <button class="hdr-btn" onclick="togglePassport()">📋 Passport</button>
-      <button class="hdr-btn" onclick="changeKey()">🔑 Key</button>
-    </div>
+    <button class="tb-btn" onclick="changeKey()">🔑 เปลี่ยน Key</button>
   </div>
 
-  <!-- Topic Tabs -->
-  <div class="topic-tabs" id="topicTabs">
-    <button class="tab" onclick="changeTopic(this,'ความหมายของเซต')">ความหมายของเซต</button>
-    <button class="tab active" onclick="changeTopic(this,'สับเซตและเพาเวอร์เซต')">สับเซต & เพาเวอร์เซต</button>
-    <button class="tab" onclick="changeTopic(this,'การดำเนินการของเซต')">การดำเนินการ</button>
-    <button class="tab" onclick="changeTopic(this,'แผนภาพเวนน์-ออยเลอร์')">เวนน์-ออยเลอร์</button>
-    <button class="tab" onclick="changeTopic(this,'จำนวนสมาชิกของเซต')">จำนวนสมาชิก</button>
-  </div>
+  <div class="prog-bar-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
 
-  <!-- Progress -->
-  <div class="progress-card">
-    <div class="prog-top">
-      <div>
-        <div class="prog-label" id="topicLabel">สับเซตและเพาเวอร์เซต</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px;" id="levelLabel">ระดับ: ปานกลาง</div>
+  <!-- CHAT SCREEN -->
+  <div class="screen active" id="chatScreen">
+    <div class="chat-wrap">
+      <div class="messages" id="messages"></div>
+      <div class="input-row" id="inputRow" style="display:none;">
+        <textarea class="chat-input" id="chatInput" placeholder="พิมพ์ตอบที่นี่..." rows="1"
+          onkeydown="handleKey(event)" oninput="autoH(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendText()">➤</button>
       </div>
-      <div class="prog-count"><span id="qNum">0</span><span style="color:var(--muted);font-size:14px;">/10</span></div>
-    </div>
-    <div class="prog-bar-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
-    <div class="prog-stats">
-      <div class="stat-item">✅ ถูก <span id="correctCount">0</span></div>
-      <div class="stat-item">❌ ผิด <span id="wrongCount">0</span></div>
-      <div class="stat-item">🎯 ความแม่น <span id="accPct">—</span></div>
     </div>
   </div>
 
-  <!-- Loading -->
-  <div class="loading-card" id="loadingCard">
-    <div class="loading-dots"><span></span><span></span><span></span></div>
-    <div class="loading-text" id="loadingText">AI กำลังสร้างโจทย์...</div>
-  </div>
-
-  <!-- Question -->
-  <div class="q-card" id="qCard" style="display:none;">
-    <div>
-      <span class="q-level medium" id="qLevel">ปานกลาง</span>
-      <div class="q-text" id="qText"></div>
-      <div class="q-hint" id="qHint"></div>
+  <!-- RESULT SCREEN -->
+  <div class="screen" id="resultScreen">
+    <div class="result-screen">
+      <div class="result-trophy" id="resTrophy">🏆</div>
+      <div class="result-score" id="resScore"></div>
+      <div class="result-title" id="resTitle"></div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="st1">—</div><div class="stat-lbl">ข้อที่ทำ</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)" id="st2">—</div><div class="stat-lbl">ตอบถูก</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="st3">—</div><div class="stat-lbl">ตอบผิด</div></div>
+      </div>
+      <div class="result-analysis" id="resAnalysis">
+        <h3>🤖 AI วิเคราะห์</h3>
+        <div id="resAnalysisText">กำลังวิเคราะห์...</div>
+      </div>
+      <button class="restart-btn" onclick="restart()">🔄 เริ่มใหม่</button>
     </div>
-    <div class="choices" id="choicesWrap"></div>
-    <div class="feedback" id="feedback"></div>
-    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">ข้อถัดไป →</button>
   </div>
-
-  <!-- Result -->
-  <div class="result-card" id="resultCard">
-    <div style="font-size:36px;">🏆</div>
-    <div class="result-score" id="resultScore"></div>
-    <div class="result-label" id="resultLabel"></div>
-    <div class="result-breakdown">
-      <div class="rb-item"><div class="rb-num" id="rb1">—</div><div class="rb-txt">ข้อที่ทำ</div></div>
-      <div class="rb-item"><div class="rb-num" style="color:var(--accent3);" id="rb2">—</div><div class="rb-txt">ตอบถูก</div></div>
-      <div class="rb-item"><div class="rb-num" style="color:var(--danger);" id="rb3">—</div><div class="rb-txt">ตอบผิด</div></div>
-      <div class="rb-item"><div class="rb-num" style="color:var(--warn);" id="rb4">—</div><div class="rb-txt">ระดับสูงสุด</div></div>
-    </div>
-    <button class="restart-btn" onclick="restartQuiz()">🔄 เริ่มใหม่</button>
-  </div>
-
-</div>
 </div>
 
 <script>
-// ---- State ----
+// ===== STATE =====
 let GKEY = "";
-let topic = "สับเซตและเพาเวอร์เซต";
-let qNum = 0;
+let studentName = "";
+let selectedTopic = "";
+let selectedGrade = "";
+let phase = "intro"; // intro | topic | mode | quiz | result
+let qIndex = 0;
+let questions = [];
+let answers = []; // {correct: bool, question, chosen, correctIdx}
 let correct = 0;
 let wrong = 0;
-let level = 1; // 1=ง่าย 2=ปานกลาง 3=ยาก
-let consecutiveCorrect = 0;
-let consecutiveWrong = 0;
-let answered = false;
-let maxLevel = 1;
-const TOTAL = 10;
+const TOTAL_Q = 10;
 
-const LEVELS = {1:'ง่าย', 2:'ปานกลาง', 3:'ยาก'};
-const LEVEL_CSS = {1:'easy', 2:'medium', 3:'hard'};
+// ===== TOPICS =====
+const TOPICS = [
+  {grade:"ม.1", name:"จำนวนเต็ม"},
+  {grade:"ม.1", name:"เศษส่วนและทศนิยม"},
+  {grade:"ม.1", name:"สมการเชิงเส้น"},
+  {grade:"ม.2", name:"อัตราส่วนและร้อยละ"},
+  {grade:"ม.2", name:"พื้นที่ผิวและปริมาตร"},
+  {grade:"ม.2", name:"ระบบสมการ"},
+  {grade:"ม.3", name:"พีทาโกรัส"},
+  {grade:"ม.3", name:"สถิติเบื้องต้น"},
+  {grade:"ม.3", name:"ความน่าจะเป็น"},
+  {grade:"ม.4", name:"เซต"},
+  {grade:"ม.4", name:"ตรรกศาสตร์"},
+  {grade:"ม.4", name:"จำนวนจริง"},
+  {grade:"ม.5", name:"ฟังก์ชัน"},
+  {grade:"ม.5", name:"ลำดับและอนุกรม"},
+  {grade:"ม.5", name:"ตรีโกณมิติ"},
+  {grade:"ม.6", name:"แคลคูลัสเบื้องต้น"},
+  {grade:"ม.6", name:"เวกเตอร์"},
+  {grade:"ม.6", name:"สถิติและความน่าจะเป็น"},
+];
 
-// ---- Init ----
+// ===== KEY =====
 window.onload = () => {
   const k = localStorage.getItem('orkey');
-  if (k && k.length > 10) { GKEY = k; showApp(); }
+  if (k && k.length > 10) { GKEY = k; startApp(); }
 };
 
 function saveKey() {
@@ -266,221 +277,413 @@ function saveKey() {
   }
   GKEY = k;
   localStorage.setItem('orkey', k);
-  showApp();
-}
-
-function showApp() {
-  document.getElementById('keyModal').style.display = 'none';
-  document.getElementById('appWrap').style.display = 'flex';
-  startQuiz();
+  startApp();
 }
 
 function changeKey() { localStorage.removeItem('orkey'); location.reload(); }
-function togglePassport() { document.getElementById('passportOverlay').classList.toggle('open'); }
 
-// ---- Quiz Logic ----
-function startQuiz() {
-  qNum = 0; correct = 0; wrong = 0;
-  level = 1; consecutiveCorrect = 0; consecutiveWrong = 0; maxLevel = 1;
-  updateProgress();
-  loadQuestion();
+function startApp() {
+  document.getElementById('keyModal').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  setTimeout(() => greetUser(), 300);
 }
 
-function restartQuiz() {
-  document.getElementById('resultCard').classList.remove('show');
-  startQuiz();
+// ===== CHAT HELPERS =====
+function addMsg(role, html, isHTML=false) {
+  const box = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + role;
+  const av = document.createElement('div');
+  av.className = 'm-av';
+  av.textContent = role === 'ai' ? '🤖' : '👤';
+  const bub = document.createElement('div');
+  bub.className = 'm-bub';
+  if (isHTML) bub.innerHTML = html;
+  else bub.innerHTML = html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  wrap.appendChild(av);
+  wrap.appendChild(bub);
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+  return bub;
 }
 
-function changeTopic(btn, t) {
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  topic = t;
-  document.getElementById('topicLabel').textContent = t;
-  document.getElementById('passTopicRow').textContent = t;
-  startQuiz();
+function addTyping() {
+  const box = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai'; wrap.id = 'typing';
+  wrap.innerHTML = '<div class="m-av">🤖</div><div class="m-bub"><div class="typing"><span></span><span></span><span></span></div></div>';
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+}
+function rmTyping() { const t=document.getElementById('typing'); if(t)t.remove(); }
+
+function showInput(placeholder="พิมพ์ตอบที่นี่...") {
+  const row = document.getElementById('inputRow');
+  const inp = document.getElementById('chatInput');
+  row.style.display = 'flex';
+  inp.placeholder = placeholder;
+  inp.value = '';
+  inp.focus();
+  autoH(inp);
+}
+function hideInput() { document.getElementById('inputRow').style.display = 'none'; }
+
+function addChoices(choices, onSelect) {
+  const box = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai';
+  const av = document.createElement('div');
+  av.className = 'm-av'; av.textContent = '🤖';
+  const bub = document.createElement('div');
+  bub.className = 'm-bub';
+  const cw = document.createElement('div');
+  cw.className = 'choices-wrap';
+  choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = c;
+    btn.onclick = () => { onSelect(i, c, cw); };
+    cw.appendChild(btn);
+  });
+  bub.appendChild(cw);
+  wrap.appendChild(av);
+  wrap.appendChild(bub);
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+  return cw;
+}
+
+function addTopicGrid(onSelect) {
+  const box = document.getElementById('messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ai';
+  const av = document.createElement('div');
+  av.className = 'm-av'; av.textContent = '🤖';
+  const bub = document.createElement('div');
+  bub.className = 'm-bub';
+  const grid = document.createElement('div');
+  grid.className = 'topic-grid';
+  TOPICS.forEach((t, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'topic-btn';
+    btn.innerHTML = `<span class="grade">${t.grade}</span>${t.name}`;
+    btn.onclick = () => { onSelect(t); disableGrid(grid); };
+    grid.appendChild(btn);
+  });
+  bub.appendChild(grid);
+  wrap.appendChild(av);
+  wrap.appendChild(bub);
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+}
+
+function disableChoices(cw) {
+  cw.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+}
+function disableGrid(grid) {
+  grid.querySelectorAll('.topic-btn').forEach(b => b.disabled = true);
 }
 
 function updateProgress() {
-  document.getElementById('qNum').textContent = qNum;
-  document.getElementById('progBar').style.width = (qNum / TOTAL * 100) + '%';
-  document.getElementById('correctCount').textContent = correct;
-  document.getElementById('wrongCount').textContent = wrong;
-  document.getElementById('accPct').textContent = qNum > 0 ? Math.round(correct/qNum*100) + '%' : '—';
-  document.getElementById('levelLabel').textContent = 'ระดับ: ' + LEVELS[level];
-  if (level > maxLevel) maxLevel = level;
+  document.getElementById('progBar').style.width = (qIndex/TOTAL_Q*100)+'%';
 }
 
-// ---- AI Call ----
-async function callAI(prompt) {
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${GKEY}`,
-      "HTTP-Referer": "https://sarawut2206.github.io/ai_math_coach/",
-      "X-Title": "AI Math Coach"
-    },
-    body: JSON.stringify({
-      model: "anthropic/claude-haiku-4.5",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 600,
-      temperature: 0.8
-    })
-  });
-  if (!res.ok) {
-    const e = await res.json().catch(()=>({}));
-    throw new Error(e?.error?.message || "HTTP "+res.status);
+// ===== FLOW =====
+function greetUser() {
+  phase = 'intro';
+  addMsg('ai', 'สวัสดีครับ! 👋 ผมคือ **AI Math Diagnosis** ระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ครับ\n\nก่อนเริ่ม ขอถามนิดนึงนะครับ **ชื่ออะไรครับ?**');
+  showInput("พิมพ์ชื่อของคุณ...");
+}
+
+async function sendText() {
+  const inp = document.getElementById('chatInput');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = ''; autoH(inp);
+  addMsg('user', txt);
+  hideInput();
+  await processInput(txt);
+}
+
+async function processInput(txt) {
+  if (phase === 'intro') {
+    studentName = txt;
+    phase = 'topic';
+    await delay(400);
+    addMsg('ai', `ยินดีต้อนรับ **${studentName}** ครับ! 🎉\n\nวันนี้อยากเรียนหรือวิเคราะห์พื้นฐานเรื่องอะไรครับ?\nเลือกจากรายการด้านล่างได้เลยครับ 👇`);
+    await delay(300);
+    addTopicGrid((topic) => {
+      selectedTopic = topic.name;
+      selectedGrade = topic.grade;
+      addMsg('user', `${topic.grade} — ${topic.name}`);
+      askMode();
+    });
   }
-  const data = await res.json();
-  return data.choices[0].message.content;
 }
 
-// ---- Load Question ----
-async function loadQuestion() {
-  if (qNum >= TOTAL) { showResult(); return; }
-
-  setLoading(true);
-  document.getElementById('qCard').style.display = 'none';
-  document.getElementById('nextBtn').classList.remove('show');
-
-  const levelName = LEVELS[level];
-  const prompt = `สร้างโจทย์คณิตศาสตร์เรื่อง "${topic}" สำหรับนักเรียน ม.4 ระดับ ${levelName}
-
-กฎสำคัญ:
-- ตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่น
-- โจทย์และตัวเลือกเป็นภาษาไทยทั้งหมด
-- มีตัวเลือก 4 ข้อ (ก ข ค ง)
-- มีเพียง 1 คำตอบที่ถูก
-- คำอธิบายสั้นๆ ว่าทำไมถึงถูก
-
-รูปแบบ JSON:
-{
-  "question": "โจทย์ที่นี่",
-  "hint": "คำใบ้สั้นๆ (ไม่เกิน 1 บรรทัด)",
-  "choices": ["ก. ...", "ข. ...", "ค. ...", "ง. ..."],
-  "answer": 0,
-  "explanation": "เพราะ..."
+async function askMode() {
+  phase = 'mode';
+  await delay(400);
+  addMsg('ai', `เลือกเรื่อง **${selectedTopic}** (${selectedGrade}) แล้วครับ 📚\n\nอยากเริ่มยังไงดีครับ?`);
+  await delay(300);
+  addChoices([
+    '🔍 วิเคราะห์พื้นฐาน — AI ถามเพื่อหาจุดอ่อน (ตอบแบบเลือก)',
+    '💬 เรียนแบบสนทนา — คุยกับ AI ทีละขั้น (พิมพ์ตอบ)',
+  ], (i, c, cw) => {
+    disableChoices(cw);
+    addMsg('user', c);
+    if (i === 0) startMCQMode();
+    else startChatMode();
+  });
 }
 
-answer คือ index (0=ก, 1=ข, 2=ค, 3=ง)`;
+// ===== MCQ MODE =====
+async function startMCQMode() {
+  phase = 'quiz';
+  qIndex = 0; correct = 0; wrong = 0; questions = []; answers = [];
+  updateProgress();
+  await delay(400);
+  addMsg('ai', `เริ่มวิเคราะห์พื้นฐานเรื่อง **${selectedTopic}** เลยนะครับ ${studentName} 🎯\n\nจะมีโจทย์ทั้งหมด **${TOTAL_Q} ข้อ** AI จะปรับระดับตามคำตอบของคุณโดยอัตโนมัติครับ`);
+  await delay(600);
+  await loadNextMCQ();
+}
 
+let currentQ = null;
+let mcqLevel = 1;
+let consCorrect = 0;
+let consWrong = 0;
+
+async function loadNextMCQ() {
+  if (qIndex >= TOTAL_Q) { await showResult(); return; }
+  addTyping();
+  const levelName = ['ง่าย','ปานกลาง','ยาก'][mcqLevel-1];
+  const prompt = `สร้างโจทย์คณิตศาสตร์เรื่อง "${selectedTopic}" ระดับ ${selectedGrade} ระดับความยาก: ${levelName}
+อ้างอิงตัวชี้วัดแกนกลางการศึกษาขั้นพื้นฐาน 2560
+
+กฎสำคัญมาก:
+1. ตอบ JSON เท่านั้น ห้ามมีข้อความอื่น
+2. choices ต้องมี 4 ตัวเลือก (index 0,1,2,3)
+3. ans คือ index ของตัวเลือกที่ถูกต้อง (0=ก, 1=ข, 2=ค, 3=ง)
+4. ตรวจสอบให้แน่ใจว่า choices[ans] คือคำตอบที่ถูก
+5. ทุกอย่างเป็นภาษาไทย
+
+ตัวอย่าง JSON (ถ้าคำตอบถูกคือ ข.):
+{"q":"โจทย์","choices":["ก. ผิด","ข. ถูก","ค. ผิด","ง. ผิด"],"ans":1,"explain":"เพราะ..."}
+
+สร้าง JSON ใหม่สำหรับโจทย์นี้:`;
   try {
     const raw = await callAI(prompt);
     const json = raw.match(/\{[\s\S]*\}/)?.[0];
-    if (!json) throw new Error("ไม่ได้รับ JSON");
-    const q = JSON.parse(json);
-    setLoading(false);
-    showQuestion(q);
+    const parsed = JSON.parse(json);
+    // Validate: ans must be valid index
+    if (!parsed.q || !Array.isArray(parsed.choices) ||
+        parsed.choices.length !== 4 ||
+        typeof parsed.ans !== 'number' ||
+        parsed.ans < 0 || parsed.ans > 3) {
+      throw new Error("JSON ไม่ถูกต้อง");
+    }
+    currentQ = parsed;
+    rmTyping();
+    showMCQ(currentQ);
   } catch(e) {
-    setLoading(false);
-    document.getElementById('loadingText').textContent = '⚠️ ' + e.message;
-    document.getElementById('loadingCard').classList.add('show');
-    setTimeout(loadQuestion, 2000);
+    rmTyping();
+    addMsg('ai','⚠️ เกิดข้อผิดพลาด กำลังลองใหม่...');
+    await delay(1500);
+    await loadNextMCQ();
   }
 }
 
-function showQuestion(q) {
-  answered = false;
-  document.getElementById('qCard').style.display = 'flex';
-  document.getElementById('feedback').classList.remove('show','correct-fb','wrong-fb');
-
-  const lvlEl = document.getElementById('qLevel');
-  lvlEl.textContent = LEVELS[level];
-  lvlEl.className = 'q-level ' + LEVEL_CSS[level];
-
-  document.getElementById('qText').innerHTML = q.question.replace(/\n/g,'<br>');
-  document.getElementById('qHint').textContent = q.hint ? '💡 ' + q.hint : '';
-
-  const wrap = document.getElementById('choicesWrap');
-  wrap.innerHTML = '';
-  q.choices.forEach((c, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'choice';
-    btn.innerHTML = c;
-    btn.onclick = () => selectAnswer(i, q.answer, q.explanation, wrap);
-    wrap.appendChild(btn);
+function showMCQ(q) {
+  const lvlEmoji = ['🟢','🟡','🔴'][mcqLevel-1];
+  addMsg('ai', `${lvlEmoji} **ข้อที่ ${qIndex+1}/${TOTAL_Q}**\n\n${q.q}`);
+  const cw = addChoices(q.choices, async (i, c, choiceWrap) => {
+    const isCorrect = (i === q.ans);
+    disableChoices(choiceWrap);
+    // highlight
+    choiceWrap.querySelectorAll('.choice-btn').forEach((b,idx) => {
+      if (idx === q.ans) b.classList.add('selected-correct');
+      else if (idx === i && !isCorrect) b.classList.add('selected-wrong');
+    });
+    addMsg('user', c);
+    // record
+    answers.push({correct:isCorrect, q:q.q, chosen:i, correctIdx:q.ans});
+    if (isCorrect) {
+      correct++; consCorrect++; consWrong=0;
+      addMsg('ai', `✅ **ถูกต้องครับ ${studentName}!** ${q.explain}`);
+      if (consCorrect >= 2 && mcqLevel < 3) { mcqLevel++; consCorrect=0; }
+    } else {
+      wrong++; consWrong++; consCorrect=0;
+      addMsg('ai', `❌ **ยังไม่ถูกนะครับ** คำตอบที่ถูกคือ ${q.choices[q.ans]}\n\n${q.explain}`);
+      if (consWrong >= 2 && mcqLevel > 1) { mcqLevel--; consWrong=0; }
+    }
+    qIndex++;
+    updateProgress();
+    await delay(800);
+    await loadNextMCQ();
   });
-
-  // store answer for next
-  wrap.dataset.answer = q.answer;
-  wrap.dataset.explanation = q.explanation;
 }
 
-function selectAnswer(chosen, correct_idx, explanation, wrap) {
-  if (answered) return;
-  answered = true;
-  qNum++;
+// ===== CHAT MODE =====
+async function startChatMode() {
+  phase = 'quiz';
+  qIndex = 0; correct = 0; wrong = 0; questions = []; answers = [];
+  await delay(400);
+  addMsg('ai', `เริ่มเรียนเรื่อง **${selectedTopic}** แบบสนทนากันเลยนะครับ ${studentName} 💬\n\nผมจะถามทีละขั้น ถ้าไม่เข้าใจบอกได้เลยครับ ไม่ต้องกังวลนะครับ`);
+  await delay(500);
+  await askChatQuestion();
+}
 
-  const btns = wrap.querySelectorAll('.choice');
-  btns.forEach((b, i) => {
-    b.disabled = true;
-    if (i === correct_idx) b.classList.add('correct');
-    else if (i === chosen) b.classList.add('wrong');
-  });
+async function askChatQuestion() {
+  if (qIndex >= TOTAL_Q) { await showResult(); return; }
+  showInput("พิมพ์คำตอบของคุณ...");
+  addTyping();
+  const prevContext = answers.slice(-3).map(a =>
+    `ข้อที่แล้ว: "${a.q}" นักเรียนตอบ: "${a.userAnswer}" ผล: ${a.correct?'ถูก':'ผิด'}`
+  ).join('\n');
+  const prompt = `คุณคือครูสอนคณิตศาสตร์เรื่อง "${selectedTopic}" ระดับ ${selectedGrade}
+ชื่อนักเรียน: ${studentName}
+ข้อที่: ${qIndex+1}/${TOTAL_Q}
+${prevContext ? 'ประวัติ:\n'+prevContext : ''}
 
-  const fb = document.getElementById('feedback');
-  fb.classList.add('show');
-
-  if (chosen === correct_idx) {
-    correct++;
-    consecutiveCorrect++;
-    consecutiveWrong = 0;
-    fb.className = 'feedback show correct-fb';
-    fb.innerHTML = '✅ <strong>ถูกต้อง!</strong> ' + explanation;
-    if (consecutiveCorrect >= 2 && level < 3) { level++; consecutiveCorrect = 0; }
-  } else {
-    wrong++;
-    consecutiveWrong++;
-    consecutiveCorrect = 0;
-    fb.className = 'feedback show wrong-fb';
-    fb.innerHTML = '❌ <strong>ยังไม่ถูกนะครับ</strong> ' + explanation;
-    if (consecutiveWrong >= 2 && level > 1) { level--; consecutiveWrong = 0; }
+ถามโจทย์ 1 ข้อ ระดับเหมาะสม อิงตัวชี้วัด 2560
+ตอบภาษาไทย สั้น ไม่เกิน 3 บรรทัด
+ห้ามบอกเฉลย ให้นักเรียนตอบเอง`;
+  try {
+    const reply = await callAI(prompt);
+    rmTyping();
+    addMsg('ai', reply);
+  } catch(e) {
+    rmTyping();
+    addMsg('ai','⚠️ เกิดข้อผิดพลาด กรุณาลองใหม่');
   }
+  // listen for user reply
+  document.getElementById('sendBtn').onclick = () => handleChatAnswer();
+  document.getElementById('chatInput').onkeydown = (e) => {
+    if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleChatAnswer();}
+  };
+}
 
+async function handleChatAnswer() {
+  const inp = document.getElementById('chatInput');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = ''; autoH(inp);
+  hideInput();
+  addMsg('user', txt);
+  addTyping();
+  const lastQ = document.getElementById('messages').querySelectorAll('.msg.ai .m-bub');
+  const lastQText = lastQ[lastQ.length-2]?.textContent || '';
+  const prompt = `นักเรียนชื่อ ${studentName} เรียนเรื่อง "${selectedTopic}" ระดับ ${selectedGrade}
+โจทย์: "${lastQText}"
+คำตอบนักเรียน: "${txt}"
+
+ตอบภาษาไทย:
+1. บอกว่าถูกหรือผิด
+2. อธิบายสั้นๆ ว่าทำไม
+3. ให้กำลังใจ
+ตอบไม่เกิน 3 บรรทัด
+ท้ายสุดใส่ [CORRECT] หรือ [WRONG] เพื่อบอกผล`;
+  try {
+    const reply = await callAI(prompt);
+    rmTyping();
+    const isCorrect = reply.includes('[CORRECT]');
+    const cleaned = reply.replace(/\[CORRECT\]|\[WRONG\]/g,'').trim();
+    addMsg('ai', cleaned);
+    answers.push({correct:isCorrect, q:lastQText, userAnswer:txt});
+    if (isCorrect) correct++; else wrong++;
+    qIndex++;
+    updateProgress();
+    await delay(800);
+    await askChatQuestion();
+  } catch(e) {
+    rmTyping();
+    addMsg('ai','⚠️ เกิดข้อผิดพลาด กรุณาลองใหม่');
+    showInput();
+  }
+}
+
+// ===== RESULT =====
+async function showResult() {
+  hideInput();
   updateProgress();
+  document.getElementById('progBar').style.width = '100%';
+  const pct = Math.round(correct/TOTAL_Q*100);
+  addMsg('ai', `เสร็จแล้วครับ ${studentName}! 🎊 กำลังวิเคราะห์ผลให้นะครับ...`);
+  addTyping();
+  const wrongList = answers.filter(a=>!a.correct).map(a=>`- "${a.q}"`).join('\n');
+  const prompt = `นักเรียนชื่อ ${studentName} ทำแบบทดสอบเรื่อง "${selectedTopic}" ระดับ ${selectedGrade}
+ผล: ถูก ${correct}/${TOTAL_Q} (${pct}%)
+โจทย์ที่ผิด:\n${wrongList||'ไม่มีข้อผิด'}
 
-  if (qNum >= TOTAL) {
-    document.getElementById('nextBtn').textContent = 'ดูผลลัพธ์ →';
-  } else {
-    document.getElementById('nextBtn').textContent = 'ข้อถัดไป →';
-  }
-  document.getElementById('nextBtn').classList.add('show');
-}
-
-function nextQuestion() {
-  document.getElementById('nextBtn').classList.remove('show');
-  if (qNum >= TOTAL) { showResult(); }
-  else { loadQuestion(); }
-}
-
-function showResult() {
-  document.getElementById('qCard').style.display = 'none';
-  document.getElementById('loadingCard').classList.remove('show');
-  const card = document.getElementById('resultCard');
-  card.classList.add('show');
-
-  const pct = Math.round(correct / TOTAL * 100);
-  document.getElementById('resultScore').textContent = pct + '%';
-  document.getElementById('resultScore').style.color =
-    pct >= 80 ? 'var(--accent3)' : pct >= 60 ? 'var(--warn)' : 'var(--danger)';
-
-  let label = pct >= 80 ? '🌟 ยอดเยี่ยมมากครับ!' : pct >= 60 ? '👍 ทำได้ดีครับ ฝึกต่อไปนะครับ' : '💪 ไม่เป็นไร ลองใหม่ได้เลยครับ';
-  document.getElementById('resultLabel').textContent = label;
-  document.getElementById('rb1').textContent = TOTAL;
-  document.getElementById('rb2').textContent = correct;
-  document.getElementById('rb3').textContent = wrong;
-  document.getElementById('rb4').textContent = LEVELS[maxLevel];
-}
-
-function setLoading(v) {
-  const card = document.getElementById('loadingCard');
-  if (v) {
-    card.classList.add('show');
-    document.getElementById('loadingText').textContent = 'AI กำลังสร้างโจทย์...';
-  } else {
-    card.classList.remove('show');
+วิเคราะห์ผลเป็นภาษาไทย 3-4 ประโยค:
+1. สรุประดับความเข้าใจ
+2. จุดที่ควรพัฒนา
+3. แนะนำหัวข้อที่ควรทบทวน
+4. ให้กำลังใจ
+ตอบสั้น กระชับ เป็นกันเอง`;
+  try {
+    const analysis = await callAI(prompt);
+    rmTyping();
+    await delay(300);
+    showResultScreen(pct, analysis);
+  } catch(e) {
+    rmTyping();
+    showResultScreen(pct, 'ขอบคุณที่ทำแบบทดสอบนะครับ! ทำได้ดีมากครับ');
   }
 }
+
+function showResultScreen(pct, analysis) {
+  document.getElementById('chatScreen').classList.remove('active');
+  document.getElementById('resultScreen').classList.add('active');
+  const trophy = pct>=80?'🏆':pct>=60?'🥈':'💪';
+  const title = pct>=80?'ยอดเยี่ยมมากครับ!':pct>=60?'ทำได้ดีครับ ฝึกต่อไปนะครับ':'ไม่เป็นไร ลองใหม่ได้เลยครับ';
+  document.getElementById('resTrophy').textContent = trophy;
+  document.getElementById('resScore').textContent = pct+'%';
+  document.getElementById('resScore').style.color = pct>=80?'var(--green)':pct>=60?'var(--warn)':'var(--red)';
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('st1').textContent = TOTAL_Q;
+  document.getElementById('st2').textContent = correct;
+  document.getElementById('st3').textContent = wrong;
+  document.getElementById('resAnalysisText').innerHTML =
+    analysis.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+}
+
+function restart() {
+  document.getElementById('resultScreen').classList.remove('active');
+  document.getElementById('chatScreen').classList.add('active');
+  document.getElementById('messages').innerHTML = '';
+  document.getElementById('progBar').style.width = '0%';
+  phase='intro'; qIndex=0; correct=0; wrong=0;
+  mcqLevel=1; consCorrect=0; consWrong=0; answers=[];
+  greetUser();
+}
+
+// ===== AI CALL =====
+async function callAI(prompt) {
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${GKEY}`,
+      "HTTP-Referer":"https://sarawut2206.github.io/ai_math_coach/",
+      "X-Title":"AI Math Diagnosis"
+    },
+    body:JSON.stringify({
+      model:"anthropic/claude-haiku-4.5",
+      messages:[{role:"user",content:prompt}],
+      max_tokens:600,
+      temperature:0.7
+    })
+  });
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||"HTTP "+res.status);}
+  const data=await res.json();
+  return data.choices[0].message.content;
+}
+
+// ===== UTILS =====
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendText();}}
+function autoH(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 </script>
 </body>
 </html>
