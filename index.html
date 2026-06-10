@@ -14,9 +14,17 @@
   --warn:#d97706;--red:#dc2626;--red2:#ef4444;
   --text:#0f172a;--text2:#334155;--muted:#64748b;--dim:#94a3b8;
   --gold:#d97706;
+  /* device-adaptive font */
+  --fs-base:14px;--fs-msg:14.5px;--fs-choice:14px;--fs-q:15px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:var(--fs-base);}
+
+/* DEVICE GRID */
+.device-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;}
+.device-btn{flex:1;min-width:100px;padding:14px 12px;background:var(--s2);border:2px solid var(--border);border-radius:14px;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;}
+.device-btn:hover{border-color:var(--blue);background:#eff6ff;color:var(--blue);}
+
 
 /* KEY MODAL */
 #keyModal{position:fixed;inset:0;background:rgba(15,23,42,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;}
@@ -72,7 +80,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .m-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:2px;}
 .msg.ai .m-av{background:linear-gradient(135deg,var(--blue),var(--indigo));box-shadow:0 2px 8px rgba(29,106,255,0.25);}
 .msg.user .m-av{background:var(--s3);border:2px solid var(--border);}
-.m-bub{padding:13px 17px;border-radius:14px;font-size:15px;line-height:1.85;}
+.m-bub{padding:13px 17px;border-radius:14px;font-size:var(--fs-msg);line-height:1.85;}
 .msg.ai .m-bub{background:var(--s1);border:2px solid var(--border);border-top-left-radius:4px;color:var(--text2);box-shadow:0 2px 8px rgba(0,0,0,0.05);}
 .msg.user .m-bub{background:linear-gradient(135deg,#eff6ff,#e0e7ff);border:2px solid #bfdbfe;border-top-right-radius:4px;color:var(--text);}
 .typing{display:flex;gap:5px;align-items:center;}
@@ -96,7 +104,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 /* MCQ */
 .choices-wrap{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-.choice-btn{padding:13px 17px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:15px;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.choice-btn{padding:13px 17px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:var(--fs-choice);text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 .choice-btn::before{content:attr(data-label);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;background:var(--s3);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;margin-top:2px;}
 .choice-btn:hover:not(:disabled){border-color:var(--blue);background:#eff6ff;color:var(--blue);}
 .choice-btn.ok{border-color:var(--green2);background:#ecfdf5;color:var(--green);}
@@ -704,7 +712,8 @@ let GKEY="",TPASS="",studentName="",selectedGrade="",selectedTopic=null,selected
 let phase="intro",qIndex=0,correct=0,wrong=0,answers=[],exerciseData="";
 let mcqLevel=1,consCorrect=0,consWrong=0;
 const TOTAL_Q=10;
-let DB_KEY='mathscan_v3'; // will be set after login
+let DB_KEY='mathscan_v3';
+let deviceType='desktop'; // 'mobile','tablet','desktop'
 
 window.onload=()=>{
   const urlParams = new URLSearchParams(window.location.search);
@@ -1115,9 +1124,42 @@ function addGrid(type,items,onSelect){
 }
 
 function greetUser(){
-  phase='intro';
-  addMsg('ai','สวัสดีครับ 👋 ยินดีต้อนรับสู่ **MathScan AI**\nระบบวิเคราะห์ผู้เรียนวิชาคณิตศาสตร์ด้วยปัญญาประดิษฐ์\nอ้างอิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560\n\nก่อนเริ่มต้น กรุณาระบุชื่อของท่านครับ');
-  showInput('พิมพ์ชื่อของคุณ...');
+  phase='device';
+  addMsg('ai','สวัสดีครับ 👋 ยินดีต้อนรับสู่ **MathScan AI**\nระบบวิเคราะห์ผู้เรียนวิชาคณิตศาสตร์ด้วยปัญญาประดิษฐ์\nอ้างอิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560\n\nก่อนเริ่ม กรุณาเลือกว่าขณะนี้คุณใช้อุปกรณ์ใดอยู่ครับ 📱💻');
+  setTimeout(()=>{
+    addGrid('device',['📱 มือถือ','📟 แท็บเล็ต','💻 คอมพิวเตอร์'],dev=>{
+      if(dev.includes('มือถือ'))deviceType='mobile';
+      else if(dev.includes('แท็บเล็ต'))deviceType='tablet';
+      else deviceType='desktop';
+      applyDeviceFont();
+      addMsg('user',dev);
+      delay(400).then(()=>{
+        phase='intro';
+        addMsg('ai',`ขอบคุณครับ 😊\n\nกรุณาระบุชื่อของท่านเพื่อเริ่มต้นครับ`);
+        showInput('พิมพ์ชื่อของคุณ...');
+      });
+    });
+  },400);
+}
+
+function applyDeviceFont(){
+  const root=document.documentElement;
+  if(deviceType==='mobile'){
+    root.style.setProperty('--fs-base','15px');
+    root.style.setProperty('--fs-msg','15px');
+    root.style.setProperty('--fs-choice','15px');
+    root.style.setProperty('--fs-q','16px');
+  } else if(deviceType==='tablet'){
+    root.style.setProperty('--fs-base','15px');
+    root.style.setProperty('--fs-msg','15.5px');
+    root.style.setProperty('--fs-choice','15px');
+    root.style.setProperty('--fs-q','17px');
+  } else {
+    root.style.setProperty('--fs-base','14px');
+    root.style.setProperty('--fs-msg','14.5px');
+    root.style.setProperty('--fs-choice','14px');
+    root.style.setProperty('--fs-q','15px');
+  }
 }
 async function sendText(){
   const inp=document.getElementById('chatInput');const txt=inp.value.trim();if(!txt)return;
@@ -1187,21 +1229,19 @@ async function loadNextQ(){
   const lvl=['ง่าย','ปานกลาง','ยาก'][mcqLevel-1];
   const needsGeo = isGeoTopic(selectedSubtopic, selectedTopic.topic);
 
-  const geoExtra = needsGeo ? `
-นอกจากนี้ให้สร้าง SVG ประกอบโจทย์ด้วย โดยใส่ใน field "svg" ของ JSON
-SVG ต้องมีลักษณะดังนี้:
-- viewBox="0 0 300 220" หรือขนาดที่เหมาะสม
-- ใช้สีที่อ่านง่าย: เส้น #1d6aff หรือ #334155, ข้อความ #0f172a
-- แสดงรูปร่าง ตัวเลข ป้ายกำกับ มุม หรือระยะที่เกี่ยวข้องกับโจทย์
-- ถ้าเป็นเซต/แผนภาพเวนน์ให้วาดวงกลมแสดงเซต
-- ถ้าเป็นรูปสามเหลี่ยม/สี่เหลี่ยมให้วาดรูปพร้อมกำกับด้าน/มุม
-- ไม่ต้องมี background สี ใช้ transparent
-- SVG ต้องสมบูรณ์และ valid HTML
-` : '';
+  // SVG เฉพาะโจทย์เซต/เวนน์ที่ชัดเจนเท่านั้น (ไม่ทำทุก geo เพราะ token overflow)
+  const isVenn = (selectedSubtopic+selectedTopic.topic).match(/เซต|เวนน์|ยูเนียน|อินเตอร์|แผนภาพ/i);
+  const needsSVG = isVenn;
 
-  const jsonTemplate = needsGeo
-    ? `{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น","svg":"<svg viewBox=\\"0 0 300 220\\" ...>...</svg>"}`
-    : `{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น"}`;
+  const geoExtra = needsSVG ? `
+ให้สร้าง SVG แผนภาพเวนน์ประกอบโจทย์ ใส่ใน field "svg" ของ JSON
+กฎ SVG: viewBox="0 0 280 180", ใช้ fill none stroke="#1d6aff" strokeWidth="2" สำหรับวงกลม, ข้อความ font-size="12" fill="#0f172a"
+วาดวงกลม A และ B แสดงส่วนที่ซ้อน สมาชิกของแต่ละเซตตามโจทย์จริง ไม่ต้องมี background
+SVG ต้องสั้นกระชับ ความยาวรวมไม่เกิน 600 ตัวอักษร` : '';
+
+  const jsonTemplate = needsSVG
+    ? \`{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น","svg":"<svg ...>...</svg>"}\`
+    : \`{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น"}\`;
 
   const prompt=`คุณคือครูคณิตศาสตร์ระดับผู้เชี่ยวชาญ จงสร้างข้อสอบวิชาคณิตศาสตร์
 
@@ -1225,11 +1265,31 @@ ${geoExtra}
 ${jsonTemplate}`;
 
   try{
-    const raw=await callAI(prompt);const json=raw.match(/\{[\s\S]*\}/)?.[0];
-    const q=JSON.parse(json);
-    if(!q.q||!Array.isArray(q.choices)||q.choices.length!==4||typeof q.ans!=='number'||q.ans<0||q.ans>3)throw new Error('invalid');
+    const raw=await callAI(prompt,1800);
+    // หา JSON object — strip markdown code fence ถ้ามี
+    const cleaned=raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    const jsonStr=cleaned.match(/\{[\s\S]*\}/)?.[0];
+    if(!jsonStr) throw new Error('no json');
+    // ถ้า SVG ยาวเกินให้ตัดออกก่อน parse เพื่อป้องกัน JSON พัง
+    const safe=jsonStr.replace(/"svg"\s*:\s*"<svg[\s\S]*?<\/svg>"/,'"svg":""');
+    const q=JSON.parse(safe);
+    if(!q.q||!Array.isArray(q.choices)||q.choices.length!==4||typeof q.ans!=='number'||q.ans<0||q.ans>3)throw new Error('invalid json structure');
     rmTyping();showMCQ(q);
-  }catch(e){rmTyping();addMsg('ai','⚠️ กำลังลองใหม่...');await delay(1500);loadNextQ();}
+  }catch(e){
+    rmTyping();
+    // หยุด retry ถ้า qIndex ยังไม่เปลี่ยน (ป้องกัน infinite loop)
+    if(!loadNextQ._retries) loadNextQ._retries={};
+    const key=`q${qIndex}`;
+    loadNextQ._retries[key]=(loadNextQ._retries[key]||0)+1;
+    if(loadNextQ._retries[key]>2){
+      // เกิน 3 ครั้งแล้ว — ข้ามข้อนี้ไป
+      loadNextQ._retries[key]=0;
+      addMsg('ai','⚠️ ไม่สามารถสร้างข้อนี้ได้ ข้ามไปข้อถัดไปนะครับ...');
+      qIndex++;updateProgress();await delay(1000);loadNextQ();
+    } else {
+      addMsg('ai','⚠️ กำลังลองใหม่...');await delay(1500);loadNextQ();
+    }
+  }
 }
 
 function showMCQ(q){
@@ -1452,11 +1512,11 @@ function restart(){
 }
 
 // ===== API =====
-async function callAI(prompt){
+async function callAI(prompt, maxTok=1000){
   const res=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":GKEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:1200,messages:[{role:"user",content:prompt}]})
+    body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:maxTok,messages:[{role:"user",content:prompt}]})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||"HTTP "+res.status);}
   const data=await res.json();if(data.error)throw new Error(data.error.message);
