@@ -222,6 +222,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   #printArea { position: fixed; left: 0; top: 0; width: 100%; }
   .no-print { display: none !important; }
 }
+
+/* SVG DIAGRAM */
+.svg-wrap svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 8px;
+}
 </style>
 <script>
 MathJax = {
@@ -289,7 +300,7 @@ MathJax = {
     <div class="chart-card" style="overflow-x:auto;">
       <div class="chart-title" style="margin-bottom:14px;">รายละเอียดนักเรียนทุกคน</div>
       <table class="stu-table" id="stuTable">
-        <thead><tr><th>#</th><th>ชื่อ</th><th>ระดับ</th><th>หัวข้อ</th><th>คะแนน</th><th>สถานะ</th><th>เวลา</th></tr></thead>
+        <thead><tr><th>#</th><th>ชื่อ</th><th>ระดับ</th><th>หัวข้อ</th><th>คะแนน</th><th>สถานะ</th><th>วันที่/เวลา</th><th class="no-print">ปริ้นใบงาน</th></tr></thead>
         <tbody id="stuBody"></tbody>
       </table>
     </div>
@@ -796,7 +807,31 @@ async function renderDash(){
   const sw=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const mx=sw[0]?.[1]||1;
   document.getElementById('weakGrid').innerHTML=sw.length?sw.map(([t,c])=>`<div class="weak-item"><div class="weak-topic">${t}</div><div class="weak-count">นักเรียนผิด ${c} คน</div><div class="weak-bar"><div class="weak-bar-fill" style="width:${Math.round(c/mx*100)}%"></div></div></div>`).join(''):'<div style="color:var(--muted);font-size:14px;padding:8px;">ยังไม่มีข้อมูล</div>';
-  document.getElementById('stuBody').innerHTML=R.map((r,i)=>{const lc=r.pct>=80?'high':r.pct>=60?'mid':'low';const lt=r.pct>=80?'ดี':r.pct>=60?'ปานกลาง':'ต้องพัฒนา';return`<tr><td style="color:var(--muted)">${i+1}</td><td style="font-weight:600">${r.name}</td><td>${r.grade}</td><td style="font-size:13px">${r.subtopic}</td><td style="font-family:'Space Mono',monospace;font-weight:700;color:${r.pct>=80?'var(--green)':r.pct>=60?'var(--warn)':'var(--red)'}">${r.pct}%</td><td><span class="level-badge ${lc}">${lt}</span></td><td style="color:var(--muted);font-size:12px">${r.time}</td></tr>`;}).join('');
+  document.getElementById('stuBody').innerHTML=R.map((r,i)=>{
+    const lc=r.pct>=80?'high':r.pct>=60?'mid':'low';
+    const lt=r.pct>=80?'ดี':r.pct>=60?'ปานกลาง':'ต้องพัฒนา';
+    // แก้ bug เวลา: ถ้ามี timestamp ISO ใช้แทน, fallback ใช้ date+time
+    let displayTime = r.time || '';
+    if(r.timestamp){
+      try{
+        const d = new Date(r.timestamp);
+        displayTime = d.toLocaleDateString('th-TH') + ' ' + d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+      }catch(e){}
+    } else if(r.date && r.time && !r.time.includes('1899')){
+      displayTime = r.date + ' ' + r.time;
+    } else if(r.date){
+      displayTime = r.date;
+    }
+    return`<tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td style="font-weight:600">${r.name}</td>
+      <td>${r.grade}</td>
+      <td style="font-size:13px">${r.subtopic}</td>
+      <td style="font-family:'Space Mono',monospace;font-weight:700;color:${r.pct>=80?'var(--green)':r.pct>=60?'var(--warn)':'var(--red)'}">${r.pct}%</td>
+      <td><span class="level-badge ${lc}">${lt}</span></td>
+      <td style="color:var(--muted);font-size:12px">${displayTime}</td>
+      <td class="no-print"><button onclick="printStudentWorksheet(${i})" style="padding:5px 12px;background:linear-gradient(135deg,var(--blue),var(--indigo));color:white;border:none;border-radius:7px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;" title="ปริ้นใบงานสำหรับ ${r.name}">🖨️ ใบงาน</button></td>
+    </tr>`;}).join('');
 }
 
 function copyStudentLink(){
@@ -831,6 +866,106 @@ function exportCSV(){
   const rows=[['ชื่อ','ระดับ','หัวข้อหลัก','หัวข้อย่อย','คะแนน%','ถูก','ผิด','ระดับ','เวลา']];
   R.forEach(r=>rows.push([r.name,r.grade,r.topic,r.subtopic,r.pct,r.correct,r.wrong,r.pct>=80?'ดี':r.pct>=60?'ปานกลาง':'ต้องพัฒนา',r.time]));
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='mathscan_results.csv';a.click();
+}
+
+async function printStudentWorksheet(idx){
+  const R = getResults();
+  const r = R[idx];
+  if(!r){ alert('ไม่พบข้อมูลนักเรียน'); return; }
+
+  // แสดง loading modal
+  const overlay = document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  overlay.innerHTML=`<div style="background:white;border-radius:16px;padding:32px 40px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="font-size:36px;margin-bottom:12px;">🤖</div>
+    <div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:#1d6aff;margin-bottom:6px;">AI กำลังสร้างใบงาน</div>
+    <div style="font-size:14px;color:#64748b;">สำหรับ ${r.name} — ${r.subtopic}</div>
+  </div>`;
+  document.body.appendChild(overlay);
+
+  try{
+    const weak = (r.wrongTopics||[]).slice(0,3).join('; ') || 'ทบทวนเนื้อหาทั่วไป';
+    const prompt=`สร้างแบบฝึกหัด 10 ข้อ สำหรับนักเรียน ${r.grade} ชื่อ ${r.name} เรื่อง "${r.subtopic}" (${r.topic})
+จุดอ่อนที่พบ: ${weak}
+
+แบ่งระดับดังนี้:
+- ข้อที่ 1-4: ระดับพื้นฐาน
+- ข้อที่ 5-8: ระดับประยุกต์
+- ข้อที่ 9-10: ระดับสูง
+
+กฎสำคัญ: ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย ห้ามใส่ field svg
+แต่ละ object มีเฉพาะ 5 field: {"num":1,"level":"พื้นฐาน","q":"โจทย์","method":"วิธีแก้","ans":"คำตอบ"}`;
+
+    const raw = await callAI(prompt);
+    let exercises = null;
+    const m = raw.match(/\[[\s\S]*\]/);
+    if(m){ try{ exercises=JSON.parse(m[0]); }catch(e){} }
+    if(!exercises || exercises.length < 3) throw new Error('parse failed');
+
+    // กรอง field
+    exercises = exercises.map(ex=>({num:ex.num||0,level:ex.level||'',q:ex.q||'',method:ex.method||'',ans:ex.ans||''}));
+
+    // สร้าง print window
+    const now = new Date();
+    const levelColors={'พื้นฐาน':'#059669','ประยุกต์':'#d97706','สูง':'#dc2626'};
+    const itemsHTML = exercises.map(ex=>`
+      <div class="item">
+        <div class="num">ข้อที่ ${ex.num} <span style="background:${levelColors[ex.level]||'#64748b'};color:white;padding:1px 8px;border-radius:10px;font-size:10px;margin-left:6px;">${ex.level}</span></div>
+        <div class="q">${ex.q}</div>
+        <div class="method"><strong>วิธีทำ:</strong> ${(ex.method||'').replace(/\n/g,'<br>')}</div>
+        <div class="ans">✅ คำตอบ: ${ex.ans}</div>
+        <div class="blank">พื้นที่ทำงาน: ................................................................................................</div>
+      </div>`).join('');
+
+    const scoreColor = r.pct>=80?'#059669':r.pct>=60?'#d97706':'#dc2626';
+    const htmlContent=`<!DOCTYPE html><html><head>
+      <meta charset="UTF-8">
+      <title>ใบงาน — ${r.name}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+      <style>
+        body{font-family:'Sarabun',sans-serif;padding:24px 28px;color:#0f172a;max-width:800px;margin:0 auto;font-size:14px;}
+        .header{border-bottom:3px solid #1d6aff;padding-bottom:14px;margin-bottom:20px;}
+        .header h1{color:#1d6aff;font-size:20px;margin:0 0 6px;}
+        .info-row{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:#334155;margin-top:8px;}
+        .info-row span{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:3px 10px;}
+        .score-badge{background:${scoreColor};color:white;border-radius:8px;padding:4px 12px;font-weight:700;font-size:15px;}
+        .item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:12px;page-break-inside:avoid;}
+        .num{font-size:11px;font-weight:700;color:#1d6aff;margin-bottom:7px;letter-spacing:1px;}
+        .q{font-size:15px;font-weight:600;margin-bottom:9px;line-height:1.7;}
+        .method{background:#eff6ff;border-left:3px solid #1d6aff;padding:8px 12px;margin-bottom:6px;font-size:13px;line-height:1.7;border-radius:0 6px 6px 0;}
+        .ans{background:#ecfdf5;border-left:3px solid #10b981;padding:7px 12px;font-size:14px;font-weight:700;color:#059669;border-radius:0 6px 6px 0;}
+        .blank{border:1px dashed #c8d3e0;padding:10px 12px;margin-top:8px;font-size:13px;color:#94a3b8;font-style:italic;border-radius:6px;}
+        .footer{margin-top:20px;font-size:12px;color:#94a3b8;text-align:center;border-top:1px solid #dde3ec;padding-top:10px;}
+        @media print{@page{margin:15mm;} body{padding:0;}}
+      </style>
+    </head><body>
+      <div class="header">
+        <h1>📝 ใบงานแบบฝึกหัดเฉพาะตัว — MathScan AI</h1>
+        <div class="info-row">
+          <span>👤 ${r.name}</span>
+          <span>📚 ${r.grade}</span>
+          <span>📖 ${r.subtopic}</span>
+          <span class="score-badge">คะแนน ${r.pct}%</span>
+          <span>📅 ${now.toLocaleDateString('th-TH')}</span>
+        </div>
+      </div>
+      ${itemsHTML}
+      <div class="footer">สร้างโดย MathScan AI • ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo • อิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560</div>
+      <script>window.addEventListener('load',()=>{setTimeout(()=>{window.print();},600);});<\/script>
+    </body></html>`;
+
+    document.body.removeChild(overlay);
+    const blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.target='_blank'; a.rel='noopener';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),5000);
+
+  }catch(e){
+    document.body.removeChild(overlay);
+    alert('ไม่สามารถสร้างใบงานได้ กรุณาลองใหม่ครับ');
+  }
 }
 
 function dashToPDF(){
@@ -901,6 +1036,35 @@ async function sendText(){
   }
 }
 
+// ===== GEOMETRY DETECTOR =====
+const GEO_KEYWORDS = [
+  'เรขาคณิต','รูปร่าง','รูปสามเหลี่ยม','รูปสี่เหลี่ยม','วงกลม','วงรี','ปริซึม','ทรงกระบอก',
+  'พีระมิด','กรวย','ทรงกลม','ทรงสี่เหลี่ยม','ความคล้าย','พีทาโกรัส','ทฤษฎีบท','เส้นขนาน',
+  'มุม','เส้นตรง','รังสี','ส่วนของเส้นตรง','ความสมมาตร','แกนสมมาตร','การแปลง','เลื่อนขนาน',
+  'สะท้อน','หมุน','การสร้าง','คอร์ด','เส้นสัมผัส','พาราโบลา','วงรี','ไฮเพอร์โบลา',
+  'เวกเตอร์','อัตราส่วนตรีโกณมิติ','sin','cos','tan','พื้นที่ผิว','ปริมาตร','พื้นที่',
+  'ความยาวรอบรูป','ระยะห่าง','มิติ','แผนภาพเวนน์','เซต'
+];
+
+function isGeoTopic(subtopic, topicName){
+  const txt = (subtopic + ' ' + topicName).toLowerCase();
+  return GEO_KEYWORDS.some(k => txt.includes(k.toLowerCase()));
+}
+
+function addSVGtoMessage(svgCode){
+  if(!svgCode || svgCode.length < 30) return;
+  const box = document.getElementById('messages');
+  const w = document.createElement('div'); w.className = 'msg ai';
+  const av = document.createElement('div'); av.className = 'm-av'; av.textContent = '🤖';
+  const bub = document.createElement('div'); bub.className = 'm-bub';
+  bub.style.cssText = 'padding:10px 12px;background:white;border:2px solid var(--border);border-radius:14px;';
+  // Sanitize: only allow <svg> tag
+  const clean = svgCode.trim();
+  if(!clean.startsWith('<svg')) return;
+  bub.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">📐 ภาพประกอบโจทย์</div><div class="svg-wrap">${clean}</div>`;
+  w.appendChild(av); w.appendChild(bub); box.appendChild(w); box.scrollTop = box.scrollHeight;
+}
+
 // ===== QUIZ =====
 async function startQuiz(){
   qIndex=0;correct=0;wrong=0;answers=[];mcqLevel=1;consCorrect=0;consWrong=0;
@@ -913,10 +1077,28 @@ async function loadNextQ(){
   if(qIndex>=TOTAL_Q){showResult();return;}
   addTyping();
   const lvl=['ง่าย','ปานกลาง','ยาก'][mcqLevel-1];
+  const needsGeo = isGeoTopic(selectedSubtopic, selectedTopic.topic);
+
+  const geoExtra = needsGeo ? `
+นอกจากนี้ให้สร้าง SVG ประกอบโจทย์ด้วย โดยใส่ใน field "svg" ของ JSON
+SVG ต้องมีลักษณะดังนี้:
+- viewBox="0 0 300 220" หรือขนาดที่เหมาะสม
+- ใช้สีที่อ่านง่าย: เส้น #1d6aff หรือ #334155, ข้อความ #0f172a
+- แสดงรูปร่าง ตัวเลข ป้ายกำกับ มุม หรือระยะที่เกี่ยวข้องกับโจทย์
+- ถ้าเป็นเซต/แผนภาพเวนน์ให้วาดวงกลมแสดงเซต
+- ถ้าเป็นรูปสามเหลี่ยม/สี่เหลี่ยมให้วาดรูปพร้อมกำกับด้าน/มุม
+- ไม่ต้องมี background สี ใช้ transparent
+- SVG ต้องสมบูรณ์และ valid HTML
+` : '';
+
+  const jsonTemplate = needsGeo
+    ? `{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น","svg":"<svg viewBox=\\"0 0 300 220\\" ...>...</svg>"}`
+    : `{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น"}`;
+
   const prompt=`คุณคือครูคณิตศาสตร์ระดับผู้เชี่ยวชาญ จงสร้างข้อสอบวิชาคณิตศาสตร์
 
 หัวข้อ: ${selectedSubtopic}
-บทเรียน: ${selectedTopic.topic}  
+บทเรียน: ${selectedTopic.topic}
 ระดับชั้น: ${selectedGrade}
 ระดับความยาก: ${lvl}
 ตัวชี้วัด: ${selectedTopic.indicator} (หลักสูตรแกนกลาง 2560)
@@ -927,12 +1109,13 @@ async function loadNextQ(){
 3. ตรวจสอบความถูกต้องของคำตอบอีกครั้ง
 4. สร้างตัวเลือกที่ผิด 3 ข้อ ให้สมเหตุสมผลแต่ผิดจริง
 5. จัดวางตัวเลือกทั้ง 4 ข้อ และกำหนดค่า ans ให้ตรงกับคำตอบในขั้นตอนที่ 2
-
+${geoExtra}
 ข้อกำหนดสำคัญ: ค่า choices[ans] ต้องเป็นคำตอบที่ถูกต้องเท่านั้น
 ภาษา: ใช้ภาษาไทยที่ถูกต้องตามหลักภาษา เป็นทางการ ชัดเจน
 
 ตอบเฉพาะ JSON เท่านั้น ห้ามมีข้อความอื่น:
-{"q":"โจทย์ภาษาไทยที่ถูกต้อง","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ปัญหาทีละขั้นตอน"}`;
+${jsonTemplate}`;
+
   try{
     const raw=await callAI(prompt);const json=raw.match(/\{[\s\S]*\}/)?.[0];
     const q=JSON.parse(json);
@@ -944,6 +1127,10 @@ async function loadNextQ(){
 function showMCQ(q){
   const em=['🟢','🟡','🔴'][mcqLevel-1];
   addMsg('ai',`${em} **ข้อที่ ${qIndex+1}/${TOTAL_Q}**\n\n${q.q}`);
+  // แสดง SVG ถ้ามี
+  if(q.svg && q.svg.trim().startsWith('<svg')){
+    addSVGtoMessage(q.svg);
+  }
   const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';
   const av=document.createElement('div');av.className='m-av';av.textContent='🤖';
   const bub=document.createElement('div');bub.className='m-bub';
@@ -1016,39 +1203,81 @@ async function generateWorksheet(wrongItems){
   meta.textContent=`${studentName} | ${selectedGrade} | ${selectedSubtopic} | วันที่ ${new Date().toLocaleDateString('th-TH')}`;
   body.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:14px;">🤖 AI กำลังสร้างใบงานแบบฝึกหัด 10 ข้อ...</div>';
   const weak=wrongItems.length?wrongItems.slice(0,3).map(a=>a.q.substring(0,50)).join('; '):'ทบทวนเนื้อหาทั่วไป';
+
   const prompt=`สร้างแบบฝึกหัด 10 ข้อ สำหรับนักเรียน ${selectedGrade} เรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
 จุดอ่อนที่พบ: ${weak}
 
-จงสร้างแบบฝึกหัดที่มีความหลากหลายและครอบคลุมเนื้อหา แบ่งระดับดังนี้:
-- ข้อที่ 1-4: ระดับพื้นฐาน (ทดสอบความเข้าใจหลักการ)
-- ข้อที่ 5-8: ระดับประยุกต์ (นำความรู้ไปใช้)
-- ข้อที่ 9-10: ระดับสูง (โจทย์ปัญหาและการวิเคราะห์)
+แบ่งระดับดังนี้:
+- ข้อที่ 1-4: ระดับพื้นฐาน
+- ข้อที่ 5-8: ระดับประยุกต์
+- ข้อที่ 9-10: ระดับสูง
 
-ตอบในรูปแบบ JSON array เท่านั้น ห้ามมีข้อความอื่น:
-[
-  {"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทยที่ชัดเจน","method":"วิธีแก้ปัญหาทีละขั้นตอน","ans":"คำตอบที่ถูกต้อง"},
-  ...
-]`;
+กฎสำคัญ: ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย ห้ามใส่ markdown ห้ามใส่ field svg หรือ field อื่นนอกจากที่กำหนด
+แต่ละ object มีเฉพาะ 5 field นี้เท่านั้น:
+{"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทย","method":"วิธีแก้ทีละขั้น","ans":"คำตอบ"}
+
+ตัวอย่าง:
+[{"num":1,"level":"พื้นฐาน","q":"โจทย์...","method":"ขั้นที่ 1...","ans":"..."},{"num":2,...}]`;
+
   try{
     const raw=await callAI(prompt);
-    const jsonMatch=raw.match(/\[[\s\S]*\]/);
-    if(!jsonMatch)throw new Error('no json');
-    const exercises=JSON.parse(jsonMatch[0]);
+
+    // หา JSON array — ลองหลายวิธี
+    let exercises = null;
+
+    // วิธี 1: หา [...] ตรง ๆ
+    const arrMatch = raw.match(/\[[\s\S]*\]/);
+    if(arrMatch){
+      try{ exercises = JSON.parse(arrMatch[0]); }catch(e1){}
+    }
+
+    // วิธี 2: ลบ SVG/HTML ที่อาจแทรกอยู่แล้ว parse ใหม่
+    if(!exercises){
+      const cleaned = raw
+        .replace(/<svg[\s\S]*?<\/svg>/gi,'""')
+        .replace(/```json/g,'').replace(/```/g,'').trim();
+      const m2 = cleaned.match(/\[[\s\S]*\]/);
+      if(m2){ try{ exercises = JSON.parse(m2[0]); }catch(e2){} }
+    }
+
+    // วิธี 3: ดึง objects ทีละอันแล้ว assemble
+    if(!exercises){
+      const objs = [];
+      const re = /\{[^{}]*"num"\s*:\s*\d+[^{}]*\}/g;
+      let m;
+      while((m=re.exec(raw))!==null){
+        try{ objs.push(JSON.parse(m[0])); }catch(e){}
+      }
+      if(objs.length>=5) exercises = objs;
+    }
+
+    if(!exercises || !Array.isArray(exercises) || exercises.length < 3) throw new Error('parse failed');
+
+    // กรอง field ที่ไม่ต้องการออก (เช่น svg)
+    exercises = exercises.map(ex => ({
+      num: ex.num || 0,
+      level: ex.level || '',
+      q: ex.q || '',
+      method: ex.method || '',
+      ans: ex.ans || ''
+    }));
+
     exerciseData=exercises;
-    const levelColors={ง่าย:'#059669',ปานกลาง:'#d97706',ยาก:'#dc2626'};
+    const levelColors={'พื้นฐาน':'#059669','ประยุกต์':'#d97706','สูง':'#dc2626'};
     body.innerHTML=exercises.map(ex=>`
       <div class="ws-item">
         <div class="ws-num">
-          ข้อที่ ${ex.num} 
+          ข้อที่ ${ex.num}
           <span style="background:${levelColors[ex.level]||'#64748b'};color:white;padding:1px 8px;border-radius:10px;font-size:10px;margin-left:6px;">${ex.level}</span>
         </div>
         <div class="ws-q">${ex.q}</div>
-        <div class="ws-method"><strong>วิธีทำ:</strong><br>${ex.method.replace(/\n/g,'<br>')}</div>
+        <div class="ws-method"><strong>วิธีทำ:</strong><br>${(ex.method||'').replace(/\n/g,'<br>')}</div>
         <div class="ws-ans">✅ คำตอบ: ${ex.ans}</div>
         <div class="ws-blank">📝 พื้นที่ทำงานของนักเรียน: ............................................................................</div>
       </div>`).join('');
   }catch(e){
-    body.innerHTML='<div style="color:var(--red);padding:16px;">ไม่สามารถสร้างแบบฝึกหัดได้ กรุณาลองใหม่</div>';
+    console.error('Worksheet error:',e);
+    body.innerHTML='<div style="color:var(--red);padding:16px;font-size:14px;">⚠️ ไม่สามารถสร้างแบบฝึกหัดได้ กรุณากดปุ่ม "ลองใหม่" ด้านล่างครับ</div><button onclick="generateWorksheet([])" style="margin:0 16px 16px;padding:10px 20px;background:var(--blue);color:white;border:none;border-radius:8px;cursor:pointer;font-family:Sarabun,sans-serif;font-size:14px;font-weight:700;">🔄 ลองใหม่</button>';
   }
 }
 
