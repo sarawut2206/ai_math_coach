@@ -3,210 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MathScan AI</title>
+<title>MathScan AI — สแกนจุดอ่อน สร้างเส้นทางเรียนรู้เฉพาะตัว</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap');
 :root{
-  --bg:#04080f;--s1:#080e18;--s2:#0d1524;--s3:#121d30;
-  --border:#1a2840;--border2:#243550;
-  --blue:#1d6aff;--cyan:#00c8ff;--indigo:#4338ca;
-  --green:#059669;--green2:#10b981;
-  --warn:#d97706;--warn2:#f59e0b;
-  --red:#dc2626;--red2:#ef4444;
-  --text:#f1f5f9;--text2:#cbd5e1;--muted:#64748b;--dim:#94a3b8;
-  --gold:#f59e0b;
+  --bg:#f0f4f8;--s1:#ffffff;--s2:#f8fafc;--s3:#eef2f7;
+  --border:#dde3ec;--border2:#c8d3e0;
+  --blue:#1d6aff;--blue2:#1557d4;--indigo:#4338ca;
+  --cyan:#0891b2;--green:#059669;--green2:#10b981;
+  --warn:#d97706;--red:#dc2626;--red2:#ef4444;
+  --text:#0f172a;--text2:#334155;--muted:#64748b;--dim:#94a3b8;
+  --gold:#d97706;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-body::before{content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse 80% 50% at 20% -10%,rgba(29,106,255,0.07) 0%,transparent 60%),
-  radial-gradient(ellipse 60% 40% at 80% 110%,rgba(109,40,217,0.06) 0%,transparent 60%);
-  pointer-events:none;z-index:0;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-/* ===== KEY MODAL ===== */
-#keyModal{position:fixed;inset:0;background:rgba(2,5,12,0.97);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;}
-.km-card{background:var(--s1);border:1px solid var(--border2);border-radius:20px;padding:40px 36px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.6);}
-.km-badge{display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(29,106,255,0.1);border:1px solid rgba(29,106,255,0.25);border-radius:20px;padding:4px 14px;font-size:11px;color:var(--cyan);font-family:'Space Mono',monospace;letter-spacing:1px;width:fit-content;margin:0 auto 20px;}
-.km-title{font-family:'Prompt',sans-serif;color:var(--text);font-size:26px;font-weight:700;text-align:center;margin-bottom:6px;}
-.km-title span{background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.km-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:28px;line-height:1.6;}
-.km-section{margin-bottom:20px;}
-.km-label{font-size:12px;color:var(--dim);margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
-.km-input{width:100%;padding:12px 16px;background:var(--s2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;transition:all .2s;}
-.km-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,106,255,0.12);}
-.km-err{color:var(--red2);font-size:12px;min-height:16px;margin-top:6px;}
-.km-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--blue),var(--indigo));border:none;border-radius:10px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(29,106,255,0.3);margin-top:8px;}
-.km-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(29,106,255,0.4);}
+/* KEY MODAL */
+#keyModal{position:fixed;inset:0;background:rgba(15,23,42,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;}
+.km-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+.km-badge{display:flex;align-items:center;justify-content:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;padding:5px 14px;font-size:12px;color:var(--blue);font-family:'Space Mono',monospace;letter-spacing:1px;width:fit-content;margin:0 auto 20px;}
+.km-title{font-family:'Prompt',sans-serif;color:var(--text);font-size:28px;font-weight:700;text-align:center;margin-bottom:6px;}
+.km-title span{color:var(--blue);}
+.km-sub{color:var(--muted);font-size:13px;text-align:center;margin-bottom:32px;line-height:1.7;}
+.km-label{font-size:12px;color:var(--muted);margin-bottom:7px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.km-input{width:100%;padding:13px 16px;background:var(--s2);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;outline:none;margin-bottom:14px;transition:all .2s;}
+.km-input:focus{border-color:var(--blue);background:#fff;}
+.km-err{color:var(--red);font-size:12px;min-height:18px;margin-bottom:10px;}
+.km-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--blue),var(--indigo));border:none;border-radius:10px;color:white;font-family:'Sarabun',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(29,106,255,0.35);}
+.km-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(29,106,255,0.45);}
 .km-divider{height:1px;background:var(--border);margin:20px 0;}
-.km-note{font-size:11px;color:var(--muted);text-align:center;line-height:1.8;}
-.km-note a{color:var(--cyan);text-decoration:none;}
+.km-note{font-size:11.5px;color:var(--muted);text-align:center;line-height:2;}
+.km-note a{color:var(--blue);text-decoration:none;font-weight:600;}
 
-/* ===== APP ===== */
-#app{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:1;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:54px;border-bottom:1px solid var(--border);background:rgba(8,14,24,0.96);backdrop-filter:blur(12px);position:sticky;top:0;z-index:50;}
-.tb-logo{display:flex;align-items:center;gap:10px;}
-.tb-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--blue),var(--indigo));border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
-.tb-name{font-family:'Prompt',sans-serif;font-size:13px;font-weight:700;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-.tb-sub{font-size:10px;color:var(--muted);}
-.tb-right{display:flex;align-items:center;gap:8px;}
-.tb-badge{font-size:10px;font-family:'Space Mono',monospace;padding:3px 10px;background:rgba(29,106,255,0.1);border:1px solid rgba(29,106,255,0.2);border-radius:20px;color:var(--cyan);}
-.tb-btn{padding:5px 12px;background:transparent;border:1px solid var(--border2);border-radius:7px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;}
-.tb-btn:hover{border-color:var(--blue);color:var(--text);}
-.tb-btn.teacher{border-color:rgba(245,158,11,0.4);color:var(--gold);}
-.tb-btn.teacher:hover{background:rgba(245,158,11,0.1);}
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;background:var(--s1);border-bottom:2px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06);position:sticky;top:0;z-index:50;}
+.tb-logo{display:flex;align-items:center;gap:12px;}
+.tb-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--indigo));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 2px 8px rgba(29,106,255,0.3);}
+.tb-name{font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--blue);}
+.tb-sub{font-size:11px;color:var(--muted);}
+.tb-right{display:flex;align-items:center;gap:10px;}
+.tb-badge{font-size:11px;padding:4px 12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;color:var(--blue);font-weight:600;}
+.tb-btn{padding:7px 16px;background:var(--s2);border:2px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:13px;cursor:pointer;font-weight:600;transition:all .2s;}
+.tb-btn:hover{border-color:var(--blue);color:var(--blue);}
+.tb-btn.teacher{border-color:#fbbf24;color:var(--gold);background:#fffbeb;}
+.tb-btn.teacher:hover{background:#fef3c7;}
 
 /* PROGRESS */
-.prog-bar-wrap{height:2px;background:var(--border);position:sticky;top:54px;z-index:40;}
-.prog-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .5s;}
+.prog-bar-wrap{height:4px;background:var(--border);position:sticky;top:60px;z-index:40;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width .5s ease;}
 
 /* SCREENS */
 .screen{display:none;flex-direction:column;flex:1;}
 .screen.active{display:flex;}
 
-/* ===== CHAT SCREEN ===== */
-.chat-wrap{display:flex;flex-direction:column;max-width:660px;margin:0 auto;width:100%;padding:20px 16px 14px;flex:1;}
-.messages{display:flex;flex-direction:column;gap:14px;flex:1;overflow-y:auto;padding-bottom:14px;max-height:calc(100vh - 180px);}
-.messages::-webkit-scrollbar{width:3px;}
+/* CHAT */
+.chat-wrap{display:flex;flex-direction:column;max-width:700px;margin:0 auto;width:100%;padding:24px 20px 16px;flex:1;}
+.messages{display:flex;flex-direction:column;gap:16px;overflow-y:auto;padding-bottom:16px;max-height:calc(100vh - 200px);}
+.messages::-webkit-scrollbar{width:4px;}
 .messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
-.msg{display:flex;gap:9px;max-width:90%;animation:fadeUp .25s ease;}
+
+.msg{display:flex;gap:10px;max-width:88%;animation:fadeUp .25s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
 .msg.ai{align-self:flex-start;}
 .msg.user{flex-direction:row-reverse;align-self:flex-end;}
-.m-av{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px;}
-.msg.ai .m-av{background:linear-gradient(135deg,var(--blue),var(--indigo));}
-.msg.user .m-av{background:var(--s3);border:1px solid var(--border2);}
-.m-bub{padding:11px 15px;border-radius:13px;font-size:14px;line-height:1.8;}
-.msg.ai .m-bub{background:var(--s2);border:1px solid var(--border2);border-top-left-radius:3px;color:var(--text2);}
-.msg.user .m-bub{background:linear-gradient(135deg,rgba(29,106,255,0.2),rgba(109,40,217,0.15));border:1px solid rgba(29,106,255,0.25);border-top-right-radius:3px;}
-.typing{display:flex;gap:4px;align-items:center;}
-.typing span{width:6px;height:6px;background:var(--blue);border-radius:50%;animation:tdot 1.2s infinite;}
+.m-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:2px;}
+.msg.ai .m-av{background:linear-gradient(135deg,var(--blue),var(--indigo));box-shadow:0 2px 8px rgba(29,106,255,0.25);}
+.msg.user .m-av{background:var(--s3);border:2px solid var(--border);}
+.m-bub{padding:13px 17px;border-radius:14px;font-size:15px;line-height:1.85;}
+.msg.ai .m-bub{background:var(--s1);border:2px solid var(--border);border-top-left-radius:4px;color:var(--text2);box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.msg.user .m-bub{background:linear-gradient(135deg,#eff6ff,#e0e7ff);border:2px solid #bfdbfe;border-top-right-radius:4px;color:var(--text);}
+.typing{display:flex;gap:5px;align-items:center;}
+.typing span{width:7px;height:7px;background:var(--blue);border-radius:50%;animation:tdot 1.2s infinite;}
 .typing span:nth-child(2){animation-delay:.2s;}.typing span:nth-child(3){animation-delay:.4s;}
-@keyframes tdot{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
 
 /* SELECTORS */
-.grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:7px;}
-.grade-btn{padding:13px 6px;background:var(--s3);border:1px solid var(--border2);border-radius:10px;color:var(--text2);font-family:'Prompt',sans-serif;font-size:14px;font-weight:600;text-align:center;cursor:pointer;transition:all .18s;}
-.grade-btn:hover{border-color:var(--blue);background:rgba(29,106,255,0.08);color:var(--text);}
-.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;}
+.grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
+.grade-btn{padding:14px 8px;background:var(--s1);border:2px solid var(--border);border-radius:11px;color:var(--text);font-family:'Prompt',sans-serif;font-size:16px;font-weight:600;text-align:center;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.grade-btn:hover{border-color:var(--blue);background:#eff6ff;color:var(--blue);}
+.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
 @media(max-width:460px){.topic-grid{grid-template-columns:1fr;}.grade-grid{grid-template-columns:repeat(2,1fr);}}
-.topic-btn{padding:11px 13px;background:var(--s3);border:1px solid var(--border2);border-radius:9px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:12.5px;text-align:left;cursor:pointer;transition:all .18s;}
-.topic-btn:hover{border-color:var(--blue);background:rgba(29,106,255,0.08);}
-.topic-btn .ind{font-size:9px;color:var(--muted);display:block;margin-bottom:2px;font-family:'Space Mono',monospace;}
-.subtopic-list{display:flex;flex-direction:column;gap:6px;margin-top:7px;}
-.subtopic-btn{padding:11px 14px;background:var(--s3);border:1px solid var(--border2);border-radius:9px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:13px;text-align:left;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:9px;}
-.subtopic-btn::before{content:'';width:5px;height:5px;background:var(--blue);border-radius:50%;flex-shrink:0;}
-.subtopic-btn:hover{border-color:var(--blue);background:rgba(29,106,255,0.08);}
+.topic-btn{padding:12px 14px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:14px;text-align:left;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.topic-btn:hover{border-color:var(--blue);background:#eff6ff;}
+.topic-btn .ind{font-size:10px;color:var(--muted);display:block;margin-bottom:3px;font-family:'Space Mono',monospace;}
+.subtopic-list{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
+.subtopic-btn{padding:12px 16px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:14px;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.subtopic-btn::before{content:'';width:6px;height:6px;background:var(--blue);border-radius:50%;flex-shrink:0;}
+.subtopic-btn:hover{border-color:var(--blue);background:#eff6ff;}
 
 /* MCQ */
-.choices-wrap{display:flex;flex-direction:column;gap:6px;margin-top:7px;}
-.choice-btn{padding:11px 15px;background:var(--s3);border:1px solid var(--border2);border-radius:9px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:13.5px;text-align:left;cursor:pointer;transition:all .18s;display:flex;align-items:flex-start;gap:9px;}
-.choice-btn::before{content:attr(data-label);font-family:'Space Mono',monospace;font-size:9px;font-weight:700;min-width:19px;height:19px;background:var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;margin-top:2px;}
-.choice-btn:hover:not(:disabled){border-color:var(--blue);background:rgba(29,106,255,0.07);}
-.choice-btn.ok{border-color:var(--green2);background:rgba(16,185,129,0.08);color:var(--green2);}
-.choice-btn.ok::before{background:rgba(16,185,129,0.2);color:var(--green2);}
-.choice-btn.no{border-color:var(--red2);background:rgba(239,68,68,0.06);color:#fca5a5;}
-.choice-btn.no::before{background:rgba(239,68,68,0.15);color:var(--red2);}
-.choice-btn:disabled{cursor:not-allowed;opacity:.7;}
+.choices-wrap{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.choice-btn{padding:13px 17px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:15px;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.choice-btn::before{content:attr(data-label);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;background:var(--s3);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;margin-top:2px;}
+.choice-btn:hover:not(:disabled){border-color:var(--blue);background:#eff6ff;color:var(--blue);}
+.choice-btn.ok{border-color:var(--green2);background:#ecfdf5;color:var(--green);}
+.choice-btn.ok::before{background:#d1fae5;color:var(--green);border-color:var(--green2);}
+.choice-btn.no{border-color:var(--red);background:#fef2f2;color:var(--red);}
+.choice-btn.no::before{background:#fee2e2;color:var(--red);border-color:var(--red);}
+.choice-btn:disabled{cursor:not-allowed;opacity:.75;}
 
 /* INPUT */
-.input-row{display:flex;gap:9px;padding-top:12px;border-top:1px solid var(--border);margin-top:7px;}
-.chat-input{flex:1;background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:11px 14px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:14px;outline:none;resize:none;min-height:44px;max-height:90px;transition:all .2s;}
-.chat-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(29,106,255,0.1);}
-.chat-input::placeholder{color:var(--muted);}
-.send-btn{width:44px;height:44px;background:linear-gradient(135deg,var(--blue),var(--indigo));border:none;border-radius:9px;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;box-shadow:0 2px 10px rgba(29,106,255,0.3);}
+.input-row{display:flex;gap:10px;padding-top:14px;border-top:2px solid var(--border);margin-top:10px;}
+.chat-input{flex:1;background:var(--s1);border:2px solid var(--border);border-radius:10px;padding:12px 16px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:15px;outline:none;resize:none;min-height:48px;max-height:100px;transition:all .2s;}
+.chat-input:focus{border-color:var(--blue);}
+.chat-input::placeholder{color:var(--dim);}
+.send-btn{width:48px;height:48px;background:linear-gradient(135deg,var(--blue),var(--indigo));border:none;border-radius:10px;color:white;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;box-shadow:0 2px 10px rgba(29,106,255,0.35);}
 .send-btn:hover{transform:translateY(-1px);}
-.send-btn:disabled{opacity:.25;cursor:not-allowed;transform:none;box-shadow:none;}
+.send-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none;}
 
-/* ===== RESULT SCREEN ===== */
-.result-wrap{display:flex;flex-direction:column;align-items:center;padding:32px 16px;max-width:660px;margin:0 auto;width:100%;gap:18px;}
-.res-trophy{font-size:48px;}
-.res-score{font-size:60px;font-weight:800;font-family:'Prompt',sans-serif;letter-spacing:-2px;line-height:1;}
-.res-title{font-size:15px;color:var(--muted);}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;}
-.stat-box{background:var(--s1);border:1px solid var(--border2);border-radius:12px;padding:16px 12px;text-align:center;}
-.stat-num{font-family:'Prompt',sans-serif;font-size:26px;font-weight:700;line-height:1;}
-.stat-lbl{font-size:11px;color:var(--muted);margin-top:5px;}
-.res-card{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:20px;width:100%;font-size:13.5px;line-height:1.85;}
-.res-card h3{font-size:10px;font-family:'Space Mono',monospace;letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;}
+/* RESULT */
+.result-wrap{display:flex;flex-direction:column;align-items:center;padding:32px 20px;max-width:700px;margin:0 auto;width:100%;gap:20px;}
+.res-trophy{font-size:54px;}
+.res-score{font-size:66px;font-weight:800;font-family:'Prompt',sans-serif;letter-spacing:-2px;line-height:1;}
+.res-title{font-size:17px;color:var(--muted);margin-top:4px;}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;}
+.stat-box{background:var(--s1);border:2px solid var(--border);border-radius:14px;padding:18px 14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.stat-num{font-family:'Prompt',sans-serif;font-size:28px;font-weight:700;line-height:1;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:5px;}
+.res-card{background:var(--s1);border:2px solid var(--border);border-radius:14px;padding:22px;width:100%;font-size:15px;line-height:1.9;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.res-card h3{font-size:11px;font-family:'Space Mono',monospace;letter-spacing:2px;margin-bottom:14px;text-transform:uppercase;}
 .res-card.blue h3{color:var(--blue);}
-.res-card.red{border-color:rgba(220,38,38,0.2);}
-.res-card.red h3{color:var(--red2);}
-.res-card.cyan{border-color:rgba(0,200,255,0.2);}
-.res-card.cyan h3{color:var(--cyan);}
-.wrong-item{padding:11px 13px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;margin-bottom:7px;font-size:12.5px;line-height:1.75;}
-.wi-q{color:var(--text2);margin-bottom:4px;font-weight:500;}
-.wi-no{color:var(--red2);font-size:11.5px;}
-.wi-ok{color:var(--green2);font-size:11.5px;margin-top:2px;}
-.ex-item{padding:13px 15px;background:var(--s2);border:1px solid var(--border2);border-radius:8px;margin-bottom:9px;font-size:13px;line-height:1.8;}
-.ex-num{font-family:'Space Mono',monospace;font-size:8px;color:var(--blue);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
-.restart-btn{padding:13px 44px;background:linear-gradient(135deg,var(--blue),var(--indigo));border:none;border-radius:11px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 18px rgba(29,106,255,0.3);}
+.res-card.red{border-color:#fca5a5;}
+.res-card.red h3{color:var(--red);}
+.res-card.green{border-color:#6ee7b7;}
+.res-card.green h3{color:var(--green);}
+.wrong-item{padding:13px 15px;background:var(--s2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:14px;line-height:1.8;}
+.wi-q{color:var(--text);margin-bottom:5px;font-weight:600;}
+.wi-no{color:var(--red);font-size:13px;}
+.wi-ok{color:var(--green);font-size:13px;margin-top:3px;}
+
+/* WORKSHEET */
+.worksheet-card{background:var(--s1);border:2px solid var(--blue);border-radius:14px;padding:0;width:100%;overflow:hidden;box-shadow:0 4px 16px rgba(29,106,255,0.12);}
+.ws-header{background:linear-gradient(135deg,var(--blue),var(--indigo));padding:18px 22px;color:white;}
+.ws-title{font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
+.ws-meta{font-size:12px;opacity:.85;}
+.ws-body{padding:20px 22px;}
+.ws-item{padding:16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;}
+.ws-num{font-size:11px;font-family:'Space Mono',monospace;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;font-weight:700;}
+.ws-q{font-size:15px;color:var(--text);font-weight:600;margin-bottom:10px;line-height:1.7;}
+.ws-method{background:#eff6ff;border-left:3px solid var(--blue);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:8px;font-size:13.5px;line-height:1.8;color:var(--text2);}
+.ws-ans{background:#ecfdf5;border-left:3px solid var(--green2);padding:8px 14px;border-radius:0 8px 8px 0;font-size:14px;font-weight:700;color:var(--green);}
+.ws-blank{background:#fff;border:1.5px dashed var(--border2);border-radius:8px;padding:12px 14px;margin-top:8px;font-size:13px;color:var(--dim);font-style:italic;}
+.ws-actions{display:flex;gap:10px;padding:0 22px 20px;}
+.ws-btn{flex:1;padding:12px;border:none;border-radius:9px;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .2s;}
+.ws-btn.pdf{background:linear-gradient(135deg,var(--red),#b91c1c);color:white;box-shadow:0 3px 10px rgba(220,38,38,0.3);}
+.ws-btn.pdf:hover{transform:translateY(-1px);}
+.ws-btn.print{background:linear-gradient(135deg,var(--blue),var(--indigo));color:white;box-shadow:0 3px 10px rgba(29,106,255,0.3);}
+.ws-btn.print:hover{transform:translateY(-1px);}
+
+.restart-btn{padding:13px 44px;background:linear-gradient(135deg,var(--blue),var(--indigo));border:none;border-radius:11px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(29,106,255,0.3);}
 .restart-btn:hover{transform:translateY(-2px);}
 
-/* ===== TEACHER DASHBOARD ===== */
-#dashModal{position:fixed;inset:0;background:rgba(2,5,12,0.97);z-index:200;display:none;flex-direction:column;overflow-y:auto;}
+/* TEACHER DASHBOARD */
+#dashModal{position:fixed;inset:0;background:var(--bg);z-index:200;display:none;flex-direction:column;overflow-y:auto;}
 #dashModal.open{display:flex;}
-.dash-topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:54px;border-bottom:1px solid var(--border);background:rgba(8,14,24,0.98);position:sticky;top:0;}
-.dash-title{font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;color:var(--gold);}
-.dash-close{padding:6px 14px;background:transparent;border:1px solid var(--border2);border-radius:7px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:12px;cursor:pointer;}
-.dash-wrap{max-width:900px;margin:0 auto;width:100%;padding:24px 16px;display:flex;flex-direction:column;gap:20px;}
+.dash-topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:60px;border-bottom:2px solid var(--border);background:var(--s1);position:sticky;top:0;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.dash-title{font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:var(--gold);display:flex;align-items:center;gap:8px;}
+.dash-actions-top{display:flex;gap:8px;}
+.dash-wrap{max-width:960px;margin:0 auto;width:100%;padding:24px 16px;display:flex;flex-direction:column;gap:20px;}
 
-/* summary cards */
 .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 @media(max-width:600px){.summary-grid{grid-template-columns:repeat(2,1fr);}}
-.sum-card{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:18px 14px;text-align:center;}
-.sum-num{font-family:'Prompt',sans-serif;font-size:28px;font-weight:700;line-height:1;}
-.sum-lbl{font-size:11px;color:var(--muted);margin-top:6px;}
+.sum-card{background:var(--s1);border:2px solid var(--border);border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.sum-num{font-family:'Prompt',sans-serif;font-size:30px;font-weight:700;line-height:1;}
+.sum-lbl{font-size:12px;color:var(--muted);margin-top:6px;font-weight:500;}
 
-/* chart */
-.chart-card{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:20px;}
-.chart-title{font-size:12px;font-family:'Space Mono',monospace;color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;}
-.bar-chart{display:flex;flex-direction:column;gap:8px;}
-.bar-row{display:flex;align-items:center;gap:10px;}
-.bar-name{font-size:12px;color:var(--text2);width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bar-wrap{flex:1;height:22px;background:var(--s2);border-radius:4px;overflow:hidden;position:relative;}
-.bar-fill{height:100%;border-radius:4px;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;}
-.bar-pct{font-size:10px;font-weight:700;color:white;font-family:'Space Mono',monospace;}
-.bar-level{font-size:10px;color:var(--muted);width:60px;flex-shrink:0;text-align:right;}
+.chart-card{background:var(--s1);border:2px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.chart-title{font-size:12px;font-family:'Space Mono',monospace;color:var(--blue);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:18px;font-weight:700;}
+.bar-chart{display:flex;flex-direction:column;gap:10px;}
+.bar-row{display:flex;align-items:center;gap:12px;}
+.bar-name{font-size:13px;color:var(--text2);width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;}
+.bar-wrap{flex:1;height:24px;background:var(--s3);border-radius:5px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:5px;transition:width .7s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;}
+.bar-pct{font-size:11px;font-weight:700;color:white;font-family:'Space Mono',monospace;}
+.bar-level{font-size:11px;color:var(--muted);width:70px;flex-shrink:0;text-align:right;font-weight:500;}
 
-/* student table */
-.table-card{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:20px;overflow-x:auto;}
-.stu-table{width:100%;border-collapse:collapse;font-size:13px;}
-.stu-table th{padding:10px 12px;text-align:left;font-size:10px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border2);}
-.stu-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2);}
+.stu-table{width:100%;border-collapse:collapse;font-size:14px;}
+.stu-table th{padding:11px 14px;text-align:left;font-size:11px;font-family:'Space Mono',monospace;color:var(--muted);letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid var(--border);background:var(--s2);}
+.stu-table td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text2);}
 .stu-table tr:last-child td{border-bottom:none;}
-.stu-table tr:hover td{background:rgba(29,106,255,0.04);}
-.level-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;font-family:'Space Mono',monospace;font-weight:700;}
-.level-badge.high{background:rgba(16,185,129,0.1);color:var(--green2);border:1px solid rgba(16,185,129,0.2);}
-.level-badge.mid{background:rgba(245,158,11,0.1);color:var(--warn2);border:1px solid rgba(245,158,11,0.2);}
-.level-badge.low{background:rgba(239,68,68,0.1);color:var(--red2);border:1px solid rgba(239,68,68,0.2);}
-.score-bar{display:inline-flex;align-items:center;gap:6px;}
-.score-dots{display:flex;gap:2px;}
-.score-dot{width:6px;height:6px;border-radius:50%;}
+.stu-table tr:hover td{background:var(--s2);}
+.level-badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700;}
+.level-badge.high{background:#d1fae5;color:var(--green);border:1px solid #6ee7b7;}
+.level-badge.mid{background:#fef3c7;color:var(--warn);border:1px solid #fcd34d;}
+.level-badge.low{background:#fee2e2;color:var(--red);border:1px solid #fca5a5;}
 
-/* weak topics */
 .weak-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media(max-width:500px){.weak-grid{grid-template-columns:1fr;}}
-.weak-item{padding:12px 14px;background:var(--s2);border:1px solid var(--border2);border-radius:10px;}
-.weak-topic{font-size:13px;color:var(--text2);margin-bottom:4px;}
-.weak-count{font-size:11px;color:var(--red2);}
-.weak-bar{height:4px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden;}
-.weak-bar-fill{height:100%;background:var(--red2);border-radius:2px;}
+.weak-item{padding:14px 16px;background:var(--s2);border:1px solid var(--border);border-radius:10px;}
+.weak-topic{font-size:14px;color:var(--text);margin-bottom:4px;font-weight:600;}
+.weak-count{font-size:12px;color:var(--red);margin-bottom:6px;}
+.weak-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.weak-bar-fill{height:100%;background:var(--red);border-radius:3px;}
 
-/* teacher pass modal */
-.pass-modal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;}
-.pass-card{background:var(--s1);border:1px solid var(--border2);border-radius:16px;padding:32px;width:100%;max-width:360px;}
-.pass-title{font-size:16px;font-weight:700;color:var(--gold);margin-bottom:20px;text-align:center;}
-.pass-input{width:100%;padding:12px 16px;background:var(--s2);border:1px solid var(--border2);border-radius:9px;color:var(--text);font-size:14px;outline:none;margin-bottom:8px;}
+.dash-export-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border:2px solid var(--border);border-radius:8px;background:var(--s1);color:var(--text2);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.dash-export-btn:hover{border-color:var(--blue);color:var(--blue);}
+.dash-export-btn.pdf-btn{border-color:#fca5a5;color:var(--red);background:#fef2f2;}
+.dash-export-btn.pdf-btn:hover{background:#fee2e2;}
+.dash-close{padding:7px 16px;background:var(--s2);border:2px solid var(--border);border-radius:8px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+
+/* TEACHER PASS */
+.pass-modal{position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;}
+.pass-card{background:var(--s1);border:2px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
+.pass-title{font-size:17px;font-weight:700;color:var(--gold);margin-bottom:20px;text-align:center;}
+.pass-input{width:100%;padding:12px 16px;background:var(--s2);border:2px solid var(--border);border-radius:9px;color:var(--text);font-size:15px;outline:none;margin-bottom:8px;transition:all .2s;}
 .pass-input:focus{border-color:var(--gold);}
-.pass-err{color:var(--red2);font-size:12px;min-height:16px;margin-bottom:10px;}
-.pass-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--warn),var(--gold));border:none;border-radius:9px;color:white;font-family:'Sarabun',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
-.pass-cancel{width:100%;padding:10px;background:transparent;border:1px solid var(--border2);border-radius:9px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:13px;cursor:pointer;margin-top:8px;}
+.pass-err{color:var(--red);font-size:12px;min-height:16px;margin-bottom:10px;}
+.pass-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--warn),var(--gold));border:none;border-radius:9px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
+.pass-cancel{width:100%;padding:10px;background:transparent;border:2px solid var(--border);border-radius:9px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:13px;cursor:pointer;margin-top:8px;}
 
-/* clear btn */
-.dash-actions{display:flex;gap:10px;justify-content:flex-end;}
-.clear-btn{padding:8px 18px;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2);border-radius:8px;color:var(--red2);font-family:'Sarabun',sans-serif;font-size:12px;cursor:pointer;}
-.clear-btn:hover{background:rgba(220,38,38,0.2);}
-.export-btn{padding:8px 18px;background:rgba(29,106,255,0.1);border:1px solid rgba(29,106,255,0.2);border-radius:8px;color:var(--blue);font-family:'Sarabun',sans-serif;font-size:12px;cursor:pointer;}
+/* PRINT STYLES */
+@media print {
+  body * { visibility: hidden; }
+  #printArea, #printArea * { visibility: visible; }
+  #printArea { position: fixed; left: 0; top: 0; width: 100%; }
+  .no-print { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -216,34 +231,26 @@ body::before{content:'';position:fixed;inset:0;
   <div class="km-card">
     <div class="km-badge">🧮 AI FOR EDUCATION</div>
     <div class="km-title"><span>MathScan</span> AI</div>
-    <div class="km-sub">ระบบวิเคราะห์ผู้เรียนคณิตศาสตร์<br>อิงตัวชี้วัดแกนกลาง 2560</div>
-    <div class="km-section">
-      <div class="km-label">API Key (Anthropic)</div>
-      <input id="apiKeyInput" class="km-input" type="password" placeholder="sk-ant-api03-..."
-        onkeydown="if(event.key==='Enter')saveKey()"/>
-      <div id="keyError" class="km-err"></div>
-    </div>
-    <div class="km-section">
-      <div class="km-label">รหัสผ่านครู (Teacher Password)</div>
-      <input id="teacherPwInput" class="km-input" type="password" placeholder="ตั้งรหัสผ่านสำหรับดู Dashboard"/>
-    </div>
+    <div class="km-sub">ระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ด้วย AI<br>อิงตัวชี้วัดแกนกลางการศึกษาขั้นพื้นฐาน 2560</div>
+    <div class="km-label">API Key (Anthropic)</div>
+    <input id="apiKeyInput" class="km-input" type="password" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')saveKey()"/>
+    <div class="km-label">รหัสผ่านครู (Teacher Password)</div>
+    <input id="teacherPwInput" class="km-input" type="password" placeholder="ตั้งรหัสผ่านสำหรับดู Dashboard"/>
+    <div id="keyError" class="km-err"></div>
     <button class="km-btn" onclick="saveKey()">เข้าสู่ระบบ →</button>
     <div class="km-divider"></div>
-    <div class="km-note">
-      Key เก็บในเครื่องเท่านั้น •
-      <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
-    </div>
+    <div class="km-note">Key เก็บในเครื่องเท่านั้น • <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
   </div>
 </div>
 
-<!-- TEACHER PASSWORD MODAL -->
+<!-- TEACHER PASSWORD -->
 <div class="pass-modal" id="passModal" style="display:none;">
   <div class="pass-card">
     <div class="pass-title">🔐 Teacher Dashboard</div>
     <input class="pass-input" id="passInput" type="password" placeholder="รหัสผ่านครู"/>
     <div class="pass-err" id="passErr"></div>
-    <button class="pass-btn" onclick="checkTeacherPass()">เข้าสู่ Dashboard</button>
-    <button class="pass-cancel" onclick="closePassModal()">ยกเลิก</button>
+    <button class="pass-btn" onclick="checkPass()">เข้าสู่ Dashboard</button>
+    <button class="pass-cancel" onclick="closePass()">ยกเลิก</button>
   </div>
 </div>
 
@@ -251,13 +258,14 @@ body::before{content:'';position:fixed;inset:0;
 <div id="dashModal">
   <div class="dash-topbar">
     <div class="dash-title">📊 Teacher Dashboard — MathScan AI</div>
-    <button class="dash-close" onclick="closeDash()">✕ ปิด</button>
-  </div>
-  <div class="dash-wrap">
-    <div class="dash-actions">
-      <button class="export-btn" onclick="exportCSV()">📥 Export CSV</button>
-      <button class="clear-btn" onclick="clearData()">🗑 ล้างข้อมูล</button>
+    <div class="dash-actions-top">
+      <button class="dash-export-btn pdf-btn no-print" onclick="dashToPDF()">📄 Export PDF</button>
+      <button class="dash-export-btn no-print" onclick="exportCSV()">📥 CSV</button>
+      <button class="dash-export-btn no-print" onclick="clearData()">🗑 ล้างข้อมูล</button>
+      <button class="dash-close no-print" onclick="closeDash()">✕ ปิด</button>
     </div>
+  </div>
+  <div class="dash-wrap" id="dashContent">
     <div class="summary-grid" id="summaryGrid"></div>
     <div class="chart-card">
       <div class="chart-title">คะแนนรายนักเรียน</div>
@@ -267,15 +275,10 @@ body::before{content:'';position:fixed;inset:0;
       <div class="chart-title">หัวข้อที่ทั้งห้องอ่อนที่สุด</div>
       <div class="weak-grid" id="weakGrid"></div>
     </div>
-    <div class="table-card">
+    <div class="chart-card" style="overflow-x:auto;">
       <div class="chart-title" style="margin-bottom:14px;">รายละเอียดนักเรียนทุกคน</div>
       <table class="stu-table" id="stuTable">
-        <thead>
-          <tr>
-            <th>#</th><th>ชื่อ</th><th>ระดับชั้น</th><th>หัวข้อ</th>
-            <th>คะแนน</th><th>ระดับ</th><th>เวลา</th>
-          </tr>
-        </thead>
+        <thead><tr><th>#</th><th>ชื่อ</th><th>ระดับ</th><th>หัวข้อ</th><th>คะแนน</th><th>สถานะ</th><th>เวลา</th></tr></thead>
         <tbody id="stuBody"></tbody>
       </table>
     </div>
@@ -294,13 +297,12 @@ body::before{content:'';position:fixed;inset:0;
     </div>
     <div class="tb-right">
       <span class="tb-badge">AI FOR EDUCATION</span>
-      <button class="tb-btn teacher" onclick="openTeacherDash()">👨‍🏫 ครู</button>
+      <button class="tb-btn teacher" onclick="openDash()">👨‍🏫 ครู</button>
       <button class="tb-btn" onclick="changeKey()">🔑</button>
     </div>
   </div>
   <div class="prog-bar-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
 
-  <!-- CHAT SCREEN -->
   <div class="screen active" id="chatScreen">
     <div class="chat-wrap">
       <div class="messages" id="messages"></div>
@@ -312,7 +314,6 @@ body::before{content:'';position:fixed;inset:0;
     </div>
   </div>
 
-  <!-- RESULT SCREEN -->
   <div class="screen" id="resultScreen">
     <div class="result-wrap">
       <div class="res-trophy" id="resTrophy">🏆</div>
@@ -320,349 +321,101 @@ body::before{content:'';position:fixed;inset:0;
       <div class="res-title" id="resTitle"></div>
       <div class="stat-grid">
         <div class="stat-box"><div class="stat-num" id="st1">—</div><div class="stat-lbl">ข้อที่ทำ</div></div>
-        <div class="stat-box"><div class="stat-num" style="color:var(--green2)" id="st2">—</div><div class="stat-lbl">ตอบถูก</div></div>
-        <div class="stat-box"><div class="stat-num" style="color:var(--red2)" id="st3">—</div><div class="stat-lbl">ตอบผิด</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--green)" id="st2">—</div><div class="stat-lbl">ตอบถูก</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="st3">—</div><div class="stat-lbl">ตอบผิด</div></div>
       </div>
       <div class="res-card blue" id="resAnalysis">
         <h3>AI วิเคราะห์ผล</h3>
-        <div id="resAnalysisText">กำลังวิเคราะห์...</div>
+        <div id="resAnalysisText"></div>
       </div>
       <div class="res-card red" id="wrongReview" style="display:none;">
         <h3>ข้อที่ตอบผิด</h3>
         <div id="wrongList"></div>
       </div>
-      <div class="res-card cyan" id="exerciseCard" style="display:none;">
-        <h3>แบบฝึกหัดเฉพาะตัว 10 ข้อ</h3>
-        <div id="exerciseText"><div style="text-align:center;padding:16px;color:var(--muted);font-size:13px;">🤖 กำลังสร้างแบบฝึกหัด 10 ข้อ...</div></div>
+      <!-- WORKSHEET -->
+      <div class="worksheet-card" id="worksheetCard" style="display:none;">
+        <div class="ws-header">
+          <div class="ws-title">📝 ใบงานแบบฝึกหัดเฉพาะตัว — 10 ข้อ</div>
+          <div class="ws-meta" id="wsMeta"></div>
+        </div>
+        <div class="ws-body" id="wsBody"></div>
+        <div class="ws-actions no-print">
+          <button class="ws-btn pdf" onclick="worksheetToPDF()">📄 Download PDF</button>
+          <button class="ws-btn print" onclick="printWorksheet()">🖨️ พิมพ์ใบงาน</button>
+        </div>
       </div>
       <button class="restart-btn" onclick="restart()">🔄 เริ่มใหม่</button>
     </div>
   </div>
 </div>
 
+<!-- PRINT AREA -->
+<div id="printArea" style="display:none;font-family:'Sarabun',sans-serif;padding:20px;"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-// ===== CURRICULUM (ตัวชี้วัดแกนกลาง 2560 — ละเอียดรายคาบ) =====
+// ===== CURRICULUM =====
 const CURRICULUM = {
   "ม.1":[
-    {topic:"จำนวนนับและการประยุกต์",indicator:"ค 1.1 ม.1/1-4",subs:[
-      "ความหมายและชนิดของจำนวนนับ",
-      "จำนวนเฉพาะ — นิยามและการระบุ",
-      "การแยกตัวประกอบเป็นจำนวนเฉพาะ",
-      "ตัวหารร่วมมาก (ห.ร.ม.) — วิธีหาและนิยาม",
-      "ตัวคูณร่วมน้อย (ล.ค.น.) — วิธีหาและนิยาม",
-      "โจทย์ปัญหา ห.ร.ม. และ ล.ค.น.",
-      "การประยุกต์ใช้ ห.ร.ม. ล.ค.น. ในชีวิตจริง",
-    ]},
-    {topic:"จำนวนเต็ม",indicator:"ค 1.1 ม.1/5-8",subs:[
-      "ความหมายและชนิดของจำนวนเต็ม",
-      "การเปรียบเทียบและเรียงลำดับจำนวนเต็ม",
-      "การบวกจำนวนเต็มบวกและลบ",
-      "การลบจำนวนเต็ม — เครื่องหมายซ้อนกัน",
-      "การคูณจำนวนเต็ม — กฎเครื่องหมาย",
-      "การหารจำนวนเต็ม — กฎเครื่องหมาย",
-      "สมบัติของจำนวนเต็ม (สลับที่ เปลี่ยนหมู่ แจกแจง)",
-      "โจทย์ปัญหาจำนวนเต็มในชีวิตจริง",
-    ]},
-    {topic:"เศษส่วนและทศนิยม",indicator:"ค 1.1 ม.1/9-12",subs:[
-      "เศษส่วน — ความหมายและการทำให้อยู่ในรูปอย่างต่ำ",
-      "การบวกและลบเศษส่วน (ตัวส่วนเท่ากันและต่างกัน)",
-      "การคูณและหารเศษส่วน",
-      "ทศนิยม — ความหมายและค่าประจำหลัก",
-      "การบวก ลบ คูณ หาร ทศนิยม",
-      "การแปลงเศษส่วนเป็นทศนิยมและทศนิยมซ้ำ",
-      "โจทย์ปัญหาเศษส่วนและทศนิยมในชีวิตจริง",
-    ]},
-    {topic:"การประมาณค่า",indicator:"ค 1.2 ม.1/1-2",subs:[
-      "การปัดเศษทศนิยมและการประมาณค่า",
-      "การนำการประมาณค่าไปใช้แก้ปัญหา",
-    ]},
-    {topic:"สมการเชิงเส้นตัวแปรเดียว",indicator:"ค 4.1 ม.1/1-3",subs:[
-      "นิพจน์และการแทนค่าตัวแปร",
-      "ความหมายของสมการและคำตอบ",
-      "การแก้สมการโดยการบวก ลบ ทั้งสองข้าง",
-      "การแก้สมการโดยการคูณ หาร ทั้งสองข้าง",
-      "การแก้สมการที่ซับซ้อนและมีวงเล็บ",
-      "การสร้างสมการจากโจทย์ปัญหา",
-      "โจทย์ปัญหาสมการเชิงเส้น",
-    ]},
-    {topic:"พื้นฐานเรขาคณิต",indicator:"ค 2.1 ม.1/1-5",subs:[
-      "จุด เส้นตรง รังสี ส่วนของเส้นตรง",
-      "มุม — ชนิดและการวัดมุม",
-      "มุมที่เกิดจากเส้นตัดกัน (มุมตรงข้ามกัน มุมประชิด)",
-      "เส้นขนาน — สมบัติและมุมที่เกี่ยวข้อง",
-      "รูปสามเหลี่ยม — ชนิดและสมบัติ",
-      "ผลรวมมุมภายในรูปหลายเหลี่ยม",
-    ]},
-    {topic:"สถิติเบื้องต้น",indicator:"ค 3.1 ม.1/1-3",subs:[
-      "การเก็บรวบรวมข้อมูลและการนับความถี่",
-      "ตารางแจกแจงความถี่และแผนภูมิแท่ง",
-      "ค่าเฉลี่ยเลขคณิต",
-      "มัธยฐาน",
-      "ฐานนิยม",
-      "การเลือกใช้ค่ากลางที่เหมาะสม",
-      "การอ่านและแปลความหมายข้อมูล",
-    ]},
+    {topic:"จำนวนนับและการประยุกต์",indicator:"ค 1.1 ม.1/1-4",subs:["ความหมายและชนิดของจำนวนนับ","จำนวนเฉพาะและการระบุ","การแยกตัวประกอบเป็นจำนวนเฉพาะ","ตัวหารร่วมมาก (ห.ร.ม.)","ตัวคูณร่วมน้อย (ล.ค.น.)","โจทย์ปัญหา ห.ร.ม. และ ล.ค.น."]},
+    {topic:"จำนวนเต็ม",indicator:"ค 1.1 ม.1/5-8",subs:["ความหมายและชนิดของจำนวนเต็ม","การเปรียบเทียบและเรียงลำดับจำนวนเต็ม","การบวกจำนวนเต็มบวกและลบ","การลบจำนวนเต็ม — เครื่องหมายซ้อนกัน","การคูณจำนวนเต็ม — กฎเครื่องหมาย","การหารจำนวนเต็ม — กฎเครื่องหมาย","สมบัติของจำนวนเต็ม","โจทย์ปัญหาจำนวนเต็มในชีวิตจริง"]},
+    {topic:"เศษส่วนและทศนิยม",indicator:"ค 1.1 ม.1/9-12",subs:["เศษส่วนและการทำให้อยู่ในรูปอย่างต่ำ","การบวกและลบเศษส่วน","การคูณและหารเศษส่วน","ทศนิยมและค่าประจำหลัก","การบวก ลบ คูณ หาร ทศนิยม","การแปลงเศษส่วนเป็นทศนิยม","โจทย์ปัญหาเศษส่วนและทศนิยม"]},
+    {topic:"สมการเชิงเส้นตัวแปรเดียว",indicator:"ค 4.1 ม.1/1-3",subs:["นิพจน์และการแทนค่าตัวแปร","ความหมายของสมการและคำตอบ","การแก้สมการโดยการบวก ลบ ทั้งสองข้าง","การแก้สมการโดยการคูณ หาร ทั้งสองข้าง","การแก้สมการที่มีวงเล็บ","การสร้างสมการจากโจทย์ปัญหา","โจทย์ปัญหาสมการเชิงเส้น"]},
+    {topic:"พื้นฐานเรขาคณิต",indicator:"ค 2.1 ม.1/1-5",subs:["จุด เส้นตรง รังสี ส่วนของเส้นตรง","มุมและชนิดของมุม","มุมที่เกิดจากเส้นตัดกัน","เส้นขนานและมุมที่เกี่ยวข้อง","รูปสามเหลี่ยมและสมบัติ"]},
+    {topic:"สถิติเบื้องต้น",indicator:"ค 3.1 ม.1/1-3",subs:["การเก็บรวบรวมข้อมูลและตารางความถี่","แผนภูมิแท่ง","ค่าเฉลี่ยเลขคณิต","มัธยฐาน","ฐานนิยม","การเลือกใช้ค่ากลางที่เหมาะสม"]},
   ],
   "ม.2":[
-    {topic:"อัตราส่วนและร้อยละ",indicator:"ค 1.1 ม.2/1-4",subs:[
-      "ความหมายและการเขียนอัตราส่วน",
-      "อัตราส่วนที่เท่ากันและการหาค่า",
-      "สัดส่วน — การแก้โจทย์สัดส่วน",
-      "ร้อยละ — การแปลงและการคำนวณ",
-      "โจทย์ปัญหากำไรและขาดทุน",
-      "โจทย์ปัญหาดอกเบี้ยและส่วนลด",
-      "การประยุกต์อัตราส่วนในชีวิตจริง",
-    ]},
-    {topic:"เลขยกกำลัง",indicator:"ค 1.1 ม.2/5-7",subs:[
-      "ความหมายของเลขยกกำลัง",
-      "การคูณเลขยกกำลัง (เลขฐานเดียวกัน)",
-      "การหารเลขยกกำลัง",
-      "เลขยกกำลังที่มีเลขชี้กำลังเป็นศูนย์และลบ",
-      "สัญกรณ์วิทยาศาสตร์",
-      "โจทย์ประยุกต์เลขยกกำลัง",
-    ]},
-    {topic:"พหุนามและการแยกตัวประกอบ",indicator:"ค 4.1 ม.2/1-4",subs:[
-      "เอกนาม — ความหมายและการดำเนินการ",
-      "พหุนาม — การบวกและลบ",
-      "การคูณพหุนาม",
-      "การแยกตัวประกอบโดยดึงตัวร่วม",
-      "การแยกตัวประกอบรูปผลต่างของกำลังสอง",
-      "การแยกตัวประกอบพหุนามดีกรีสอง",
-    ]},
-    {topic:"ระบบสมการเชิงเส้นสองตัวแปร",indicator:"ค 4.1 ม.2/5-7",subs:[
-      "กราฟของสมการเชิงเส้นสองตัวแปร",
-      "ระบบสมการ — ความหมายและคำตอบ",
-      "การแก้ระบบสมการวิธีแทนค่า",
-      "การแก้ระบบสมการวิธีกำจัด",
-      "โจทย์ปัญหาระบบสมการสองตัวแปร",
-    ]},
-    {topic:"พื้นที่ผิวและปริมาตร",indicator:"ค 2.1 ม.2/1-5",subs:[
-      "พื้นที่ผิวและปริมาตรของปริซึม",
-      "พื้นที่ผิวและปริมาตรของทรงกระบอก",
-      "พื้นที่ผิวและปริมาตรของพีระมิด",
-      "พื้นที่ผิวและปริมาตรของกรวย",
-      "พื้นที่ผิวและปริมาตรของทรงกลม",
-      "โจทย์ปัญหาพื้นที่ผิวและปริมาตรรวม",
-    ]},
-    {topic:"การแปลงทางเรขาคณิต",indicator:"ค 2.2 ม.2/1-3",subs:[
-      "การเลื่อนขนาน (Translation) — หลักการและการหาภาพ",
-      "การสะท้อน (Reflection) — สะท้อนแกน x แกน y",
-      "การหมุน (Rotation) — หมุนรอบจุดกำเนิด",
-      "การแปลงทางเรขาคณิตผสม",
-    ]},
-    {topic:"สถิติ ม.2",indicator:"ค 3.1 ม.2/1-3",subs:[
-      "ฮิสโทแกรมและรูปหลายเหลี่ยมความถี่",
-      "แผนภูมิความถี่สะสม",
-      "ค่าเฉลี่ยจากตารางแจกแจงความถี่",
-      "การวิเคราะห์และเปรียบเทียบข้อมูล",
-    ]},
+    {topic:"อัตราส่วนและร้อยละ",indicator:"ค 1.1 ม.2/1-4",subs:["ความหมายและการเขียนอัตราส่วน","อัตราส่วนที่เท่ากัน","สัดส่วนและการแก้โจทย์","ร้อยละและการแปลง","โจทย์กำไรและขาดทุน","โจทย์ดอกเบี้ยและส่วนลด"]},
+    {topic:"เลขยกกำลัง",indicator:"ค 1.1 ม.2/5-7",subs:["ความหมายของเลขยกกำลัง","การคูณเลขยกกำลังฐานเดียวกัน","การหารเลขยกกำลัง","เลขชี้กำลังเป็นศูนย์และลบ","สัญกรณ์วิทยาศาสตร์"]},
+    {topic:"พหุนามและการแยกตัวประกอบ",indicator:"ค 4.1 ม.2/1-4",subs:["เอกนามและการดำเนินการ","พหุนามและการบวกลบ","การคูณพหุนาม","การแยกตัวประกอบโดยดึงตัวร่วม","การแยกตัวประกอบผลต่างกำลังสอง","การแยกตัวประกอบพหุนามดีกรีสอง"]},
+    {topic:"ระบบสมการเชิงเส้นสองตัวแปร",indicator:"ค 4.1 ม.2/5-7",subs:["กราฟของสมการเชิงเส้นสองตัวแปร","ระบบสมการและคำตอบ","การแก้ระบบสมการวิธีแทนค่า","การแก้ระบบสมการวิธีกำจัด","โจทย์ปัญหาระบบสมการ"]},
+    {topic:"พื้นที่ผิวและปริมาตร",indicator:"ค 2.1 ม.2/1-5",subs:["พื้นที่ผิวและปริมาตรปริซึม","พื้นที่ผิวและปริมาตรทรงกระบอก","พื้นที่ผิวและปริมาตรพีระมิด","พื้นที่ผิวและปริมาตรกรวย","พื้นที่ผิวและปริมาตรทรงกลม"]},
+    {topic:"การแปลงทางเรขาคณิต",indicator:"ค 2.2 ม.2/1-3",subs:["การเลื่อนขนาน (Translation)","การสะท้อน (Reflection)","การหมุน (Rotation)","การแปลงผสม"]},
   ],
   "ม.3":[
-    {topic:"ทฤษฎีบทพีทาโกรัส",indicator:"ค 2.1 ม.3/1-3",subs:[
-      "ทฤษฎีบทพีทาโกรัส — ความหมายและการพิสูจน์เบื้องต้น",
-      "บทกลับของทฤษฎีบทพีทาโกรัส",
-      "การหาด้านที่ไม่ทราบค่าในสามเหลี่ยมมุมฉาก",
-      "Triple พีทาโกรัส (3-4-5, 5-12-13 ฯลฯ)",
-      "การประยุกต์ทฤษฎีบทพีทาโกรัสในชีวิตจริง",
-    ]},
-    {topic:"ความคล้าย",indicator:"ค 2.1 ม.3/4-6",subs:[
-      "รูปที่คล้ายกัน — ความหมายและสมบัติ",
-      "เงื่อนไขการเป็นสามเหลี่ยมคล้าย (AA, SAS, SSS)",
-      "อัตราส่วนของความยาวและพื้นที่ในรูปคล้าย",
-      "การนำความคล้ายไปใช้หาระยะทาง",
-    ]},
-    {topic:"วงกลม",indicator:"ค 2.1 ม.3/7-10",subs:[
-      "ส่วนประกอบของวงกลม — รัศมี เส้นผ่านศูนย์กลาง คอร์ด",
-      "เส้นสัมผัสวงกลมและสมบัติ",
-      "มุมที่จุดศูนย์กลางและมุมที่จารึกในวงกลม",
-      "ความสัมพันธ์ระหว่างคอร์ดกับมุมกลาง",
-      "โจทย์ปัญหาเกี่ยวกับวงกลม",
-    ]},
-    {topic:"สมการกำลังสอง",indicator:"ค 4.1 ม.3/1-4",subs:[
-      "ความหมายและรูปทั่วไปของสมการกำลังสอง",
-      "การแก้สมการกำลังสองโดยการแยกตัวประกอบ",
-      "การแก้สมการกำลังสองโดยการทำให้เป็นกำลังสองสมบูรณ์",
-      "การแก้สมการกำลังสองโดยใช้สูตร (-b±√Δ)/2a",
-      "ตัวแยกแยะ (Discriminant) และจำนวนคำตอบ",
-      "โจทย์ปัญหาสมการกำลังสอง",
-    ]},
-    {topic:"ความน่าจะเป็น",indicator:"ค 3.1 ม.3/1-4",subs:[
-      "การทดลองสุ่มและปริภูมิตัวอย่าง",
-      "เหตุการณ์และการเขียนแผนภาพต้นไม้",
-      "ความน่าจะเป็นของเหตุการณ์",
-      "ความน่าจะเป็นของเหตุการณ์เสริมกัน",
-      "โจทย์ปัญหาความน่าจะเป็น",
-    ]},
-    {topic:"กราฟและความสัมพันธ์",indicator:"ค 4.2 ม.3/1-3",subs:[
-      "ระนาบพิกัดฉาก — การพล็อตจุด",
-      "กราฟของสมการเชิงเส้น y = mx + b",
-      "ความชันและจุดตัดแกน",
-      "การอ่านและแปลความหมายกราฟในชีวิตจริง",
-    ]},
+    {topic:"ทฤษฎีบทพีทาโกรัส",indicator:"ค 2.1 ม.3/1-3",subs:["ทฤษฎีบทพีทาโกรัสและบทกลับ","การหาด้านในสามเหลี่ยมมุมฉาก","Triple พีทาโกรัส","การประยุกต์ในชีวิตจริง"]},
+    {topic:"ความคล้าย",indicator:"ค 2.1 ม.3/4-6",subs:["รูปคล้ายและสมบัติ","เงื่อนไขสามเหลี่ยมคล้าย (AA, SAS, SSS)","อัตราส่วนความยาวและพื้นที่","การประยุกต์หาระยะทาง"]},
+    {topic:"วงกลม",indicator:"ค 2.1 ม.3/7-10",subs:["ส่วนประกอบวงกลม คอร์ด","เส้นสัมผัสวงกลม","มุมที่จุดศูนย์กลางและมุมที่จารึก","โจทย์ปัญหาวงกลม"]},
+    {topic:"สมการกำลังสอง",indicator:"ค 4.1 ม.3/1-4",subs:["ความหมายและรูปทั่วไป","การแก้สมการโดยการแยกตัวประกอบ","การแก้สมการโดยทำกำลังสองสมบูรณ์","การแก้สมการโดยใช้สูตร (-b±√Δ)/2a","ตัวแยกแยะและจำนวนคำตอบ","โจทย์ปัญหาสมการกำลังสอง"]},
+    {topic:"ความน่าจะเป็น",indicator:"ค 3.1 ม.3/1-4",subs:["การทดลองสุ่มและปริภูมิตัวอย่าง","แผนภาพต้นไม้","ความน่าจะเป็นของเหตุการณ์","เหตุการณ์เสริมกัน","โจทย์ปัญหาความน่าจะเป็น"]},
+    {topic:"กราฟและความสัมพันธ์",indicator:"ค 4.2 ม.3/1-3",subs:["ระนาบพิกัดฉาก","กราฟ y = mx + b","ความชันและจุดตัดแกน","การแปลความหมายกราฟ"]},
   ],
   "ม.4":[
-    {topic:"เซต",indicator:"ค 4.1 ม.4/1-5",subs:[
-      "ความหมายของเซตและการเขียนแสดงเซต",
-      "สมาชิกของเซต (∈ และ ∉)",
-      "เซตที่เท่ากัน เซตว่าง และเอกภพสัมพัทธ์",
-      "สับเซตและสับเซตแท้",
-      "เพาเวอร์เซตและจำนวนสับเซต",
-      "ยูเนียน (∪) ของเซต",
-      "อินเตอร์เซกชัน (∩) ของเซต",
-      "คอมพลีเมนต์ของเซต (A')",
-      "ผลต่างของเซต (A \ B)",
-      "แผนภาพเวนน์-ออยเลอร์",
-      "จำนวนสมาชิกและการประยุกต์ n(A∪B)",
-    ]},
-    {topic:"ตรรกศาสตร์",indicator:"ค 4.1 ม.4/6-10",subs:[
-      "ประพจน์และค่าความจริง",
-      "การเชื่อม 'และ' (∧) — ตารางค่าความจริง",
-      "การเชื่อม 'หรือ' (∨) — ตารางค่าความจริง",
-      "การเชื่อม 'ถ้า...แล้ว...' (→) — ตารางค่าความจริง",
-      "นิเสธ (~p) และตารางค่าความจริง",
-      "ประพจน์ที่สมมูลกัน",
-      "สัจนิรันดร์และการตรวจสอบ",
-      "การอ้างเหตุผล — สมเหตุสมผลหรือไม่",
-    ]},
-    {topic:"จำนวนจริง",indicator:"ค 1.1 ม.4/1-6",subs:[
-      "ระบบจำนวน — จำนวนนับ จำนวนเต็ม ตรรกยะ อตรรกยะ",
-      "จำนวนตรรกยะและการแสดงในรูปทศนิยม",
-      "จำนวนอตรรกยะ — ตัวอย่างและสมบัติ",
-      "ค่าสัมบูรณ์และการแก้สมการ |x| = a",
-      "อสมการเชิงเส้นตัวแปรเดียว",
-      "อสมการค่าสัมบูรณ์",
-      "การแสดงคำตอบบนเส้นจำนวนและในรูปช่วง",
-    ]},
-    {topic:"ความสัมพันธ์และฟังก์ชัน",indicator:"ค 4.2 ม.4/1-5",subs:[
-      "คู่อันดับและผลคูณคาร์ทีเซียน",
-      "ความสัมพันธ์ — โดเมน เรนจ์ ภาพ",
-      "นิยามฟังก์ชันและการตรวจสอบ",
-      "ฟังก์ชันหนึ่งต่อหนึ่งและฟังก์ชันทั่วถึง",
-      "ฟังก์ชันเชิงเส้น y = mx + b",
-      "ฟังก์ชันกำลังสอง y = ax² + bx + c",
-      "กราฟพาราโบลาและแกนสมมาตร",
-    ]},
-    {topic:"เลขยกกำลัง (ขั้นสูง)",indicator:"ค 1.1 ม.4/7-9",subs:[
-      "เลขยกกำลังที่มีเลขชี้กำลังเป็นเศษส่วน",
-      "รากที่ n — นิยามและสมบัติ",
-      "การดำเนินการกับนิพจน์ที่มีรากและเลขยกกำลัง",
-      "การทำให้ตัวส่วนปราศจากรากที่ไม่ลงตัว",
-    ]},
+    {topic:"เซต",indicator:"ค 4.1 ม.4/1-5",subs:["ความหมายของเซตและการแสดงเซต","สมาชิก ∈ และ ∉","เซตว่างและเอกภพสัมพัทธ์","สับเซตและสับเซตแท้","เพาเวอร์เซต","ยูเนียน (∪)","อินเตอร์เซกชัน (∩)","คอมพลีเมนต์ (A')","ผลต่างของเซต","แผนภาพเวนน์-ออยเลอร์","จำนวนสมาชิก n(A∪B)"]},
+    {topic:"ตรรกศาสตร์",indicator:"ค 4.1 ม.4/6-10",subs:["ประพจน์และค่าความจริง","การเชื่อม 'และ' (∧)","การเชื่อม 'หรือ' (∨)","การเชื่อม 'ถ้า...แล้ว...' (→)","นิเสธ (~p)","ประพจน์ที่สมมูลกัน","สัจนิรันดร์","การอ้างเหตุผล"]},
+    {topic:"จำนวนจริง",indicator:"ค 1.1 ม.4/1-6",subs:["ระบบจำนวนและชนิด","จำนวนตรรกยะและทศนิยม","จำนวนอตรรกยะ","ค่าสัมบูรณ์ |x|","อสมการเชิงเส้น","อสมการค่าสัมบูรณ์","การแสดงคำตอบในรูปช่วง"]},
+    {topic:"ความสัมพันธ์และฟังก์ชัน",indicator:"ค 4.2 ม.4/1-5",subs:["คู่อันดับและผลคูณคาร์ทีเซียน","ความสัมพันธ์ โดเมน เรนจ์","นิยามฟังก์ชัน","ฟังก์ชันหนึ่งต่อหนึ่ง","ฟังก์ชันเชิงเส้น","ฟังก์ชันกำลังสอง","กราฟพาราโบลา"]},
+    {topic:"เลขยกกำลังขั้นสูง",indicator:"ค 1.1 ม.4/7-9",subs:["เลขยกกำลังเศษส่วน","รากที่ n","การดำเนินการกับนิพจน์อตรรกยะ","การทำตัวส่วนปราศจากราก"]},
   ],
   "ม.5":[
-    {topic:"ฟังก์ชันตรีโกณมิติ",indicator:"ค 4.2 ม.5/1-6",subs:[
-      "อัตราส่วนตรีโกณมิติ sin cos tan ในสามเหลี่ยมมุมฉาก",
-      "csc sec cot — ฟังก์ชันส่วนกลับ",
-      "มุมในหน่วยเรเดียนและการแปลงหน่วย",
-      "วงกลมหนึ่งหน่วยและค่า sin cos ของมุมต่างๆ",
-      "กราฟ y = sin x และ y = cos x",
-      "กราฟ y = tan x",
-      "เอกลักษณ์ตรีโกณมิติพื้นฐาน",
-      "สมการตรีโกณมิติ",
-    ]},
-    {topic:"ฟังก์ชันชี้กำลังและลอการิทึม",indicator:"ค 4.2 ม.5/7-10",subs:[
-      "ฟังก์ชันชี้กำลัง y = aˣ และกราฟ",
-      "ลอการิทึม — นิยามและความสัมพันธ์กับเลขยกกำลัง",
-      "สมบัติของลอการิทึม (log ab, log a/b, log aⁿ)",
-      "การเปลี่ยนฐานของลอการิทึม",
-      "สมการชี้กำลัง",
-      "สมการลอการิทึม",
-      "การประยุกต์ใช้ในชีวิตจริง (การเติบโต การสลายตัว)",
-    ]},
-    {topic:"ลำดับและอนุกรม",indicator:"ค 1.2 ม.5/1-6",subs:[
-      "ลำดับ — ความหมายและพจน์ทั่วไป",
-      "ลำดับเลขคณิต — พจน์ทั่วไปและผลบวก",
-      "ลำดับเรขาคณิต — พจน์ทั่วไปและผลบวก",
-      "อนุกรมอนันต์ที่ลู่เข้า",
-      "สัญลักษณ์ซิกมา Σ",
-      "โจทย์ประยุกต์ลำดับและอนุกรม",
-    ]},
-    {topic:"สถิติขั้นสูง",indicator:"ค 3.1 ม.5/1-5",subs:[
-      "เปอร์เซนไทล์และควอร์ไทล์",
-      "พิสัยควอร์ไทล์ (IQR)",
-      "ความแปรปรวนและส่วนเบี่ยงเบนมาตรฐาน",
-      "การแจกแจงปกติเบื้องต้น",
-      "สัมประสิทธิ์สหสัมพันธ์",
-      "การถดถอยเชิงเส้น",
-    ]},
-    {topic:"ความน่าจะเป็นขั้นสูง",indicator:"ค 3.2 ม.5/1-4",subs:[
-      "กฎการนับเบื้องต้น — กฎการคูณ",
-      "การเรียงสับเปลี่ยน P(n,r)",
-      "การจัดหมู่ C(n,r)",
-      "ความน่าจะเป็นของเหตุการณ์รวม",
-      "ทฤษฎีบทเบย์ (Bayes)",
-    ]},
-    {topic:"เมทริกซ์",indicator:"ค 4.1 ม.5/1-5",subs:[
-      "เมทริกซ์ — ความหมายและชนิด",
-      "การบวกและลบเมทริกซ์",
-      "การคูณเมทริกซ์",
-      "ดีเทอร์มิแนนต์ของเมทริกซ์ 2×2 และ 3×3",
-      "เมทริกซ์ผกผัน",
-      "การแก้ระบบสมการด้วยเมทริกซ์ผกผัน",
-    ]},
+    {topic:"ฟังก์ชันตรีโกณมิติ",indicator:"ค 4.2 ม.5/1-6",subs:["sin cos tan ในสามเหลี่ยมมุมฉาก","csc sec cot","มุมในหน่วยเรเดียน","วงกลมหนึ่งหน่วย","กราฟ y=sin x และ y=cos x","กราฟ y=tan x","เอกลักษณ์ตรีโกณมิติ","สมการตรีโกณมิติ"]},
+    {topic:"ฟังก์ชันชี้กำลังและลอการิทึม",indicator:"ค 4.2 ม.5/7-10",subs:["ฟังก์ชันชี้กำลัง y=aˣ","ลอการิทึมและสมบัติ","การเปลี่ยนฐานลอการิทึม","สมการชี้กำลัง","สมการลอการิทึม","การประยุกต์ใช้"]},
+    {topic:"ลำดับและอนุกรม",indicator:"ค 1.2 ม.5/1-6",subs:["ลำดับและพจน์ทั่วไป","ลำดับเลขคณิต","ผลบวกลำดับเลขคณิต","ลำดับเรขาคณิต","ผลบวกลำดับเรขาคณิต","อนุกรมอนันต์","สัญลักษณ์ Σ","โจทย์ประยุกต์"]},
+    {topic:"สถิติขั้นสูง",indicator:"ค 3.1 ม.5/1-5",subs:["เปอร์เซนไทล์และควอร์ไทล์","พิสัยควอร์ไทล์ (IQR)","ความแปรปรวนและส่วนเบี่ยงเบนมาตรฐาน","การแจกแจงปกติ","สัมประสิทธิ์สหสัมพันธ์","การถดถอยเชิงเส้น"]},
+    {topic:"ความน่าจะเป็นขั้นสูง",indicator:"ค 3.2 ม.5/1-4",subs:["กฎการคูณ","การเรียงสับเปลี่ยน P(n,r)","การจัดหมู่ C(n,r)","ความน่าจะเป็นรวม","ทฤษฎีบทเบย์"]},
+    {topic:"เมทริกซ์",indicator:"ค 4.1 ม.5/1-5",subs:["เมทริกซ์และชนิด","การบวกลบเมทริกซ์","การคูณเมทริกซ์","ดีเทอร์มิแนนต์ 2×2 และ 3×3","เมทริกซ์ผกผัน","การแก้ระบบสมการด้วยเมทริกซ์"]},
   ],
   "ม.6":[
-    {topic:"ลิมิตและความต่อเนื่อง",indicator:"ค 4.2 ม.6/1-4",subs:[
-      "ความหมายของลิมิตอย่างไม่เป็นทางการ",
-      "การคำนวณลิมิตโดยการแทนค่าโดยตรง",
-      "การคำนวณลิมิตโดยการแยกตัวประกอบ",
-      "ลิมิตที่ไม่มีค่า (ลิมิตอนันต์)",
-      "ความต่อเนื่องของฟังก์ชัน ณ จุดหนึ่ง",
-    ]},
-    {topic:"อนุพันธ์",indicator:"ค 4.2 ม.6/5-9",subs:[
-      "ความหมายของอนุพันธ์และอัตราการเปลี่ยนแปลง",
-      "กฎการหาอนุพันธ์ (Power Rule, Sum Rule)",
-      "กฎลูกโซ่ (Chain Rule)",
-      "อนุพันธ์ของฟังก์ชันตรีโกณมิติ",
-      "อนุพันธ์ของฟังก์ชันชี้กำลังและลอการิทึม",
-      "การหาค่าสูงสุด-ต่ำสุด (Optimization)",
-      "โจทย์อัตราการเปลี่ยนแปลงสัมพันธ์กัน",
-    ]},
-    {topic:"ปริพันธ์",indicator:"ค 4.2 ม.6/10-13",subs:[
-      "ปริพันธ์ไม่จำกัดเขต — ความหมายและกฎ",
-      "ปริพันธ์โดยการแทนค่า (Substitution)",
-      "ทฤษฎีบทมูลฐานของแคลคูลัส",
-      "ปริพันธ์จำกัดเขตและการคำนวณ",
-      "การหาพื้นที่ใต้กราฟ",
-      "การหาพื้นที่ระหว่างสองกราฟ",
-    ]},
-    {topic:"เวกเตอร์",indicator:"ค 2.2 ม.6/1-5",subs:[
-      "เวกเตอร์ — ความหมายและการแทนเวกเตอร์",
-      "การบวก ลบ เวกเตอร์ และการคูณด้วยสเกลาร์",
-      "เวกเตอร์หน่วยและโมดูลัส",
-      "ผลคูณจุด (Dot Product) และมุมระหว่างเวกเตอร์",
-      "เวกเตอร์ในสามมิติ",
-      "การประยุกต์เวกเตอร์ในงาน",
-    ]},
-    {topic:"จำนวนเชิงซ้อน",indicator:"ค 1.1 ม.6/1-5",subs:[
-      "ความหมายของจำนวนเชิงซ้อน a + bi",
-      "การบวก ลบ คูณ หาร จำนวนเชิงซ้อน",
-      "สังยุค (Conjugate) และโมดูลัส",
-      "รูปแบบเชิงขั้ว r(cosθ + i sinθ)",
-      "ทฤษฎีบทเดอมัวฟร์และรากของจำนวนเชิงซ้อน",
-    ]},
-    {topic:"เรขาคณิตเชิงวิเคราะห์",indicator:"ค 2.2 ม.6/6-10",subs:[
-      "ระยะทางระหว่างสองจุดและจุดกึ่งกลาง",
-      "สมการเส้นตรงในรูปต่างๆ",
-      "ระยะจากจุดถึงเส้นตรง",
-      "วงกลม — สมการและการหาค่า",
-      "พาราโบลา — สมการและสมบัติ",
-      "วงรีและไฮเพอร์โบลา — สมการพื้นฐาน",
-    ]},
+    {topic:"ลิมิตและความต่อเนื่อง",indicator:"ค 4.2 ม.6/1-4",subs:["ความหมายของลิมิต","การคำนวณลิมิตแทนค่าตรง","การคำนวณลิมิตโดยแยกตัวประกอบ","ลิมิตอนันต์","ความต่อเนื่องของฟังก์ชัน"]},
+    {topic:"อนุพันธ์",indicator:"ค 4.2 ม.6/5-9",subs:["ความหมายอนุพันธ์","Power Rule และ Sum Rule","Chain Rule","อนุพันธ์ฟังก์ชันตรีโกณมิติ","อนุพันธ์ชี้กำลังและลอการิทึม","การหาค่าสูงสุด-ต่ำสุด","โจทย์อัตราการเปลี่ยนแปลง"]},
+    {topic:"ปริพันธ์",indicator:"ค 4.2 ม.6/10-13",subs:["ปริพันธ์ไม่จำกัดเขต","การแทนค่า (Substitution)","ทฤษฎีบทมูลฐาน","ปริพันธ์จำกัดเขต","การหาพื้นที่ใต้กราฟ","พื้นที่ระหว่างสองกราฟ"]},
+    {topic:"เวกเตอร์",indicator:"ค 2.2 ม.6/1-5",subs:["เวกเตอร์และการแทน","การบวกลบเวกเตอร์","เวกเตอร์หน่วยและโมดูลัส","ผลคูณจุด (Dot Product)","เวกเตอร์ในสามมิติ","การประยุกต์"]},
+    {topic:"จำนวนเชิงซ้อน",indicator:"ค 1.1 ม.6/1-5",subs:["ความหมาย a+bi","การบวก ลบ คูณ หาร","สังยุคและโมดูลัส","รูปแบบเชิงขั้ว","ทฤษฎีบทเดอมัวฟร์"]},
+    {topic:"เรขาคณิตเชิงวิเคราะห์",indicator:"ค 2.2 ม.6/6-10",subs:["ระยะสองจุดและจุดกึ่งกลาง","สมการเส้นตรง","ระยะจากจุดถึงเส้นตรง","วงกลมและสมการ","พาราโบลา","วงรีและไฮเพอร์โบลา"]},
   ],
 };
 
 // ===== STATE =====
 let GKEY="",TPASS="",studentName="",selectedGrade="",selectedTopic=null,selectedSubtopic="";
-let phase="intro",qIndex=0,correct=0,wrong=0,answers=[];
+let phase="intro",qIndex=0,correct=0,wrong=0,answers=[],exerciseData="";
 let mcqLevel=1,consCorrect=0,consWrong=0;
 const TOTAL_Q=10;
-const DB_KEY='mathscan_results';
+const DB_KEY='mathscan_v3';
 
-// ===== INIT =====
 window.onload=()=>{
-  const k=localStorage.getItem('mskey');
-  const p=localStorage.getItem('msteacher');
+  const k=localStorage.getItem('mskey3');
+  const p=localStorage.getItem('msteacher3');
   if(k&&k.length>10){GKEY=k;TPASS=p||'teacher1234';showApp();}
 };
 function saveKey(){
@@ -670,178 +423,94 @@ function saveKey(){
   const p=document.getElementById('teacherPwInput').value.trim();
   if(!k.startsWith('sk-ant-')){document.getElementById('keyError').textContent='❌ Key ต้องขึ้นต้นด้วย sk-ant-';return;}
   GKEY=k;TPASS=p||'teacher1234';
-  localStorage.setItem('mskey',k);
-  localStorage.setItem('msteacher',TPASS);
+  localStorage.setItem('mskey3',k);localStorage.setItem('msteacher3',TPASS);
   showApp();
 }
-function showApp(){
-  document.getElementById('keyModal').style.display='none';
-  document.getElementById('app').style.display='flex';
-  setTimeout(greetUser,300);
-}
-function changeKey(){localStorage.removeItem('mskey');location.reload();}
+function showApp(){document.getElementById('keyModal').style.display='none';document.getElementById('app').style.display='flex';setTimeout(greetUser,300);}
+function changeKey(){localStorage.removeItem('mskey3');location.reload();}
 
-// ===== TEACHER DASH =====
-function openTeacherDash(){
-  document.getElementById('passModal').style.display='flex';
-  document.getElementById('passInput').value='';
-  document.getElementById('passErr').textContent='';
-  setTimeout(()=>document.getElementById('passInput').focus(),100);
-}
-function closePassModal(){document.getElementById('passModal').style.display='none';}
-function checkTeacherPass(){
-  const p=document.getElementById('passInput').value;
-  if(p===TPASS){closePassModal();renderDash();document.getElementById('dashModal').classList.add('open');}
-  else{document.getElementById('passErr').textContent='❌ รหัสผ่านไม่ถูกต้อง';}
-}
+// ===== TEACHER =====
+function openDash(){document.getElementById('passModal').style.display='flex';document.getElementById('passInput').value='';document.getElementById('passErr').textContent='';}
+function closePass(){document.getElementById('passModal').style.display='none';}
+function checkPass(){const p=document.getElementById('passInput').value;if(p===TPASS){closePass();renderDash();document.getElementById('dashModal').classList.add('open');}else{document.getElementById('passErr').textContent='❌ รหัสผ่านไม่ถูกต้อง';}}
 function closeDash(){document.getElementById('dashModal').classList.remove('open');}
-
-function getResults(){
-  try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]');}catch{return [];}
-}
-function saveResult(r){
-  const arr=getResults();arr.push(r);
-  localStorage.setItem(DB_KEY,JSON.stringify(arr));
-}
-function clearData(){
-  if(confirm('ล้างข้อมูลนักเรียนทั้งหมด?')){
-    localStorage.removeItem(DB_KEY);renderDash();
-  }
-}
+function getResults(){try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]');}catch{return[];}}
+function saveResult(r){const a=getResults();a.push(r);localStorage.setItem(DB_KEY,JSON.stringify(a));}
+function clearData(){if(confirm('ล้างข้อมูลนักเรียนทั้งหมด?')){localStorage.removeItem(DB_KEY);renderDash();}}
 
 function renderDash(){
-  const results=getResults();
-  const dash=document.getElementById('dashModal');
-
-  // Summary
-  const avg=results.length?Math.round(results.reduce((s,r)=>s+r.pct,0)/results.length):0;
-  const high=results.filter(r=>r.pct>=80).length;
-  const mid=results.filter(r=>r.pct>=60&&r.pct<80).length;
-  const low=results.filter(r=>r.pct<60).length;
+  const R=getResults();
+  const avg=R.length?Math.round(R.reduce((s,r)=>s+r.pct,0)/R.length):0;
+  const high=R.filter(r=>r.pct>=80).length;
+  const low=R.filter(r=>r.pct<60).length;
   document.getElementById('summaryGrid').innerHTML=`
-    <div class="sum-card"><div class="sum-num" style="color:var(--blue)">${results.length}</div><div class="sum-lbl">นักเรียนทั้งหมด</div></div>
-    <div class="sum-card"><div class="sum-num" style="color:var(--text)">${avg}%</div><div class="sum-lbl">คะแนนเฉลี่ย</div></div>
-    <div class="sum-card"><div class="sum-num" style="color:var(--green2)">${high}</div><div class="sum-lbl">ระดับสูง (≥80%)</div></div>
-    <div class="sum-card"><div class="sum-num" style="color:var(--red2)">${low}</div><div class="sum-lbl">ต้องพัฒนา (<60%)</div></div>
-  `;
-
-  // Bar chart
-  const barChart=document.getElementById('barChart');
-  if(!results.length){barChart.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px;">ยังไม่มีข้อมูล</div>';return;}
-  barChart.innerHTML=results.map(r=>{
-    const color=r.pct>=80?'var(--green2)':r.pct>=60?'var(--warn2)':'var(--red2)';
-    return `<div class="bar-row">
-      <div class="bar-name">${r.name}</div>
-      <div class="bar-wrap"><div class="bar-fill" style="width:${r.pct}%;background:${color};">
-        <span class="bar-pct">${r.pct}%</span></div></div>
-      <div class="bar-level">${r.grade} ${r.subtopic.substring(0,8)}</div>
-    </div>`;
-  }).join('');
-
-  // Weak topics
-  const topicCount={};
-  results.forEach(r=>{
-    (r.wrongTopics||[]).forEach(t=>{topicCount[t]=(topicCount[t]||0)+1;});
-  });
-  const sorted=Object.entries(topicCount).sort((a,b)=>b[1]-a[1]).slice(0,6);
-  const maxCount=sorted[0]?.[1]||1;
-  document.getElementById('weakGrid').innerHTML=sorted.length
-    ? sorted.map(([t,c])=>`
-      <div class="weak-item">
-        <div class="weak-topic">${t}</div>
-        <div class="weak-count">นักเรียนผิด ${c} คน</div>
-        <div class="weak-bar"><div class="weak-bar-fill" style="width:${Math.round(c/maxCount*100)}%"></div></div>
-      </div>`).join('')
-    : '<div style="color:var(--muted);font-size:13px;">ยังไม่มีข้อมูล</div>';
-
-  // Student table
-  document.getElementById('stuBody').innerHTML=results.map((r,i)=>{
-    const lvlClass=r.pct>=80?'high':r.pct>=60?'mid':'low';
-    const lvlText=r.pct>=80?'สูง':r.pct>=60?'ปานกลาง':'ต้องพัฒนา';
-    const dots=[...Array(10)].map((_,j)=>{
-      const c=j<r.correct?'var(--green2)':j<r.total?'var(--red2)':'var(--border2)';
-      return `<div class="score-dot" style="background:${c}"></div>`;
-    }).join('');
-    return `<tr>
-      <td style="color:var(--muted)">${i+1}</td>
-      <td style="font-weight:600;color:var(--text)">${r.name}</td>
-      <td>${r.grade}</td>
-      <td style="font-size:12px">${r.subtopic}</td>
-      <td><div class="score-bar"><span style="font-family:'Space Mono',monospace;font-size:13px;color:${r.pct>=80?'var(--green2)':r.pct>=60?'var(--warn2)':'var(--red2)'}">${r.pct}%</span><div class="score-dots">${dots}</div></div></td>
-      <td><span class="level-badge ${lvlClass}">${lvlText}</span></td>
-      <td style="color:var(--muted);font-size:12px">${r.time}</td>
-    </tr>`;
-  }).join('');
+    <div class="sum-card"><div class="sum-num" style="color:var(--blue)">${R.length}</div><div class="sum-lbl">นักเรียนทั้งหมด</div></div>
+    <div class="sum-card"><div class="sum-num">${avg}%</div><div class="sum-lbl">คะแนนเฉลี่ย</div></div>
+    <div class="sum-card"><div class="sum-num" style="color:var(--green)">${high}</div><div class="sum-lbl">ระดับดี (≥80%)</div></div>
+    <div class="sum-card"><div class="sum-num" style="color:var(--red)">${low}</div><div class="sum-lbl">ต้องพัฒนา (<60%)</div></div>`;
+  const bc=document.getElementById('barChart');
+  if(!R.length){bc.innerHTML='<div style="color:var(--muted);padding:12px;font-size:14px;">ยังไม่มีข้อมูล</div>';return;}
+  bc.innerHTML=R.map(r=>{const c=r.pct>=80?'var(--green2)':r.pct>=60?'var(--warn)':'var(--red)';return`<div class="bar-row"><div class="bar-name">${r.name}</div><div class="bar-wrap"><div class="bar-fill" style="width:${r.pct}%;background:${c};"><span class="bar-pct">${r.pct}%</span></div></div><div class="bar-level">${r.grade}</div></div>`;}).join('');
+  const tc={};R.forEach(r=>(r.wrongTopics||[]).forEach(t=>{tc[t]=(tc[t]||0)+1;}));
+  const sw=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const mx=sw[0]?.[1]||1;
+  document.getElementById('weakGrid').innerHTML=sw.length?sw.map(([t,c])=>`<div class="weak-item"><div class="weak-topic">${t}</div><div class="weak-count">นักเรียนผิด ${c} คน</div><div class="weak-bar"><div class="weak-bar-fill" style="width:${Math.round(c/mx*100)}%"></div></div></div>`).join(''):'<div style="color:var(--muted);font-size:14px;padding:8px;">ยังไม่มีข้อมูล</div>';
+  document.getElementById('stuBody').innerHTML=R.map((r,i)=>{const lc=r.pct>=80?'high':r.pct>=60?'mid':'low';const lt=r.pct>=80?'ดี':r.pct>=60?'ปานกลาง':'ต้องพัฒนา';return`<tr><td style="color:var(--muted)">${i+1}</td><td style="font-weight:600">${r.name}</td><td>${r.grade}</td><td style="font-size:13px">${r.subtopic}</td><td style="font-family:'Space Mono',monospace;font-weight:700;color:${r.pct>=80?'var(--green)':r.pct>=60?'var(--warn)':'var(--red)'}">${r.pct}%</td><td><span class="level-badge ${lc}">${lt}</span></td><td style="color:var(--muted);font-size:12px">${r.time}</td></tr>`;}).join('');
 }
 
 function exportCSV(){
-  const results=getResults();
-  if(!results.length){alert('ยังไม่มีข้อมูล');return;}
-  const rows=[['ชื่อ','ระดับชั้น','หัวข้อหลัก','หัวข้อย่อย','คะแนน%','ถูก','ผิด','ระดับ','เวลา']];
-  results.forEach(r=>rows.push([r.name,r.grade,r.topic,r.subtopic,r.pct,r.correct,r.wrong,r.pct>=80?'สูง':r.pct>=60?'ปานกลาง':'ต้องพัฒนา',r.time]));
-  const csv=rows.map(r=>r.join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download='mathscan_results.csv';a.click();
+  const R=getResults();if(!R.length){alert('ยังไม่มีข้อมูล');return;}
+  const rows=[['ชื่อ','ระดับ','หัวข้อหลัก','หัวข้อย่อย','คะแนน%','ถูก','ผิด','ระดับ','เวลา']];
+  R.forEach(r=>rows.push([r.name,r.grade,r.topic,r.subtopic,r.pct,r.correct,r.wrong,r.pct>=80?'ดี':r.pct>=60?'ปานกลาง':'ต้องพัฒนา',r.time]));
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));a.download='mathscan_results.csv';a.click();
+}
+
+function dashToPDF(){
+  window.print();
 }
 
 // ===== CHAT =====
 function addMsg(role,html){
   const box=document.getElementById('messages');
-  const wrap=document.createElement('div');wrap.className='msg '+role;
+  const w=document.createElement('div');w.className='msg '+role;
   const av=document.createElement('div');av.className='m-av';av.textContent=role==='ai'?'🤖':'👤';
   const bub=document.createElement('div');bub.className='m-bub';
   bub.innerHTML=html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-  wrap.appendChild(av);wrap.appendChild(bub);box.appendChild(wrap);box.scrollTop=box.scrollHeight;
+  w.appendChild(av);w.appendChild(bub);box.appendChild(w);box.scrollTop=box.scrollHeight;
 }
-function addTyping(){
-  const box=document.getElementById('messages');
-  const w=document.createElement('div');w.className='msg ai';w.id='typing';
-  w.innerHTML='<div class="m-av">🤖</div><div class="m-bub"><div class="typing"><span></span><span></span><span></span></div></div>';
-  box.appendChild(w);box.scrollTop=box.scrollHeight;
-}
+function addTyping(){const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';w.id='typing';w.innerHTML='<div class="m-av">🤖</div><div class="m-bub"><div class="typing"><span></span><span></span><span></span></div></div>';box.appendChild(w);box.scrollTop=box.scrollHeight;}
 function rmTyping(){const t=document.getElementById('typing');if(t)t.remove();}
-function showInput(ph){
-  const r=document.getElementById('inputRow');r.style.display='flex';
-  document.getElementById('chatInput').placeholder=ph||'พิมพ์ที่นี่...';
-  document.getElementById('chatInput').value='';
-  document.getElementById('chatInput').focus();
-}
+function showInput(ph){const r=document.getElementById('inputRow');r.style.display='flex';document.getElementById('chatInput').placeholder=ph||'พิมพ์ที่นี่...';document.getElementById('chatInput').value='';document.getElementById('chatInput').focus();}
 function hideInput(){document.getElementById('inputRow').style.display='none';}
 function updateProgress(){document.getElementById('progBar').style.width=(qIndex/TOTAL_Q*100)+'%';}
 
 function addGrid(type,items,onSelect){
-  const box=document.getElementById('messages');
-  const wrap=document.createElement('div');wrap.className='msg ai';
+  const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';
   const av=document.createElement('div');av.className='m-av';av.textContent='🤖';
   const bub=document.createElement('div');bub.className='m-bub';
-  const grid=document.createElement('div');grid.className=type+'-grid';
+  const grid=document.createElement('div');grid.className=type+'-grid'||type+'-list';
   items.forEach(item=>{
     const btn=document.createElement('button');
     btn.className=type+'-btn';
-    if(type==='grade') btn.textContent=item;
-    else if(type==='topic') btn.innerHTML=`<span class="ind">${item.indicator}</span>${item.topic}`;
-    else if(type==='subtopic'){btn.textContent=item;}
+    if(type==='grade')btn.textContent=item;
+    else if(type==='topic')btn.innerHTML=`<span class="ind">${item.indicator}</span>${item.topic}`;
+    else btn.textContent=item;
     btn.onclick=()=>{grid.querySelectorAll('button').forEach(b=>b.disabled=true);onSelect(item);};
     grid.appendChild(btn);
   });
-  bub.appendChild(grid);wrap.appendChild(av);wrap.appendChild(bub);
-  box.appendChild(wrap);box.scrollTop=box.scrollHeight;
+  bub.appendChild(grid);w.appendChild(av);w.appendChild(bub);box.appendChild(w);box.scrollTop=box.scrollHeight;
 }
 
-// ===== FLOW =====
 function greetUser(){
   phase='intro';
   addMsg('ai','สวัสดีครับ! 👋 ผมคือ **MathScan AI**\nระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ อิงตัวชี้วัดแกนกลาง 2560\n\n**ชื่ออะไรครับ?**');
   showInput('พิมพ์ชื่อของคุณ...');
 }
 async function sendText(){
-  const inp=document.getElementById('chatInput');
-  const txt=inp.value.trim();if(!txt)return;
+  const inp=document.getElementById('chatInput');const txt=inp.value.trim();if(!txt)return;
   inp.value='';autoH(inp);hideInput();addMsg('user',txt);
   if(phase==='intro'){
-    studentName=txt;phase='grade';
-    await delay(400);
+    studentName=txt;phase='grade';await delay(400);
     addMsg('ai',`ยินดีต้อนรับ **${studentName}** ครับ! 🎉\n\nเลือกระดับชั้นที่ต้องการวิเคราะห์ได้เลยครับ`);
     await delay(300);
     addGrid('grade',Object.keys(CURRICULUM),grade=>{
@@ -851,7 +520,7 @@ async function sendText(){
         delay(300).then(()=>addGrid('topic',CURRICULUM[grade],topic=>{
           selectedTopic=topic;addMsg('user',topic.topic);
           delay(400).then(()=>{
-            addMsg('ai',`**${topic.topic}** มีเนื้อหาย่อยดังนี้ครับ\nเลือกหัวข้อที่ต้องการทดสอบได้เลย 👇`);
+            addMsg('ai',`**${topic.topic}** มีเนื้อหาย่อยดังนี้ครับ\nเลือกหัวข้อที่ต้องการทดสอบ 👇`);
             delay(300).then(()=>addGrid('subtopic',topic.subs,sub=>{
               selectedSubtopic=sub;addMsg('user',sub);startQuiz();
             }));
@@ -865,9 +534,8 @@ async function sendText(){
 // ===== QUIZ =====
 async function startQuiz(){
   qIndex=0;correct=0;wrong=0;answers=[];mcqLevel=1;consCorrect=0;consWrong=0;
-  updateProgress();
-  await delay(400);
-  addMsg('ai',`เริ่มวิเคราะห์ **${selectedSubtopic}** เลยนะครับ ${studentName} 🎯\n\nโจทย์ทั้งหมด **${TOTAL_Q} ข้อ** AI จะปรับระดับอัตโนมัติครับ`);
+  updateProgress();await delay(400);
+  addMsg('ai',`เริ่มวิเคราะห์ **${selectedSubtopic}** เลยนะครับ ${studentName} 🎯\n\nโจทย์ทั้งหมด **${TOTAL_Q} ข้อ** AI ปรับระดับอัตโนมัติครับ`);
   await delay(600);loadNextQ();
 }
 
@@ -883,42 +551,31 @@ async function loadNextQ(){
 ตอบ JSON เท่านั้น:
 {"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีทำสั้นๆ"}`;
   try{
-    const raw=await callAI(prompt);
-    const json=raw.match(/\{[\s\S]*\}/)?.[0];
+    const raw=await callAI(prompt);const json=raw.match(/\{[\s\S]*\}/)?.[0];
     const q=JSON.parse(json);
     if(!q.q||!Array.isArray(q.choices)||q.choices.length!==4||typeof q.ans!=='number'||q.ans<0||q.ans>3)throw new Error('invalid');
     rmTyping();showMCQ(q);
-  }catch(e){
-    rmTyping();addMsg('ai','⚠️ เกิดข้อผิดพลาด กำลังลองใหม่...');
-    await delay(1500);loadNextQ();
-  }
+  }catch(e){rmTyping();addMsg('ai','⚠️ กำลังลองใหม่...');await delay(1500);loadNextQ();}
 }
 
 function showMCQ(q){
   const em=['🟢','🟡','🔴'][mcqLevel-1];
   addMsg('ai',`${em} **ข้อที่ ${qIndex+1}/${TOTAL_Q}**\n\n${q.q}`);
-  const box=document.getElementById('messages');
-  const wrap=document.createElement('div');wrap.className='msg ai';
+  const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';
   const av=document.createElement('div');av.className='m-av';av.textContent='🤖';
   const bub=document.createElement('div');bub.className='m-bub';
   const cw=document.createElement('div');cw.className='choices-wrap';
   ['ก','ข','ค','ง'].forEach((lb,i)=>{
-    const btn=document.createElement('button');
-    btn.className='choice-btn';btn.setAttribute('data-label',lb);
+    const btn=document.createElement('button');btn.className='choice-btn';btn.setAttribute('data-label',lb);
     btn.innerHTML=q.choices[i].replace(/^[กขคง]\.\s*/,'');
-    btn.onclick=()=>selectAnswer(i,q,cw);
-    cw.appendChild(btn);
+    btn.onclick=()=>selectAnswer(i,q,cw);cw.appendChild(btn);
   });
-  bub.appendChild(cw);wrap.appendChild(av);wrap.appendChild(bub);
-  box.appendChild(wrap);box.scrollTop=box.scrollHeight;
+  bub.appendChild(cw);w.appendChild(av);w.appendChild(bub);box.appendChild(w);box.scrollTop=box.scrollHeight;
 }
 
 async function selectAnswer(chosen,q,cw){
   cw.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
-  cw.querySelectorAll('.choice-btn').forEach((b,i)=>{
-    if(i===q.ans)b.classList.add('ok');
-    else if(i===chosen)b.classList.add('no');
-  });
+  cw.querySelectorAll('.choice-btn').forEach((b,i)=>{if(i===q.ans)b.classList.add('ok');else if(i===chosen)b.classList.add('no');});
   const isOk=chosen===q.ans;
   addMsg('user',q.choices[chosen]);
   answers.push({correct:isOk,q:q.q,chosen,correctIdx:q.ans,chosenText:q.choices[chosen],correctText:q.choices[q.ans]});
@@ -938,26 +595,15 @@ async function showResult(){
   const prompt=`นักเรียน ${selectedGrade} ชื่อ ${studentName} ทำแบบทดสอบเรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
 ผล: ถูก ${correct}/${TOTAL_Q} (${pct}%)
 ข้อที่ผิด:\n${wrongSummary||'ไม่มีข้อผิด'}
-
 วิเคราะห์ผลภาษาไทย 4 ประโยค: สรุประดับ → จุดอ่อน → สิ่งควรทบทวน → ให้กำลังใจ
-ตอบกระชับ เป็นกันเอง ใช้ emoji`;
+ตอบกระชับ เป็นกันเอง`;
   try{
-    const analysis=await callAI(prompt);
-    rmTyping();
-    const now=new Date();
-    const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-    // Save to dashboard
-    saveResult({
-      name:studentName,grade:selectedGrade,topic:selectedTopic.topic,
-      subtopic:selectedSubtopic,pct,correct,wrong,total:TOTAL_Q,
-      wrongTopics:wrongItems.map(a=>a.q.substring(0,40)),
-      time,date:now.toLocaleDateString('th-TH')
-    });
+    const analysis=await callAI(prompt);rmTyping();
+    const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+    saveResult({name:studentName,grade:selectedGrade,topic:selectedTopic.topic,subtopic:selectedSubtopic,pct,correct,wrong,total:TOTAL_Q,wrongTopics:wrongItems.map(a=>a.q.substring(0,40)),time,date:now.toLocaleDateString('th-TH')});
     showResultScreen(pct,analysis,wrongItems);
-    generateExercises(wrongItems);
-  }catch(e){
-    rmTyping();showResultScreen(pct,'ทำได้ดีมากครับ! ขอให้ฝึกฝนต่อไปนะครับ',wrongItems);
-  }
+    generateWorksheet(wrongItems);
+  }catch(e){rmTyping();showResultScreen(pct,'ทำได้ดีมากครับ! ขอให้ฝึกฝนต่อไปนะครับ',wrongItems);}
 }
 
 function showResultScreen(pct,analysis,wrongItems){
@@ -965,55 +611,107 @@ function showResultScreen(pct,analysis,wrongItems){
   document.getElementById('resultScreen').classList.add('active');
   document.getElementById('resTrophy').textContent=pct>=80?'🏆':pct>=60?'🥈':'💪';
   document.getElementById('resScore').textContent=pct+'%';
-  document.getElementById('resScore').style.color=pct>=80?'var(--green2)':pct>=60?'var(--warn2)':'var(--red2)';
+  document.getElementById('resScore').style.color=pct>=80?'var(--green)':pct>=60?'var(--warn)':'var(--red)';
   document.getElementById('resTitle').textContent=pct>=80?'ยอดเยี่ยมมากครับ!':pct>=60?'ทำได้ดีครับ ฝึกต่อไปนะครับ':'ไม่เป็นไร ลองใหม่ได้เลยครับ';
-  document.getElementById('st1').textContent=TOTAL_Q;
-  document.getElementById('st2').textContent=correct;
-  document.getElementById('st3').textContent=wrong;
-  document.getElementById('resAnalysisText').innerHTML=analysis.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  document.getElementById('st1').textContent=TOTAL_Q;document.getElementById('st2').textContent=correct;document.getElementById('st3').textContent=wrong;
+  document.getElementById('resAnalysisText').innerHTML=analysis.replace(/\n/g,'<br>');
   if(wrongItems&&wrongItems.length>0){
     document.getElementById('wrongReview').style.display='block';
-    document.getElementById('wrongList').innerHTML=wrongItems.map(a=>`
-      <div class="wrong-item">
-        <div class="wi-q">❓ ${a.q}</div>
-        <div class="wi-no">❌ ที่เลือก: ${a.chosenText}</div>
-        <div class="wi-ok">✅ ที่ถูก: ${a.correctText}</div>
-      </div>`).join('');
+    document.getElementById('wrongList').innerHTML=wrongItems.map(a=>`<div class="wrong-item"><div class="wi-q">❓ ${a.q}</div><div class="wi-no">❌ ที่เลือก: ${a.chosenText}</div><div class="wi-ok">✅ ที่ถูก: ${a.correctText}</div></div>`).join('');
   }
-  document.getElementById('exerciseCard').style.display='block';
 }
 
-async function generateExercises(wrongItems){
-  const exDiv=document.getElementById('exerciseText');
-  if(!wrongItems||!wrongItems.length){exDiv.innerHTML='<div style="color:var(--green2);padding:12px;">🌟 ทำได้ดีมากครับ!</div>';return;}
-  const weak=wrongItems.slice(0,3).map(a=>a.q.substring(0,50)).join('; ');
-  const prompt=`นักเรียน ${selectedGrade} เรียนเรื่อง "${selectedSubtopic}" ทำผิดใน: ${weak}
-สร้างแบบฝึกหัด 10 ข้อเฉพาะจุดอ่อนที่พบ แบ่งเป็น:
+async function generateWorksheet(wrongItems){
+  const card=document.getElementById('worksheetCard');
+  const body=document.getElementById('wsBody');
+  const meta=document.getElementById('wsMeta');
+  card.style.display='block';
+  meta.textContent=`${studentName} | ${selectedGrade} | ${selectedSubtopic} | วันที่ ${new Date().toLocaleDateString('th-TH')}`;
+  body.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:14px;">🤖 AI กำลังสร้างใบงานแบบฝึกหัด 10 ข้อ...</div>';
+  const weak=wrongItems.length?wrongItems.slice(0,3).map(a=>a.q.substring(0,50)).join('; '):'ทบทวนเนื้อหาทั่วไป';
+  const prompt=`สร้างแบบฝึกหัด 10 ข้อ สำหรับนักเรียน ${selectedGrade} เรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
+จุดอ่อนที่พบ: ${weak}
+
+แบ่งเป็น:
 - ข้อ 1-4: ระดับง่าย (ทดสอบความเข้าใจพื้นฐาน)
 - ข้อ 5-8: ระดับปานกลาง (ประยุกต์ใช้)
 - ข้อ 9-10: ระดับยาก (โจทย์ปัญหา)
-ทุกข้อมีวิธีทำทีละขั้นและคำตอบ ตอบภาษาไทย
-รูปแบบ: ข้อ 1: [โจทย์] / วิธีทำ: [ขั้นตอน] / คำตอบ: [คำตอบ]`;
+
+สำหรับแต่ละข้อ ให้แสดงในรูปแบบ JSON array เท่านั้น:
+[
+  {"num":1,"level":"ง่าย","q":"โจทย์","method":"วิธีทำทีละขั้น","ans":"คำตอบ"},
+  ...
+]`;
   try{
-    const ex=await callAI(prompt);
-    exDiv.innerHTML=ex.split('\n').map(line=>{
-      if(line.match(/^ข้อ\s*\d/))return`<div class="ex-item"><div class="ex-num">โจทย์ฝึก</div>${line}`;
-      if(line.startsWith('วิธีทำ'))return`<div style="font-size:12px;color:var(--cyan);padding:3px 14px;">${line}</div>`;
-      if(line.startsWith('คำตอบ'))return`<div style="font-size:12px;color:var(--green2);padding:3px 14px 10px;">${line}</div></div>`;
-      if(!line.trim())return'';
-      return`<div style="font-size:12px;padding:2px 14px;color:var(--dim);">${line}</div>`;
-    }).join('');
-  }catch{exDiv.innerHTML='<div style="color:var(--muted);padding:12px;">ไม่สามารถสร้างแบบฝึกหัดได้</div>';}
+    const raw=await callAI(prompt);
+    const jsonMatch=raw.match(/\[[\s\S]*\]/);
+    if(!jsonMatch)throw new Error('no json');
+    const exercises=JSON.parse(jsonMatch[0]);
+    exerciseData=exercises;
+    const levelColors={ง่าย:'#059669',ปานกลาง:'#d97706',ยาก:'#dc2626'};
+    body.innerHTML=exercises.map(ex=>`
+      <div class="ws-item">
+        <div class="ws-num">
+          ข้อที่ ${ex.num} 
+          <span style="background:${levelColors[ex.level]||'#64748b'};color:white;padding:1px 8px;border-radius:10px;font-size:10px;margin-left:6px;">${ex.level}</span>
+        </div>
+        <div class="ws-q">${ex.q}</div>
+        <div class="ws-method"><strong>วิธีทำ:</strong><br>${ex.method.replace(/\n/g,'<br>')}</div>
+        <div class="ws-ans">✅ คำตอบ: ${ex.ans}</div>
+        <div class="ws-blank">📝 พื้นที่ทำงานของนักเรียน: ............................................................................</div>
+      </div>`).join('');
+  }catch(e){
+    body.innerHTML='<div style="color:var(--red);padding:16px;">ไม่สามารถสร้างแบบฝึกหัดได้ กรุณาลองใหม่</div>';
+  }
 }
+
+function worksheetToPDF(){
+  const now=new Date();
+  const wsContent=document.getElementById('worksheetCard').innerHTML;
+  const printWin=window.open('','_blank');
+  printWin.document.write(`
+    <html><head>
+    <meta charset="UTF-8">
+    <title>ใบงาน MathScan AI — ${studentName}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      body{font-family:'Sarabun',sans-serif;padding:24px;color:#0f172a;background:white;}
+      .ws-header{background:linear-gradient(135deg,#1d6aff,#4338ca);padding:18px 22px;color:white;border-radius:8px 8px 0 0;margin-bottom:0;}
+      .ws-title{font-size:18px;font-weight:700;margin-bottom:4px;}
+      .ws-meta{font-size:12px;opacity:.85;}
+      .ws-body{border:2px solid #1d6aff;border-top:none;border-radius:0 0 8px 8px;padding:16px;}
+      .ws-item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:12px;break-inside:avoid;}
+      .ws-num{font-size:11px;font-weight:700;color:#1d6aff;margin-bottom:8px;letter-spacing:1px;}
+      .ws-q{font-size:15px;font-weight:600;margin-bottom:10px;line-height:1.7;}
+      .ws-method{background:#eff6ff;border-left:3px solid #1d6aff;padding:10px 14px;margin-bottom:8px;font-size:13px;line-height:1.8;}
+      .ws-ans{background:#ecfdf5;border-left:3px solid #10b981;padding:8px 14px;font-size:14px;font-weight:700;color:#059669;}
+      .ws-blank{background:#fff;border:1.5px dashed #c8d3e0;padding:12px 14px;margin-top:8px;font-size:13px;color:#94a3b8;font-style:italic;}
+      .no-print{display:none!important;}
+      @media print{.no-print{display:none!important;}}
+    </style>
+    </head><body>
+    <div class="ws-header">
+      <div class="ws-title">📝 ใบงานแบบฝึกหัดเฉพาะตัว — MathScan AI</div>
+      <div class="ws-meta">${studentName} | ${selectedGrade} | ${selectedSubtopic} | ${now.toLocaleDateString('th-TH')}</div>
+    </div>
+    <div class="ws-body" id="wsContent">${document.getElementById('wsBody').innerHTML}</div>
+    <script>
+      document.querySelectorAll('.ws-actions,.no-print').forEach(el=>el.remove());
+      window.onload=()=>{window.print();}
+    <\/script>
+    </body></html>`);
+  printWin.document.close();
+}
+
+function printWorksheet(){worksheetToPDF();}
 
 function restart(){
   document.getElementById('resultScreen').classList.remove('active');
   document.getElementById('chatScreen').classList.add('active');
   document.getElementById('messages').innerHTML='';
   document.getElementById('progBar').style.width='0%';
-  phase='intro';qIndex=0;correct=0;wrong=0;
-  selectedGrade='';selectedTopic=null;selectedSubtopic='';
-  mcqLevel=1;consCorrect=0;consWrong=0;answers=[];
+  phase='intro';qIndex=0;correct=0;wrong=0;selectedGrade='';selectedTopic=null;selectedSubtopic='';
+  mcqLevel=1;consCorrect=0;consWrong=0;answers=[];exerciseData='';
   greetUser();
 }
 
@@ -1022,16 +720,15 @@ async function callAI(prompt){
   const res=await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
     headers:{"Content-Type":"application/json","x-api-key":GKEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:800,messages:[{role:"user",content:prompt}]})
+    body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:1200,messages:[{role:"user",content:prompt}]})
   });
   if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||"HTTP "+res.status);}
-  const data=await res.json();
-  if(data.error)throw new Error(data.error.message);
+  const data=await res.json();if(data.error)throw new Error(data.error.message);
   return data.content[0].text;
 }
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendText();}}
-function autoH(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,90)+'px';}
+function autoH(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
 </script>
 </body>
 </html>
