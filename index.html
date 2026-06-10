@@ -696,7 +696,7 @@ const CURRICULUM = {
 
 // ===== GOOGLE SHEETS CONFIG =====
 // วาง Web App URL ที่ได้จาก Apps Script Deploy ตรงนี้
-const SHEETS_WEBAPP_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HEREhttps://script.google.com/macros/s/AKfycbx9i-7SjU3QZMqLuMQh0484TflgpgKKlsQiHkAZwpkmHg_tcJ3zabe02GMNZofGlYN3/exec";
+const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx9i-7SjU3QZMqLuMQh0484TflgpgKKlsQiHkAZwpkmHg_tcJ3zabe02GMNZofGlYN3/exec";
 const SHEETS_ID = "1ScLPqpAU6qM8hodzjQXzqUw5_9L9N-CaMk7ab6ohaUE";
 
 // ===== STATE =====
@@ -958,39 +958,63 @@ async function printStudentWorksheet(idx){
   const r = R[idx];
   if(!r){ alert('ไม่พบข้อมูลนักเรียน'); return; }
 
+  // ปรับจำนวนข้อตามคะแนน
+  let numQ=10, qNote='(ต้องพัฒนา — 10 ข้อ)';
+  if(r.pct>=80){ numQ=5; qNote='(ระดับดี — 5 ข้อ)'; }
+  else if(r.pct>=60){ numQ=7; qNote='(ระดับกลาง — 7 ข้อ)'; }
+
+  const levelDist = numQ===5
+    ? '- ข้อที่ 1-3: ระดับพื้นฐาน\n- ข้อที่ 4-5: ระดับประยุกต์'
+    : numQ===7
+    ? '- ข้อที่ 1-3: ระดับพื้นฐาน\n- ข้อที่ 4-6: ระดับประยุกต์\n- ข้อที่ 7: ระดับสูง'
+    : '- ข้อที่ 1-4: ระดับพื้นฐาน\n- ข้อที่ 5-8: ระดับประยุกต์\n- ข้อที่ 9-10: ระดับสูง';
+
   // แสดง loading modal
   const overlay = document.createElement('div');
   overlay.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
   overlay.innerHTML=`<div style="background:white;border-radius:16px;padding:32px 40px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
     <div style="font-size:36px;margin-bottom:12px;">🤖</div>
-    <div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:#1d6aff;margin-bottom:6px;">AI กำลังสร้างใบงาน</div>
+    <div style="font-family:'Prompt',sans-serif;font-size:16px;font-weight:700;color:#1d6aff;margin-bottom:6px;">AI กำลังสร้างใบงาน ${numQ} ข้อ</div>
     <div style="font-size:14px;color:#64748b;">สำหรับ ${r.name} — ${r.subtopic}</div>
+    <div style="margin-top:14px;font-size:12px;color:#94a3b8;">กรุณารอสักครู่...</div>
   </div>`;
   document.body.appendChild(overlay);
 
   try{
     const weak = (r.wrongTopics||[]).slice(0,3).join('; ') || 'ทบทวนเนื้อหาทั่วไป';
-    const prompt=`สร้างแบบฝึกหัด 10 ข้อ สำหรับนักเรียน ${r.grade} ชื่อ ${r.name} เรื่อง "${r.subtopic}" (${r.topic})
+
+    const wsPrompt=`สร้างแบบฝึกหัด ${numQ} ข้อ สำหรับนักเรียน ${r.grade} ชื่อ ${r.name} เรื่อง "${r.subtopic}" (${r.topic})
 จุดอ่อนที่พบ: ${weak}
 
-แบ่งระดับดังนี้:
-- ข้อที่ 1-4: ระดับพื้นฐาน
-- ข้อที่ 5-8: ระดับประยุกต์
-- ข้อที่ 9-10: ระดับสูง
+${levelDist}
 
-กฎสำคัญ: ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย ห้ามใส่ field svg
-แต่ละ object มีเฉพาะ 5 field: {"num":1,"level":"พื้นฐาน","q":"โจทย์","method":"วิธีแก้","ans":"คำตอบ"}`;
+กฎสำคัญ:
+1. ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย
+2. ห้ามใส่ field "ans" หรือ "method" หรือ "svg" ทุกกรณี — ใบงานนี้ไม่มีเฉลย
+3. แต่ละ object มีเฉพาะ 3 field เท่านั้น: {"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทย"}
 
-    const raw = await callAI(prompt);
+ตัวอย่าง output ที่ถูกต้อง:
+[{"num":1,"level":"พื้นฐาน","q":"จงหาค่า x จาก 2x+3=11"},{"num":2,"level":"พื้นฐาน","q":"..."}]`;
+
+    // ใช้ callAI ซึ่งมี GKEY อยู่แล้ว
+    const raw = await callAI(wsPrompt);
     let exercises = null;
+
+    // วิธี 1
     const m = raw.match(/\[[\s\S]*\]/);
     if(m){ try{ exercises=JSON.parse(m[0]); }catch(e){} }
+    // วิธี 2: ลบ SVG แล้ว parse
+    if(!exercises){
+      const cleaned=raw.replace(/<svg[\s\S]*?<\/svg>/gi,'').replace(/```json/g,'').replace(/```/g,'').trim();
+      const m2=cleaned.match(/\[[\s\S]*\]/);
+      if(m2){ try{ exercises=JSON.parse(m2[0]); }catch(e){} }
+    }
     if(!exercises || exercises.length < 3) throw new Error('parse failed');
 
-    // กรอง field
-    exercises = exercises.map(ex=>({num:ex.num||0,level:ex.level||'',q:ex.q||'',method:ex.method||'',ans:ex.ans||''}));
+    // กรองเฉพาะ 3 field
+    exercises = exercises.map(ex=>({num:ex.num||0, level:ex.level||'', q:ex.q||''}));
 
-    // สร้าง print window
+    // สร้าง HTML ใบงาน
     const now = new Date();
     const levelColors={'พื้นฐาน':'#059669','ประยุกต์':'#d97706','สูง':'#dc2626'};
     const writingLns=Array(6).fill('').map(()=>'<div style="border-bottom:1.5px solid #c8d3e0;height:28px;margin-bottom:3px;"></div>').join('');
@@ -1010,26 +1034,25 @@ async function printStudentWorksheet(idx){
         body{font-family:'Sarabun',sans-serif;padding:24px 28px;color:#0f172a;max-width:800px;margin:0 auto;font-size:14px;}
         .header{border-bottom:3px solid #1d6aff;padding-bottom:14px;margin-bottom:20px;}
         .header h1{color:#1d6aff;font-size:20px;margin:0 0 6px;}
-        .info-row{display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:#334155;margin-top:8px;}
+        .header h2{color:#334155;font-size:14px;font-weight:400;margin:4px 0 0;}
+        .info-row{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:#334155;margin-top:8px;}
         .info-row span{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:3px 10px;}
-        .score-badge{background:${scoreColor};color:white;border-radius:8px;padding:4px 12px;font-weight:700;font-size:15px;}
-        .item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:12px;page-break-inside:avoid;}
-        .num{font-size:11px;font-weight:700;color:#1d6aff;margin-bottom:7px;letter-spacing:1px;}
-        .q{font-size:15px;font-weight:600;margin-bottom:9px;line-height:1.7;}
-        .method{background:#eff6ff;border-left:3px solid #1d6aff;padding:8px 12px;margin-bottom:6px;font-size:13px;line-height:1.7;border-radius:0 6px 6px 0;}
-        .ans{background:#ecfdf5;border-left:3px solid #10b981;padding:7px 12px;font-size:14px;font-weight:700;color:#059669;border-radius:0 6px 6px 0;}
-        .blank{border:1px dashed #c8d3e0;padding:10px 12px;margin-top:8px;font-size:13px;color:#94a3b8;font-style:italic;border-radius:6px;}
+        .score-badge{background:${scoreColor};color:white;border-radius:8px;padding:4px 12px;font-weight:700;font-size:14px;}
+        .item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:14px;page-break-inside:avoid;}
+        .num{font-size:11px;font-weight:700;color:#1d6aff;margin-bottom:7px;letter-spacing:1px;text-transform:uppercase;}
+        .q{font-size:15px;font-weight:600;margin-bottom:10px;line-height:1.8;}
         .footer{margin-top:20px;font-size:12px;color:#94a3b8;text-align:center;border-top:1px solid #dde3ec;padding-top:10px;}
         @media print{@page{margin:15mm;} body{padding:0;}}
       </style>
     </head><body>
       <div class="header">
-        <h1>📝 ใบงานแบบฝึกหัดเฉพาะตัว — MathScan AI</h1>
+        <h1>📝 ใบงานแบบฝึกหัดเฉพาะตัว — ${numQ} ข้อ</h1>
+        <h2>${qNote}</h2>
         <div class="info-row">
           <span>👤 ${r.name}</span>
           <span>📚 ${r.grade}</span>
           <span>📖 ${r.subtopic}</span>
-          <span class="score-badge">คะแนน ${r.pct}%</span>
+          <span class="score-badge">คะแนนเดิม ${r.pct}%</span>
           <span>📅 ${now.toLocaleDateString('th-TH')}</span>
         </div>
       </div>
@@ -1038,7 +1061,7 @@ async function printStudentWorksheet(idx){
       <script>window.addEventListener('load',()=>{setTimeout(()=>{window.print();},600);});<\/script>
     </body></html>`;
 
-    document.body.removeChild(overlay);
+    if(document.body.contains(overlay)) document.body.removeChild(overlay);
     const blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1047,8 +1070,9 @@ async function printStudentWorksheet(idx){
     setTimeout(()=>URL.revokeObjectURL(url),5000);
 
   }catch(e){
-    document.body.removeChild(overlay);
-    alert('ไม่สามารถสร้างใบงานได้ กรุณาลองใหม่ครับ');
+    console.error('printStudentWorksheet error:', e);
+    if(document.body.contains(overlay)) document.body.removeChild(overlay);
+    alert(`ไม่สามารถสร้างใบงานได้\nสาเหตุ: ${e.message||'ไม่ทราบ'}\nกรุณาลองใหม่ครับ`);
   }
 }
 
