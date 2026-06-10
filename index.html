@@ -223,6 +223,13 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   .no-print { display: none !important; }
 }
 </style>
+<script>
+MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']] },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" async></script>
 </head>
 <body>
 
@@ -262,7 +269,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <button class="dash-export-btn pdf-btn no-print" onclick="dashToPDF()">📄 Export PDF</button>
       <button class="dash-export-btn no-print" onclick="exportCSV()">📥 CSV</button>
       <button class="dash-export-btn no-print" onclick="clearData()">🗑 ล้างข้อมูล</button>
-      <button class="dash-export-btn no-print" id="copyLinkBtn" onclick="copyStudentLink()" style="border-color:#6ee7b7;color:#059669;background:#ecfdf5;">🔗 คัดลอกลิงก์นักเรียน</button>
+      <button class="dash-export-btn no-print" id="copyLinkBtn" onclick="copyStudentLink()" style="border-color:#6ee7b7;color:#059669;background:#ecfdf5;">🔗 ลิงก์นักเรียน</button>
+    <button class="dash-export-btn no-print" onclick="copyTeacherLink()" style="border-color:#fbbf24;color:#d97706;background:#fffbeb;">👨‍🏫 ลิงก์ครู</button>
     <button class="dash-close no-print" onclick="closeDash()">✕ ปิด</button>
     </div>
   </div>
@@ -412,23 +420,22 @@ let GKEY="",TPASS="",studentName="",selectedGrade="",selectedTopic=null,selected
 let phase="intro",qIndex=0,correct=0,wrong=0,answers=[],exerciseData="";
 let mcqLevel=1,consCorrect=0,consWrong=0;
 const TOTAL_Q=10;
-const DB_KEY='mathscan_v3';
+let DB_KEY='mathscan_v3'; // will be set after login
 
 window.onload=()=>{
-  // รับ Key จาก URL parameter ?k=sk-ant-...
   const urlParams = new URLSearchParams(window.location.search);
   const urlKey = urlParams.get('k');
   const urlPass = urlParams.get('p');
+  const urlMode = urlParams.get('mode');
   
   const k = urlKey || localStorage.getItem('mskey3');
   const p = urlPass || localStorage.getItem('msteacher3');
   
-  if(k && k.startsWith('sk-ant-') && k.length > 20){
+  if(k && k.length > 20){
     GKEY=k; TPASS=p||'teacher1234';
-    // ถ้ามี key ใน URL ให้ซ่อน modal และเข้าระบบเลย
-    if(urlKey) { showApp(); return; }
+    showApp(); return;
   }
-  if(k&&k.length>10){GKEY=k;TPASS=p||'teacher1234';showApp();}
+  // ถ้าไม่มี key ให้แสดง modal
 };
 function saveKey(){
   const k=document.getElementById('apiKeyInput').value.trim();
@@ -439,10 +446,19 @@ function saveKey(){
   showApp();
 }
 function showApp(){
-  // บันทึก key ลง localStorage เมื่อเข้าระบบ
   if(GKEY) localStorage.setItem('mskey3', GKEY);
   if(TPASS) localStorage.setItem('msteacher3', TPASS);
+  // DB key รวม teacher password เพื่อแยกข้อมูลแต่ละห้อง
+  DB_KEY = 'mathscan_' + (TPASS||'default');
   document.getElementById('keyModal').style.display='none';
+  // ตรวจ URL mode
+  const urlParams = new URLSearchParams(window.location.search);
+  if(urlParams.get('mode')==='teacher'){
+    document.getElementById('app').style.display='flex';
+    renderDash();
+    document.getElementById('dashModal').classList.add('open');
+    return;
+  }
   document.getElementById('app').style.display='flex';
   setTimeout(greetUser,300);
 }
@@ -478,17 +494,30 @@ function renderDash(){
 }
 
 function copyStudentLink(){
-  const key = localStorage.getItem('mskey3') || GKEY;
-  const pass = localStorage.getItem('msteacher3') || TPASS;
+  const key = GKEY || localStorage.getItem('mskey3');
+  const pass = TPASS || localStorage.getItem('msteacher3');
   const base = window.location.href.split('?')[0];
-  const link = `${base}?k=${encodeURIComponent(key)}&p=${encodeURIComponent(pass)}`;
-  navigator.clipboard.writeText(link).then(()=>{
+  const studentLink = `${base}?k=${encodeURIComponent(key)}&p=${encodeURIComponent(pass)}`;
+  const teacherLink = `${base}?k=${encodeURIComponent(key)}&p=${encodeURIComponent(pass)}&mode=teacher`;
+  const msg = `ลิงก์นักเรียน:
+${studentLink}
+
+ลิงก์ครู (Dashboard):
+${teacherLink}`;
+  navigator.clipboard.writeText(studentLink).then(()=>{
     const btn = document.getElementById('copyLinkBtn');
     btn.textContent = '✅ คัดลอกแล้ว!';
-    setTimeout(()=>{ btn.textContent = '🔗 คัดลอกลิงก์นักเรียน'; }, 2000);
-  }).catch(()=>{
-    prompt('คัดลอกลิงก์นี้แล้วส่งให้นักเรียน:', link);
-  });
+    setTimeout(()=>{ btn.textContent = '🔗 ลิงก์นักเรียน'; }, 2000);
+  }).catch(()=>{ prompt('ลิงก์นักเรียน:', studentLink); });
+}
+function copyTeacherLink(){
+  const key = GKEY || localStorage.getItem('mskey3');
+  const pass = TPASS || localStorage.getItem('msteacher3');
+  const base = window.location.href.split('?')[0];
+  const teacherLink = `${base}?k=${encodeURIComponent(key)}&p=${encodeURIComponent(pass)}&mode=teacher`;
+  navigator.clipboard.writeText(teacherLink).then(()=>{
+    alert('คัดลอกลิงก์ครูแล้ว! ใช้เปิด Dashboard โดยตรง');
+  }).catch(()=>{ prompt('ลิงก์ครู (Dashboard):', teacherLink); });
 }
 
 function exportCSV(){
@@ -510,6 +539,8 @@ function addMsg(role,html){
   const bub=document.createElement('div');bub.className='m-bub';
   bub.innerHTML=html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
   w.appendChild(av);w.appendChild(bub);box.appendChild(w);box.scrollTop=box.scrollHeight;
+  // Render LaTeX
+  if(window.MathJax) MathJax.typesetPromise([bub]).catch(()=>{});
 }
 function addTyping(){const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';w.id='typing';w.innerHTML='<div class="m-av">🤖</div><div class="m-bub"><div class="typing"><span></span><span></span><span></span></div></div>';box.appendChild(w);box.scrollTop=box.scrollHeight;}
 function rmTyping(){const t=document.getElementById('typing');if(t)t.remove();}
@@ -536,7 +567,7 @@ function addGrid(type,items,onSelect){
 
 function greetUser(){
   phase='intro';
-  addMsg('ai','สวัสดีครับ! 👋 ผมคือ **MathScan AI**\nระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ อิงตัวชี้วัดแกนกลาง 2560\n\n**ชื่ออะไรครับ?**');
+  addMsg('ai','สวัสดีครับ 👋 ยินดีต้อนรับสู่ **MathScan AI**\nระบบวิเคราะห์ผู้เรียนวิชาคณิตศาสตร์ด้วยปัญญาประดิษฐ์\nอ้างอิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560\n\nก่อนเริ่มต้น กรุณาระบุชื่อของท่านครับ');
   showInput('พิมพ์ชื่อของคุณ...');
 }
 async function sendText(){
@@ -544,16 +575,16 @@ async function sendText(){
   inp.value='';autoH(inp);hideInput();addMsg('user',txt);
   if(phase==='intro'){
     studentName=txt;phase='grade';await delay(400);
-    addMsg('ai',`ยินดีต้อนรับ **${studentName}** ครับ! 🎉\n\nเลือกระดับชั้นที่ต้องการวิเคราะห์ได้เลยครับ`);
+    addMsg('ai',`ยินดีต้อนรับ **${studentName}** ครับ 🎉\n\nกรุณาเลือกระดับชั้นที่ต้องการวิเคราะห์ครับ`);
     await delay(300);
     addGrid('grade',Object.keys(CURRICULUM),grade=>{
       selectedGrade=grade;addMsg('user',grade);
       delay(400).then(()=>{
-        addMsg('ai',`ระดับ **${grade}** แล้วครับ 📚\nเลือกหัวข้อที่ต้องการทดสอบครับ`);
+        addMsg('ai',`ท่านเลือกระดับชั้น **${grade}** แล้วครับ 📚\nกรุณาเลือกหัวข้อที่ต้องการประเมินครับ`);
         delay(300).then(()=>addGrid('topic',CURRICULUM[grade],topic=>{
           selectedTopic=topic;addMsg('user',topic.topic);
           delay(400).then(()=>{
-            addMsg('ai',`**${topic.topic}** มีเนื้อหาย่อยดังนี้ครับ\nเลือกหัวข้อที่ต้องการทดสอบ 👇`);
+            addMsg('ai',`หัวข้อ **${topic.topic}** ประกอบด้วยเนื้อหาย่อยดังต่อไปนี้ครับ\nกรุณาเลือกหัวข้อย่อยที่ต้องการประเมิน 👇`);
             delay(300).then(()=>addGrid('subtopic',topic.subs,sub=>{
               selectedSubtopic=sub;addMsg('user',sub);startQuiz();
             }));
@@ -568,7 +599,7 @@ async function sendText(){
 async function startQuiz(){
   qIndex=0;correct=0;wrong=0;answers=[];mcqLevel=1;consCorrect=0;consWrong=0;
   updateProgress();await delay(400);
-  addMsg('ai',`เริ่มวิเคราะห์ **${selectedSubtopic}** เลยนะครับ ${studentName} 🎯\n\nโจทย์ทั้งหมด **${TOTAL_Q} ข้อ** AI ปรับระดับอัตโนมัติครับ`);
+  addMsg('ai',`เริ่มการประเมินความสามารถในหัวข้อ **${selectedSubtopic}** แล้วครับ ${studentName} 🎯\n\nแบบทดสอบประกอบด้วย **${TOTAL_Q} ข้อ** ระบบจะปรับระดับความยากโดยอัตโนมัติตามผลการตอบของท่านครับ`);
   await delay(600);loadNextQ();
 }
 
@@ -576,21 +607,26 @@ async function loadNextQ(){
   if(qIndex>=TOTAL_Q){showResult();return;}
   addTyping();
   const lvl=['ง่าย','ปานกลาง','ยาก'][mcqLevel-1];
-  const prompt=`คุณเป็นครูคณิตศาสตร์ผู้เชี่ยวชาญ สร้างข้อสอบเรื่อง "${selectedSubtopic}" หัวข้อ "${selectedTopic.topic}" ระดับ ${selectedGrade} ความยาก: ${lvl}
-อิงตัวชี้วัด ${selectedTopic.indicator} หลักสูตรแกนกลาง 2560
+  const prompt=`คุณคือครูคณิตศาสตร์ระดับผู้เชี่ยวชาญ จงสร้างข้อสอบวิชาคณิตศาสตร์
 
-ทำตามขั้นตอนนี้:
-STEP 1: คิดโจทย์ที่ชัดเจน
-STEP 2: คำนวณคำตอบที่ถูกต้องทีละขั้น จนได้ผลลัพธ์สุดท้าย
-STEP 3: ตรวจสอบคำตอบอีกครั้ง
-STEP 4: สร้างตัวเลือกผิด 3 ข้อที่สมเหตุสมผลแต่ผิดจริง
-STEP 5: วางตัวเลือก 4 ข้อ กำหนด ans ให้ตรงกับคำตอบใน STEP 2
+หัวข้อ: ${selectedSubtopic}
+บทเรียน: ${selectedTopic.topic}  
+ระดับชั้น: ${selectedGrade}
+ระดับความยาก: ${lvl}
+ตัวชี้วัด: ${selectedTopic.indicator} (หลักสูตรแกนกลาง 2560)
 
-ข้อบังคับเด็ดขาด: choices[ans] ต้องเป็นคำตอบที่คำนวณได้จาก STEP 2 เท่านั้น
-ตรวจสอบ: choices[${'{ans}'}] === คำตอบที่ถูก ก่อน output
+ขั้นตอนการสร้างข้อสอบ (ดำเนินการตามลำดับ):
+1. กำหนดโจทย์ที่ชัดเจน ถูกต้องตามหลักวิชา
+2. คำนวณคำตอบที่ถูกต้องอย่างละเอียดทีละขั้นตอน
+3. ตรวจสอบความถูกต้องของคำตอบอีกครั้ง
+4. สร้างตัวเลือกที่ผิด 3 ข้อ ให้สมเหตุสมผลแต่ผิดจริง
+5. จัดวางตัวเลือกทั้ง 4 ข้อ และกำหนดค่า ans ให้ตรงกับคำตอบในขั้นตอนที่ 2
 
-ตอบเฉพาะ JSON ห้ามมีข้อความอื่น:
-{"q":"โจทย์ภาษาไทยชัดเจน","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีทำทีละขั้น"}`;
+ข้อกำหนดสำคัญ: ค่า choices[ans] ต้องเป็นคำตอบที่ถูกต้องเท่านั้น
+ภาษา: ใช้ภาษาไทยที่ถูกต้องตามหลักภาษา เป็นทางการ ชัดเจน
+
+ตอบเฉพาะ JSON เท่านั้น ห้ามมีข้อความอื่น:
+{"q":"โจทย์ภาษาไทยที่ถูกต้อง","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ปัญหาทีละขั้นตอน"}`;
   try{
     const raw=await callAI(prompt);const json=raw.match(/\{[\s\S]*\}/)?.[0];
     const q=JSON.parse(json);
@@ -620,8 +656,8 @@ async function selectAnswer(chosen,q,cw){
   const isOk=chosen===q.ans;
   addMsg('user',q.choices[chosen]);
   answers.push({correct:isOk,q:q.q,chosen,correctIdx:q.ans,chosenText:q.choices[chosen],correctText:q.choices[q.ans]});
-  if(isOk){correct++;consCorrect++;consWrong=0;addMsg('ai',`✅ **ถูกต้องครับ!** ${q.explain}`);if(consCorrect>=2&&mcqLevel<3){mcqLevel++;consCorrect=0;}}
-  else{wrong++;consWrong++;consCorrect=0;addMsg('ai',`❌ **ยังไม่ถูกนะครับ** คำตอบถูกคือ ${q.choices[q.ans]}\n\n${q.explain}`);if(consWrong>=2&&mcqLevel>1){mcqLevel--;consWrong=0;}}
+  if(isOk){correct++;consCorrect++;consWrong=0;addMsg('ai',`✅ **ถูกต้องครับ** ${q.explain}`);if(consCorrect>=2&&mcqLevel<3){mcqLevel++;consCorrect=0;}}
+  else{wrong++;consWrong++;consCorrect=0;addMsg('ai',`❌ **ยังไม่ถูกต้องครับ** คำตอบที่ถูกต้องคือ ${q.choices[q.ans]}\n\n${q.explain}`);if(consWrong>=2&&mcqLevel>1){mcqLevel--;consWrong=0;}}
   qIndex++;updateProgress();await delay(800);loadNextQ();
 }
 
@@ -629,15 +665,19 @@ async function selectAnswer(chosen,q,cw){
 async function showResult(){
   hideInput();document.getElementById('progBar').style.width='100%';
   const pct=Math.round(correct/TOTAL_Q*100);
-  addMsg('ai',`เสร็จแล้วครับ ${studentName}! 🎊 กำลังวิเคราะห์ผลให้นะครับ...`);
+  addMsg('ai',`การประเมินเสร็จสมบูรณ์แล้วครับ ${studentName} 🎊 ระบบกำลังวิเคราะห์ผลการทดสอบครับ...`);
   addTyping();
   const wrongItems=answers.filter(a=>!a.correct);
   const wrongSummary=wrongItems.map((a,i)=>`ข้อ${i+1}: "${a.q.substring(0,50)}" เลือก: "${a.chosenText}" ถูก: "${a.correctText}"`).join('\n');
   const prompt=`นักเรียน ${selectedGrade} ชื่อ ${studentName} ทำแบบทดสอบเรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
 ผล: ถูก ${correct}/${TOTAL_Q} (${pct}%)
 ข้อที่ผิด:\n${wrongSummary||'ไม่มีข้อผิด'}
-วิเคราะห์ผลภาษาไทย 4 ประโยค: สรุประดับ → จุดอ่อน → สิ่งควรทบทวน → ให้กำลังใจ
-ตอบกระชับ เป็นกันเอง`;
+วิเคราะห์ผลการประเมินเป็นภาษาไทยที่เป็นทางการ 4 ส่วน:
+1. สรุประดับความสามารถของนักเรียน
+2. จุดอ่อนหรือเนื้อหาที่ควรพัฒนา
+3. หัวข้อที่ควรทบทวนเพิ่มเติม
+4. คำแนะนำและกำลังใจ
+ตอบกระชับ ชัดเจน ใช้ภาษาไทยที่ถูกต้องตามหลักภาษา`;
   try{
     const analysis=await callAI(prompt);rmTyping();
     const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
@@ -673,14 +713,14 @@ async function generateWorksheet(wrongItems){
   const prompt=`สร้างแบบฝึกหัด 10 ข้อ สำหรับนักเรียน ${selectedGrade} เรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
 จุดอ่อนที่พบ: ${weak}
 
-แบ่งเป็น:
-- ข้อ 1-4: ระดับง่าย (ทดสอบความเข้าใจพื้นฐาน)
-- ข้อ 5-8: ระดับปานกลาง (ประยุกต์ใช้)
-- ข้อ 9-10: ระดับยาก (โจทย์ปัญหา)
+จงสร้างแบบฝึกหัดที่มีความหลากหลายและครอบคลุมเนื้อหา แบ่งระดับดังนี้:
+- ข้อที่ 1-4: ระดับพื้นฐาน (ทดสอบความเข้าใจหลักการ)
+- ข้อที่ 5-8: ระดับประยุกต์ (นำความรู้ไปใช้)
+- ข้อที่ 9-10: ระดับสูง (โจทย์ปัญหาและการวิเคราะห์)
 
-สำหรับแต่ละข้อ ให้แสดงในรูปแบบ JSON array เท่านั้น:
+ตอบในรูปแบบ JSON array เท่านั้น ห้ามมีข้อความอื่น:
 [
-  {"num":1,"level":"ง่าย","q":"โจทย์","method":"วิธีทำทีละขั้น","ans":"คำตอบ"},
+  {"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทยที่ชัดเจน","method":"วิธีแก้ปัญหาทีละขั้นตอน","ans":"คำตอบที่ถูกต้อง"},
   ...
 ]`;
   try{
