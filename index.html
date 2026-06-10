@@ -244,7 +244,7 @@ MathJax = {
 </head>
 <body>
 
-<!-- KEY MODAL -->
+<!-- KEY MODAL (admin setup - hidden after first use) -->
 <div id="keyModal">
   <div class="km-card">
     <div class="km-badge">🧮 AI FOR EDUCATION</div>
@@ -258,6 +258,50 @@ MathJax = {
     <button class="km-btn" onclick="saveKey()">เข้าสู่ระบบ →</button>
     <div class="km-divider"></div>
     <div class="km-note">Key เก็บในเครื่องเท่านั้น • <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+  </div>
+</div>
+
+<!-- ROLE SELECTION SCREEN -->
+<div id="roleScreen" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0a1628 0%,#1a2744 50%,#0d1f3c 100%);z-index:5000;display:none;align-items:center;justify-content:center;flex-direction:column;">
+  <div style="text-align:center;margin-bottom:40px;">
+    <div style="font-size:42px;margin-bottom:10px;">🧮</div>
+    <div style="font-family:'Prompt',sans-serif;font-size:28px;font-weight:800;color:white;letter-spacing:-0.5px;">MathScan <span style="color:#4d9fff;">AI</span></div>
+    <div style="font-size:14px;color:#94a3b8;margin-top:6px;">คุณเข้ามาในฐานะอะไร?</div>
+  </div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;padding:0 20px;">
+    <!-- นักเรียน -->
+    <div onclick="enterAsStudent()" style="cursor:pointer;background:linear-gradient(135deg,#1d6aff,#4d9fff);border-radius:20px;padding:32px 36px;width:200px;text-align:center;box-shadow:0 8px 32px rgba(29,106,255,0.4);transition:all .2s;border:2px solid transparent;"
+      onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 14px 40px rgba(29,106,255,0.55)'"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 8px 32px rgba(29,106,255,0.4)'">
+      <div style="font-size:48px;margin-bottom:14px;">🎓</div>
+      <div style="font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:white;margin-bottom:6px;">นักเรียน</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.5;">ทำแบบทดสอบ<br>รับใบงานเฉพาะตัว</div>
+    </div>
+    <!-- ครู -->
+    <div onclick="enterAsTeacher()" style="cursor:pointer;background:linear-gradient(135deg,#d97706,#f59e0b);border-radius:20px;padding:32px 36px;width:200px;text-align:center;box-shadow:0 8px 32px rgba(217,119,6,0.4);transition:all .2s;border:2px solid transparent;"
+      onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 14px 40px rgba(217,119,6,0.55)'"
+      onmouseout="this.style.transform='';this.style.boxShadow='0 8px 32px rgba(217,119,6,0.4)'">
+      <div style="font-size:48px;margin-bottom:14px;">👨‍🏫</div>
+      <div style="font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:white;margin-bottom:6px;">ครู</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.5;">ดู Dashboard<br>ปริ้นใบงานทั้งห้อง</div>
+    </div>
+  </div>
+  <div style="margin-top:32px;font-size:12px;color:#475569;">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
+</div>
+
+<!-- TEACHER ROLE PASSWORD MODAL -->
+<div id="rolePassModal" style="display:none;position:fixed;inset:0;background:rgba(10,22,40,0.85);z-index:6000;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:36px 32px;width:340px;max-width:90vw;box-shadow:0 24px 60px rgba(0,0,0,0.3);text-align:center;">
+    <div style="font-size:36px;margin-bottom:10px;">🔐</div>
+    <div style="font-family:'Prompt',sans-serif;font-size:18px;font-weight:700;color:#0f172a;margin-bottom:6px;">รหัสผ่านครู</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:20px;">กรอกรหัสผ่านเพื่อเข้า Dashboard</div>
+    <input id="rolePassInput" type="password" placeholder="รหัสผ่านครู..." 
+      style="width:100%;padding:12px 16px;border:2px solid #dde3ec;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:15px;box-sizing:border-box;outline:none;margin-bottom:10px;"
+      onkeydown="if(event.key==='Enter')checkRolePass()"
+      onfocus="this.style.borderColor='#1d6aff'" onblur="this.style.borderColor='#dde3ec'"/>
+    <div id="rolePassErr" style="color:#ef4444;font-size:13px;min-height:18px;margin-bottom:10px;"></div>
+    <button onclick="checkRolePass()" style="width:100%;padding:13px;background:linear-gradient(135deg,#d97706,#f59e0b);color:white;border:none;border-radius:10px;font-family:'Prompt',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">เข้า Dashboard →</button>
+    <button onclick="closeRolePass()" style="width:100%;padding:10px;background:#f1f5f9;color:#64748b;border:none;border-radius:10px;font-family:'Sarabun',sans-serif;font-size:14px;cursor:pointer;">← กลับ</button>
   </div>
 </div>
 
@@ -357,7 +401,7 @@ MathJax = {
       <!-- WORKSHEET -->
       <div class="worksheet-card" id="worksheetCard" style="display:none;">
         <div class="ws-header">
-          <div class="ws-title">📝 ใบงานแบบฝึกหัดเฉพาะตัว — 10 ข้อ</div>
+          <div class="ws-title" id="wsTitle">📝 ใบงานแบบฝึกหัดเฉพาะตัว</div>
           <div class="ws-meta" id="wsMeta"></div>
         </div>
         <div class="ws-body" id="wsBody"></div>
@@ -652,7 +696,7 @@ const CURRICULUM = {
 
 // ===== GOOGLE SHEETS CONFIG =====
 // วาง Web App URL ที่ได้จาก Apps Script Deploy ตรงนี้
-const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx9i-7SjU3QZMqLuMQh0484TflgpgKKlsQiHkAZwpkmHg_tcJ3zabe02GMNZofGlYN3/exec";
+const SHEETS_WEBAPP_URL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HEREhttps://script.google.com/macros/s/AKfycbx9i-7SjU3QZMqLuMQh0484TflgpgKKlsQiHkAZwpkmHg_tcJ3zabe02GMNZofGlYN3/exec";
 const SHEETS_ID = "1ScLPqpAU6qM8hodzjQXzqUw5_9L9N-CaMk7ab6ohaUE";
 
 // ===== STATE =====
@@ -667,16 +711,67 @@ window.onload=()=>{
   const urlKey = urlParams.get('k');
   const urlPass = urlParams.get('p');
   const urlMode = urlParams.get('mode');
-  
+
   const k = urlKey || localStorage.getItem('mskey3');
   const p = urlPass || localStorage.getItem('msteacher3');
-  
+
   if(k && k.length > 20){
     GKEY=k; TPASS=p||'teacher1234';
-    showApp(); return;
+    DB_KEY = 'mathscan_' + (TPASS||'default');
+    // มีลิงก์พร้อม key — แสดง Role Selection
+    if(urlMode==='teacher'){
+      // ลิงก์ครูตรง → ถามรหัสผ่านทันที
+      showRoleScreen(); enterAsTeacher(); return;
+    }
+    showRoleScreen(); return;
   }
-  // ถ้าไม่มี key ให้แสดง modal
+  // ไม่มี key — แสดง setup modal
 };
+
+function showRoleScreen(){
+  document.getElementById('keyModal').style.display='none';
+  const rs = document.getElementById('roleScreen');
+  rs.style.display='flex';
+}
+
+function enterAsStudent(){
+  document.getElementById('roleScreen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  setTimeout(greetUser,300);
+}
+
+function enterAsTeacher(){
+  // แสดง role password modal
+  document.getElementById('rolePassModal').style.display='flex';
+  document.getElementById('rolePassInput').value='';
+  document.getElementById('rolePassErr').textContent='';
+  setTimeout(()=>document.getElementById('rolePassInput').focus(),100);
+}
+
+function closeRolePass(){
+  document.getElementById('rolePassModal').style.display='none';
+  // กลับไป role screen
+  document.getElementById('roleScreen').style.display='flex';
+}
+
+function checkRolePass(){
+  const p = document.getElementById('rolePassInput').value;
+  if(p === TPASS){
+    document.getElementById('rolePassModal').style.display='none';
+    document.getElementById('roleScreen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    renderDash();
+    document.getElementById('dashModal').classList.add('open');
+    if(dashRefreshInterval) clearInterval(dashRefreshInterval);
+    dashRefreshInterval = setInterval(()=>{
+      if(document.getElementById('dashModal').classList.contains('open')) renderDash();
+    }, 30000);
+  } else {
+    document.getElementById('rolePassErr').textContent='❌ รหัสผ่านไม่ถูกต้อง';
+    document.getElementById('rolePassInput').select();
+  }
+}
+
 function saveKey(){
   const k=document.getElementById('apiKeyInput').value.trim();
   const p=document.getElementById('teacherPwInput').value.trim();
@@ -688,19 +783,9 @@ function saveKey(){
 function showApp(){
   if(GKEY) localStorage.setItem('mskey3', GKEY);
   if(TPASS) localStorage.setItem('msteacher3', TPASS);
-  // DB key รวม teacher password เพื่อแยกข้อมูลแต่ละห้อง
   DB_KEY = 'mathscan_' + (TPASS||'default');
   document.getElementById('keyModal').style.display='none';
-  // ตรวจ URL mode
-  const urlParams = new URLSearchParams(window.location.search);
-  if(urlParams.get('mode')==='teacher'){
-    document.getElementById('app').style.display='flex';
-    renderDash();
-    document.getElementById('dashModal').classList.add('open');
-    return;
-  }
-  document.getElementById('app').style.display='flex';
-  setTimeout(greetUser,300);
+  showRoleScreen();
 }
 function changeKey(){localStorage.removeItem('mskey3');location.reload();}
 
@@ -908,13 +993,12 @@ async function printStudentWorksheet(idx){
     // สร้าง print window
     const now = new Date();
     const levelColors={'พื้นฐาน':'#059669','ประยุกต์':'#d97706','สูง':'#dc2626'};
+    const writingLns=Array(6).fill('').map(()=>'<div style="border-bottom:1.5px solid #c8d3e0;height:28px;margin-bottom:3px;"></div>').join('');
     const itemsHTML = exercises.map(ex=>`
       <div class="item">
         <div class="num">ข้อที่ ${ex.num} <span style="background:${levelColors[ex.level]||'#64748b'};color:white;padding:1px 8px;border-radius:10px;font-size:10px;margin-left:6px;">${ex.level}</span></div>
         <div class="q">${ex.q}</div>
-        <div class="method"><strong>วิธีทำ:</strong> ${(ex.method||'').replace(/\n/g,'<br>')}</div>
-        <div class="ans">✅ คำตอบ: ${ex.ans}</div>
-        <div class="blank">พื้นที่ทำงาน: ................................................................................................</div>
+        <div style="padding:8px 4px 4px;">${writingLns}</div>
       </div>`).join('');
 
     const scoreColor = r.pct>=80?'#059669':r.pct>=60?'#d97706':'#dc2626';
@@ -1176,7 +1260,7 @@ async function showResult(){
     const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
     await saveResult({name:studentName,grade:selectedGrade,topic:selectedTopic.topic,subtopic:selectedSubtopic,pct,correct,wrong,total:TOTAL_Q,wrongTopics:wrongItems.map(a=>a.q.substring(0,40)),time,date:now.toLocaleDateString('th-TH')});
     showResultScreen(pct,analysis,wrongItems);
-    generateWorksheet(wrongItems);
+    generateWorksheet(wrongItems, pct);
   }catch(e){rmTyping();showResultScreen(pct,'ทำได้ดีมากครับ! ขอให้ฝึกฝนต่อไปนะครับ',wrongItems);}
 }
 
@@ -1195,29 +1279,35 @@ function showResultScreen(pct,analysis,wrongItems){
   }
 }
 
-async function generateWorksheet(wrongItems){
+async function generateWorksheet(wrongItems, scorePct){
   const card=document.getElementById('worksheetCard');
   const body=document.getElementById('wsBody');
   const meta=document.getElementById('wsMeta');
   card.style.display='block';
   meta.textContent=`${studentName} | ${selectedGrade} | ${selectedSubtopic} | วันที่ ${new Date().toLocaleDateString('th-TH')}`;
-  body.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:14px;">🤖 AI กำลังสร้างใบงานแบบฝึกหัด 10 ข้อ...</div>';
-  const weak=wrongItems.length?wrongItems.slice(0,3).map(a=>a.q.substring(0,50)).join('; '):'ทบทวนเนื้อหาทั่วไป';
 
-  const prompt=`สร้างแบบฝึกหัด 10 ข้อ สำหรับนักเรียน ${selectedGrade} เรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
+  // ปรับจำนวนข้อตามผลการประเมิน
+  const sp = scorePct !== undefined ? scorePct : pct;
+  let numQ=10, qNote='(ต้องพัฒนา — ฝึกเต็ม 10 ข้อ)';
+  if(sp>=80){ numQ=5; qNote='(ระดับดี — ทบทวน 5 ข้อ)'; }
+  else if(sp>=60){ numQ=7; qNote='(ระดับกลาง — ฝึกเพิ่ม 7 ข้อ)'; }
+  document.getElementById('wsTitle').textContent = `📝 ใบงานแบบฝึกหัดเฉพาะตัว — ${numQ} ข้อ ${qNote}`;
+  body.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted);font-size:14px;">🤖 AI กำลังสร้างใบงาน ${numQ} ข้อ...</div>`;
+
+  const weak=wrongItems.length?wrongItems.slice(0,3).map(a=>a.q.substring(0,50)).join('; '):'ทบทวนเนื้อหาทั่วไป';
+  const levelDist=numQ===5?'- ข้อที่ 1-3: ระดับพื้นฐาน\n- ข้อที่ 4-5: ระดับประยุกต์':numQ===7?'- ข้อที่ 1-3: ระดับพื้นฐาน\n- ข้อที่ 4-6: ระดับประยุกต์\n- ข้อที่ 7: ระดับสูง':'- ข้อที่ 1-4: ระดับพื้นฐาน\n- ข้อที่ 5-8: ระดับประยุกต์\n- ข้อที่ 9-10: ระดับสูง';
+
+  const prompt=`สร้างแบบฝึกหัด ${numQ} ข้อ สำหรับนักเรียน ${selectedGrade} เรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
 จุดอ่อนที่พบ: ${weak}
 
-แบ่งระดับดังนี้:
-- ข้อที่ 1-4: ระดับพื้นฐาน
-- ข้อที่ 5-8: ระดับประยุกต์
-- ข้อที่ 9-10: ระดับสูง
+${levelDist}
 
-กฎสำคัญ: ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย ห้ามใส่ markdown ห้ามใส่ field svg หรือ field อื่นนอกจากที่กำหนด
-แต่ละ object มีเฉพาะ 5 field นี้เท่านั้น:
-{"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทย","method":"วิธีแก้ทีละขั้น","ans":"คำตอบ"}
+กฎสำคัญ:
+1. ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย
+2. ห้ามใส่ field "ans" หรือ "method" หรือ "svg" ทุกกรณี
+3. แต่ละ object มีเฉพาะ 3 field: {"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทย"}
 
-ตัวอย่าง:
-[{"num":1,"level":"พื้นฐาน","q":"โจทย์...","method":"ขั้นที่ 1...","ans":"..."},{"num":2,...}]`;
+ตัวอย่าง: [{"num":1,"level":"พื้นฐาน","q":"จงหาค่า x จากสมการ 2x+3=11"},{"num":2,"level":"พื้นฐาน","q":"..."}]`;
 
   try{
     const raw=await callAI(prompt);
@@ -1262,8 +1352,10 @@ async function generateWorksheet(wrongItems){
       ans: ex.ans || ''
     }));
 
+    exercises=exercises.map(ex=>({num:ex.num||0,level:ex.level||'',q:ex.q||''}));
     exerciseData=exercises;
     const levelColors={'พื้นฐาน':'#059669','ประยุกต์':'#d97706','สูง':'#dc2626'};
+    const writingLines=Array(6).fill('').map(()=>'<div style="border-bottom:1.5px solid #c8d3e0;height:28px;margin-bottom:3px;"></div>').join('');
     body.innerHTML=exercises.map(ex=>`
       <div class="ws-item">
         <div class="ws-num">
@@ -1271,9 +1363,7 @@ async function generateWorksheet(wrongItems){
           <span style="background:${levelColors[ex.level]||'#64748b'};color:white;padding:1px 8px;border-radius:10px;font-size:10px;margin-left:6px;">${ex.level}</span>
         </div>
         <div class="ws-q">${ex.q}</div>
-        <div class="ws-method"><strong>วิธีทำ:</strong><br>${(ex.method||'').replace(/\n/g,'<br>')}</div>
-        <div class="ws-ans">✅ คำตอบ: ${ex.ans}</div>
-        <div class="ws-blank">📝 พื้นที่ทำงานของนักเรียน: ............................................................................</div>
+        <div style="padding:10px 6px 4px;">${writingLines}</div>
       </div>`).join('');
   }catch(e){
     console.error('Worksheet error:',e);
