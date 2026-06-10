@@ -266,6 +266,8 @@ MathJax = {
   <div class="dash-topbar">
     <div class="dash-title">📊 Teacher Dashboard — MathScan AI</div>
     <div class="dash-actions-top">
+      <span id="sheetsSyncStatus" style="font-size:12px;color:var(--muted);align-self:center;margin-right:4px;">💾 ข้อมูลเฉพาะเครื่องนี้</span>
+      <button class="dash-export-btn no-print" onclick="renderDash()" style="border-color:#a5b4fc;color:#4338ca;background:#eef2ff;" title="รีเฟรชข้อมูลจาก Sheets">🔄 รีเฟรช</button>
       <button class="dash-export-btn pdf-btn no-print" onclick="dashToPDF()">📄 Export PDF</button>
       <button class="dash-export-btn no-print" onclick="exportCSV()">📥 CSV</button>
       <button class="dash-export-btn no-print" onclick="clearData()">🗑 ล้างข้อมูล</button>
@@ -364,56 +366,283 @@ MathJax = {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-// ===== CURRICULUM =====
+// ===== CURRICULUM (อิงตัวชี้วัด ว9/2560 สสวท.) =====
 const CURRICULUM = {
   "ม.1":[
-    {topic:"จำนวนนับและการประยุกต์",indicator:"ค 1.1 ม.1/1-4",subs:["ความหมายและชนิดของจำนวนนับ","จำนวนเฉพาะและการระบุ","การแยกตัวประกอบเป็นจำนวนเฉพาะ","ตัวหารร่วมมาก (ห.ร.ม.)","ตัวคูณร่วมน้อย (ล.ค.น.)","โจทย์ปัญหา ห.ร.ม. และ ล.ค.น."]},
-    {topic:"จำนวนเต็ม",indicator:"ค 1.1 ม.1/5-8",subs:["ความหมายและชนิดของจำนวนเต็ม","การเปรียบเทียบและเรียงลำดับจำนวนเต็ม","การบวกจำนวนเต็มบวกและลบ","การลบจำนวนเต็ม — เครื่องหมายซ้อนกัน","การคูณจำนวนเต็ม — กฎเครื่องหมาย","การหารจำนวนเต็ม — กฎเครื่องหมาย","สมบัติของจำนวนเต็ม","โจทย์ปัญหาจำนวนเต็มในชีวิตจริง"]},
-    {topic:"เศษส่วนและทศนิยม",indicator:"ค 1.1 ม.1/9-12",subs:["เศษส่วนและการทำให้อยู่ในรูปอย่างต่ำ","การบวกและลบเศษส่วน","การคูณและหารเศษส่วน","ทศนิยมและค่าประจำหลัก","การบวก ลบ คูณ หาร ทศนิยม","การแปลงเศษส่วนเป็นทศนิยม","โจทย์ปัญหาเศษส่วนและทศนิยม"]},
-    {topic:"สมการเชิงเส้นตัวแปรเดียว",indicator:"ค 4.1 ม.1/1-3",subs:["นิพจน์และการแทนค่าตัวแปร","ความหมายของสมการและคำตอบ","การแก้สมการโดยการบวก ลบ ทั้งสองข้าง","การแก้สมการโดยการคูณ หาร ทั้งสองข้าง","การแก้สมการที่มีวงเล็บ","การสร้างสมการจากโจทย์ปัญหา","โจทย์ปัญหาสมการเชิงเส้น"]},
-    {topic:"พื้นฐานเรขาคณิต",indicator:"ค 2.1 ม.1/1-5",subs:["จุด เส้นตรง รังสี ส่วนของเส้นตรง","มุมและชนิดของมุม","มุมที่เกิดจากเส้นตัดกัน","เส้นขนานและมุมที่เกี่ยวข้อง","รูปสามเหลี่ยมและสมบัติ"]},
-    {topic:"สถิติเบื้องต้น",indicator:"ค 3.1 ม.1/1-3",subs:["การเก็บรวบรวมข้อมูลและตารางความถี่","แผนภูมิแท่ง","ค่าเฉลี่ยเลขคณิต","มัธยฐาน","ฐานนิยม","การเลือกใช้ค่ากลางที่เหมาะสม"]},
+    {topic:"จำนวนตรรกยะ",indicator:"ค 1.1 ม.1/1",subs:[
+      "จำนวนเต็มบวก จำนวนเต็มลบ ศูนย์ และสมบัติ",
+      "การบวก การลบจำนวนเต็ม",
+      "การคูณ การหารจำนวนเต็ม — กฎเครื่องหมาย",
+      "ทศนิยมและเศษส่วน",
+      "จำนวนตรรกยะและสมบัติของจำนวนตรรกยะ",
+      "เลขยกกำลังที่มีเลขชี้กำลังเป็นจำนวนเต็มบวก",
+      "การนำความรู้จำนวนตรรกยะไปแก้ปัญหา"
+    ]},
+    {topic:"อัตราส่วน สัดส่วน และร้อยละ",indicator:"ค 1.1 ม.1/3",subs:[
+      "อัตราส่วนของจำนวนหลาย ๆ จำนวน",
+      "สัดส่วนและการแก้โจทย์",
+      "ร้อยละ — กำไร ขาดทุน ดอกเบี้ย ส่วนลด",
+      "การนำอัตราส่วน สัดส่วน และร้อยละไปแก้ปัญหา"
+    ]},
+    {topic:"สมการเชิงเส้นตัวแปรเดียว",indicator:"ค 1.3 ม.1/1",subs:[
+      "สมบัติของการเท่ากันและสมบัติของจำนวน",
+      "สมการเชิงเส้นตัวแปรเดียว",
+      "การแก้สมการเชิงเส้นตัวแปรเดียว",
+      "การนำสมการเชิงเส้นไปใช้ในชีวิตจริง"
+    ]},
+    {topic:"ความสัมพันธ์เชิงเส้นและกราฟ",indicator:"ค 1.3 ม.1/2-3",subs:[
+      "กราฟของความสัมพันธ์",
+      "สมการเชิงเส้นสองตัวแปร",
+      "ความสัมพันธ์เชิงเส้น",
+      "การนำกราฟและความสัมพันธ์เชิงเส้นไปแก้ปัญหา"
+    ]},
+    {topic:"การสร้างทางเรขาคณิตและมิติสัมพันธ์",indicator:"ค 2.2 ม.1/1-2",subs:[
+      "การสร้างพื้นฐานทางเรขาคณิต (วงเวียนและสันตรง)",
+      "การสร้างรูปเรขาคณิตสองมิติ",
+      "หน้าตัดของรูปเรขาคณิตสามมิติ",
+      "ภาพที่ได้จากการมองด้านหน้า ด้านข้าง ด้านบน"
+    ]},
+    {topic:"สถิติและการนำเสนอข้อมูล",indicator:"ค 3.1 ม.1/1",subs:[
+      "การตั้งคำถามทางสถิติและการเก็บรวบรวมข้อมูล",
+      "แผนภูมิรูปภาพ แผนภูมิแท่ง กราฟเส้น",
+      "แผนภูมิรูปวงกลม",
+      "การแปลความหมายข้อมูลและการนำสถิติไปใช้"
+    ]},
   ],
   "ม.2":[
-    {topic:"อัตราส่วนและร้อยละ",indicator:"ค 1.1 ม.2/1-4",subs:["ความหมายและการเขียนอัตราส่วน","อัตราส่วนที่เท่ากัน","สัดส่วนและการแก้โจทย์","ร้อยละและการแปลง","โจทย์กำไรและขาดทุน","โจทย์ดอกเบี้ยและส่วนลด"]},
-    {topic:"เลขยกกำลัง",indicator:"ค 1.1 ม.2/5-7",subs:["ความหมายของเลขยกกำลัง","การคูณเลขยกกำลังฐานเดียวกัน","การหารเลขยกกำลัง","เลขชี้กำลังเป็นศูนย์และลบ","สัญกรณ์วิทยาศาสตร์"]},
-    {topic:"พหุนามและการแยกตัวประกอบ",indicator:"ค 4.1 ม.2/1-4",subs:["เอกนามและการดำเนินการ","พหุนามและการบวกลบ","การคูณพหุนาม","การแยกตัวประกอบโดยดึงตัวร่วม","การแยกตัวประกอบผลต่างกำลังสอง","การแยกตัวประกอบพหุนามดีกรีสอง"]},
-    {topic:"ระบบสมการเชิงเส้นสองตัวแปร",indicator:"ค 4.1 ม.2/5-7",subs:["กราฟของสมการเชิงเส้นสองตัวแปร","ระบบสมการและคำตอบ","การแก้ระบบสมการวิธีแทนค่า","การแก้ระบบสมการวิธีกำจัด","โจทย์ปัญหาระบบสมการ"]},
-    {topic:"พื้นที่ผิวและปริมาตร",indicator:"ค 2.1 ม.2/1-5",subs:["พื้นที่ผิวและปริมาตรปริซึม","พื้นที่ผิวและปริมาตรทรงกระบอก","พื้นที่ผิวและปริมาตรพีระมิด","พื้นที่ผิวและปริมาตรกรวย","พื้นที่ผิวและปริมาตรทรงกลม"]},
-    {topic:"การแปลงทางเรขาคณิต",indicator:"ค 2.2 ม.2/1-3",subs:["การเลื่อนขนาน (Translation)","การสะท้อน (Reflection)","การหมุน (Rotation)","การแปลงผสม"]},
+    {topic:"เลขยกกำลังที่มีเลขชี้กำลังเป็นจำนวนเต็ม",indicator:"ค 1.1 ม.2/1",subs:[
+      "เลขยกกำลังที่มีเลขชี้กำลังเป็นจำนวนเต็มลบและศูนย์",
+      "สมบัติของเลขยกกำลัง (การคูณ การหาร)",
+      "สัญกรณ์วิทยาศาสตร์",
+      "การนำเลขยกกำลังไปแก้ปัญหา"
+    ]},
+    {topic:"พหุนาม",indicator:"ค 1.2 ม.2/1",subs:[
+      "พหุนามและการดำเนินการ (บวก ลบ คูณ)",
+      "การหารพหุนามด้วยเอกนาม",
+      "การแยกตัวประกอบ — ดึงตัวร่วม",
+      "การแยกตัวประกอบ — กำลังสองสมบูรณ์",
+      "การแยกตัวประกอบ — ผลต่างของกำลังสอง",
+      "การแยกตัวประกอบพหุนามดีกรีสอง"
+    ]},
+    {topic:"การแก้สมการเชิงเส้นสองตัวแปร",indicator:"ค 1.3 ม.2/—",subs:[
+      "กราฟของสมการเชิงเส้นสองตัวแปร",
+      "ระบบสมการเชิงเส้นสองตัวแปร",
+      "การแก้ระบบสมการโดยวิธีแทนค่า",
+      "การแก้ระบบสมการโดยวิธีกำจัด",
+      "การนำระบบสมการไปแก้ปัญหา"
+    ]},
+    {topic:"พื้นที่ผิวและปริมาตร — ปริซึมและทรงกระบอก",indicator:"ค 2.1 ม.2/1-2",subs:[
+      "พื้นที่ผิวของปริซึม",
+      "ปริมาตรของปริซึม",
+      "พื้นที่ผิวของทรงกระบอก",
+      "ปริมาตรของทรงกระบอก",
+      "การนำความรู้ไปแก้ปัญหาในชีวิตจริง"
+    ]},
+    {topic:"การแปลงทางเรขาคณิต",indicator:"ค 2.2 ม.2/3",subs:[
+      "การเลื่อนขนาน (Translation)",
+      "การสะท้อน (Reflection)",
+      "การหมุน (Rotation)",
+      "ความเท่ากันทุกประการของรูปสามเหลี่ยม",
+      "ทฤษฎีบทพีทาโกรัสและบทกลับ"
+    ]},
+    {topic:"สถิติ — แผนภาพจุด ต้น-ใบ ฮิสโทแกรม",indicator:"ค 3.1 ม.2/1",subs:[
+      "แผนภาพจุด (Dot Plot)",
+      "แผนภาพต้น-ใบ (Stem-and-Leaf)",
+      "ฮิสโทแกรม (Histogram)",
+      "ค่ากลางของข้อมูล — ค่าเฉลี่ย มัธยฐาน ฐานนิยม",
+      "การแปลความหมายผลลัพธ์และการนำสถิติไปใช้"
+    ]},
   ],
   "ม.3":[
-    {topic:"ทฤษฎีบทพีทาโกรัส",indicator:"ค 2.1 ม.3/1-3",subs:["ทฤษฎีบทพีทาโกรัสและบทกลับ","การหาด้านในสามเหลี่ยมมุมฉาก","Triple พีทาโกรัส","การประยุกต์ในชีวิตจริง"]},
-    {topic:"ความคล้าย",indicator:"ค 2.1 ม.3/4-6",subs:["รูปคล้ายและสมบัติ","เงื่อนไขสามเหลี่ยมคล้าย (AA, SAS, SSS)","อัตราส่วนความยาวและพื้นที่","การประยุกต์หาระยะทาง"]},
-    {topic:"วงกลม",indicator:"ค 2.1 ม.3/7-10",subs:["ส่วนประกอบวงกลม คอร์ด","เส้นสัมผัสวงกลม","มุมที่จุดศูนย์กลางและมุมที่จารึก","โจทย์ปัญหาวงกลม"]},
-    {topic:"สมการกำลังสอง",indicator:"ค 4.1 ม.3/1-4",subs:["ความหมายและรูปทั่วไป","การแก้สมการโดยการแยกตัวประกอบ","การแก้สมการโดยทำกำลังสองสมบูรณ์","การแก้สมการโดยใช้สูตร (-b±√Δ)/2a","ตัวแยกแยะและจำนวนคำตอบ","โจทย์ปัญหาสมการกำลังสอง"]},
-    {topic:"ความน่าจะเป็น",indicator:"ค 3.1 ม.3/1-4",subs:["การทดลองสุ่มและปริภูมิตัวอย่าง","แผนภาพต้นไม้","ความน่าจะเป็นของเหตุการณ์","เหตุการณ์เสริมกัน","โจทย์ปัญหาความน่าจะเป็น"]},
-    {topic:"กราฟและความสัมพันธ์",indicator:"ค 4.2 ม.3/1-3",subs:["ระนาบพิกัดฉาก","กราฟ y = mx + b","ความชันและจุดตัดแกน","การแปลความหมายกราฟ"]},
+    {topic:"จำนวนจริง",indicator:"ค 1.1 ม.3/2",subs:[
+      "จำนวนอตรรกยะ",
+      "จำนวนจริงและความสัมพันธ์ของจำนวนจริง",
+      "รากที่สองและรากที่สามของจำนวนตรรกยะ",
+      "การนำความรู้เกี่ยวกับจำนวนจริงไปแก้ปัญหา"
+    ]},
+    {topic:"สมการกำลังสองตัวแปรเดียว",indicator:"ค 1.3 ม.3/2",subs:[
+      "สมการกำลังสองตัวแปรเดียว รูปทั่วไป",
+      "การแก้สมการโดยการแยกตัวประกอบ",
+      "การแก้สมการโดยสูตร x = (-b ± √(b²-4ac)) / 2a",
+      "ตัวแยกแยะ (Discriminant) และจำนวนคำตอบ",
+      "การนำสมการกำลังสองไปแก้ปัญหา"
+    ]},
+    {topic:"ระบบสมการเชิงเส้นสองตัวแปร",indicator:"ค 1.3 ม.3/3",subs:[
+      "ระบบสมการเชิงเส้นสองตัวแปร",
+      "การแก้ระบบสมการเชิงเส้นสองตัวแปร",
+      "การนำระบบสมการไปแก้ปัญหา"
+    ]},
+    {topic:"ความคล้ายและอัตราส่วนตรีโกณมิติ",indicator:"ค 2.2 ม.3/1-2",subs:[
+      "รูปสามเหลี่ยมที่คล้ายกัน",
+      "เงื่อนไขความคล้าย (AA, SAS, SSS)",
+      "การนำความคล้ายไปแก้ปัญหา",
+      "อัตราส่วนตรีโกณมิติ (sin, cos, tan)",
+      "การนำ sin 30°, 45°, 60° ไปใช้แก้ปัญหา"
+    ]},
+    {topic:"พื้นที่ผิวและปริมาตร — พีระมิด กรวย ทรงกลม",indicator:"ค 2.1 ม.3/1-2",subs:[
+      "พื้นที่ผิวของพีระมิด",
+      "พื้นที่ผิวของกรวย",
+      "พื้นที่ผิวของทรงกลม",
+      "ปริมาตรของพีระมิด กรวย ทรงกลม",
+      "การนำความรู้ไปแก้ปัญหาในชีวิตจริง"
+    ]},
+    {topic:"ทฤษฎีบทวงกลมและสถิติแผนภาพกล่อง",indicator:"ค 2.2 / ค 3.1 ม.3",subs:[
+      "วงกลม คอร์ด และเส้นสัมผัส",
+      "ทฤษฎีบทเกี่ยวกับวงกลม",
+      "อสมการเชิงเส้นตัวแปรเดียว",
+      "แผนภาพกล่อง (Box Plot)",
+      "ความน่าจะเป็นของเหตุการณ์จากการทดลองสุ่ม"
+    ]},
   ],
   "ม.4":[
-    {topic:"เซต",indicator:"ค 4.1 ม.4/1-5",subs:["ความหมายของเซตและการแสดงเซต","สมาชิก ∈ และ ∉","เซตว่างและเอกภพสัมพัทธ์","สับเซตและสับเซตแท้","เพาเวอร์เซต","ยูเนียน (∪)","อินเตอร์เซกชัน (∩)","คอมพลีเมนต์ (A')","ผลต่างของเซต","แผนภาพเวนน์-ออยเลอร์","จำนวนสมาชิก n(A∪B)"]},
-    {topic:"ตรรกศาสตร์",indicator:"ค 4.1 ม.4/6-10",subs:["ประพจน์และค่าความจริง","การเชื่อม 'และ' (∧)","การเชื่อม 'หรือ' (∨)","การเชื่อม 'ถ้า...แล้ว...' (→)","นิเสธ (~p)","ประพจน์ที่สมมูลกัน","สัจนิรันดร์","การอ้างเหตุผล"]},
-    {topic:"จำนวนจริง",indicator:"ค 1.1 ม.4/1-6",subs:["ระบบจำนวนและชนิด","จำนวนตรรกยะและทศนิยม","จำนวนอตรรกยะ","ค่าสัมบูรณ์ |x|","อสมการเชิงเส้น","อสมการค่าสัมบูรณ์","การแสดงคำตอบในรูปช่วง"]},
-    {topic:"ความสัมพันธ์และฟังก์ชัน",indicator:"ค 4.2 ม.4/1-5",subs:["คู่อันดับและผลคูณคาร์ทีเซียน","ความสัมพันธ์ โดเมน เรนจ์","นิยามฟังก์ชัน","ฟังก์ชันหนึ่งต่อหนึ่ง","ฟังก์ชันเชิงเส้น","ฟังก์ชันกำลังสอง","กราฟพาราโบลา"]},
-    {topic:"เลขยกกำลังขั้นสูง",indicator:"ค 1.1 ม.4/7-9",subs:["เลขยกกำลังเศษส่วน","รากที่ n","การดำเนินการกับนิพจน์อตรรกยะ","การทำตัวส่วนปราศจากราก"]},
+    {topic:"เซตและตรรกศาสตร์เบื้องต้น",indicator:"ค 1.1 ม.4/1",subs:[
+      "ความรู้เบื้องต้นและสัญลักษณ์พื้นฐานเกี่ยวกับเซต",
+      "ยูเนียน (∪) อินเตอร์เซกชัน (∩) และคอมพลีเมนต์",
+      "แผนภาพเวนน์-ออยเลอร์",
+      "จำนวนสมาชิก n(A∪B)",
+      "ประพจน์และตัวเชื่อม (นิเสธ และ หรือ ถ้า...แล้ว...)",
+      "การอ้างเหตุผลและสัจนิรันดร์"
+    ]},
+    {topic:"จำนวนจริงและเลขยกกำลัง",indicator:"ค 1.1 ม.4/—",subs:[
+      "จำนวนจริงและสมบัติของจำนวนจริง",
+      "ค่าสัมบูรณ์ของจำนวนจริง",
+      "จำนวนจริงในรูปกรณฑ์",
+      "รากที่ n ของจำนวนจริง เมื่อ n เป็นจำนวนนับ",
+      "เลขยกกำลังที่มีเลขชี้กำลังเป็นจำนวนตรรกยะ",
+      "อสมการเชิงเส้น — การแสดงคำตอบในรูปช่วง"
+    ]},
+    {topic:"ฟังก์ชัน",indicator:"ค 1.2 ม.4/—",subs:[
+      "คู่อันดับและผลคูณคาร์ทีเซียน",
+      "ความสัมพันธ์ โดเมน เรนจ์",
+      "นิยามฟังก์ชัน",
+      "ฟังก์ชันและกราฟของฟังก์ชัน (เชิงเส้น กำลังสอง ขั้นบันได)",
+      "ฟังก์ชันเอกซ์โพเนนเชียล",
+      "การใช้ฟังก์ชันอธิบายสถานการณ์"
+    ]},
+    {topic:"ฟังก์ชันชี้กำลังและลอการิทึม",indicator:"ค 1.2 ม.4/—",subs:[
+      "ฟังก์ชันเอกซ์โพเนนเชียลและกราฟ",
+      "ฟังก์ชันลอการิทึมและสมบัติ",
+      "การเปลี่ยนฐานลอการิทึม",
+      "สมการเอกซ์โพเนนเชียล",
+      "สมการลอการิทึม",
+      "การประยุกต์ใช้ฟังก์ชันชี้กำลังและลอการิทึม"
+    ]},
+    {topic:"เรขาคณิตวิเคราะห์",indicator:"ค 2.1 ม.4/—",subs:[
+      "จุดและเส้นตรงในระนาบพิกัด",
+      "วงกลมและสมการ",
+      "พาราโบลาและสมการ",
+      "วงรีและสมการ",
+      "ไฮเพอร์โบลาและสมการ"
+    ]},
+    {topic:"สถิติ — ตำแหน่งที่และค่าการกระจาย",indicator:"ค 3.1 ม.4/—",subs:[
+      "ตำแหน่งที่ของข้อมูล (เปอร์เซนไทล์ ควอร์ไทล์)",
+      "ค่ากลาง — ฐานนิยม มัธยฐาน ค่าเฉลี่ยเลขคณิต",
+      "ค่าการกระจาย — พิสัย ส่วนเบี่ยงเบนมาตรฐาน ความแปรปรวน",
+      "การนำเสนอข้อมูลเชิงคุณภาพและเชิงปริมาณ",
+      "การแปลความหมายของค่าสถิติเพื่อตัดสินใจ"
+    ]},
   ],
   "ม.5":[
-    {topic:"ฟังก์ชันตรีโกณมิติ",indicator:"ค 4.2 ม.5/1-6",subs:["sin cos tan ในสามเหลี่ยมมุมฉาก","csc sec cot","มุมในหน่วยเรเดียน","วงกลมหนึ่งหน่วย","กราฟ y=sin x และ y=cos x","กราฟ y=tan x","เอกลักษณ์ตรีโกณมิติ","สมการตรีโกณมิติ"]},
-    {topic:"ฟังก์ชันชี้กำลังและลอการิทึม",indicator:"ค 4.2 ม.5/7-10",subs:["ฟังก์ชันชี้กำลัง y=aˣ","ลอการิทึมและสมบัติ","การเปลี่ยนฐานลอการิทึม","สมการชี้กำลัง","สมการลอการิทึม","การประยุกต์ใช้"]},
-    {topic:"ลำดับและอนุกรม",indicator:"ค 1.2 ม.5/1-6",subs:["ลำดับและพจน์ทั่วไป","ลำดับเลขคณิต","ผลบวกลำดับเลขคณิต","ลำดับเรขาคณิต","ผลบวกลำดับเรขาคณิต","อนุกรมอนันต์","สัญลักษณ์ Σ","โจทย์ประยุกต์"]},
-    {topic:"สถิติขั้นสูง",indicator:"ค 3.1 ม.5/1-5",subs:["เปอร์เซนไทล์และควอร์ไทล์","พิสัยควอร์ไทล์ (IQR)","ความแปรปรวนและส่วนเบี่ยงเบนมาตรฐาน","การแจกแจงปกติ","สัมประสิทธิ์สหสัมพันธ์","การถดถอยเชิงเส้น"]},
-    {topic:"ความน่าจะเป็นขั้นสูง",indicator:"ค 3.2 ม.5/1-4",subs:["กฎการคูณ","การเรียงสับเปลี่ยน P(n,r)","การจัดหมู่ C(n,r)","ความน่าจะเป็นรวม","ทฤษฎีบทเบย์"]},
-    {topic:"เมทริกซ์",indicator:"ค 4.1 ม.5/1-5",subs:["เมทริกซ์และชนิด","การบวกลบเมทริกซ์","การคูณเมทริกซ์","ดีเทอร์มิแนนต์ 2×2 และ 3×3","เมทริกซ์ผกผัน","การแก้ระบบสมการด้วยเมทริกซ์"]},
+    {topic:"ฟังก์ชันตรีโกณมิติ",indicator:"ค 1.2 ม.5/—",subs:[
+      "sin cos tan ในสามเหลี่ยมมุมฉากและวงกลมหนึ่งหน่วย",
+      "มุมในหน่วยเรเดียน",
+      "กราฟฟังก์ชันตรีโกณมิติ (y=sin x, y=cos x, y=tan x)",
+      "ฟังก์ชันตรีโกณมิติผกผัน",
+      "เอกลักษณ์ตรีโกณมิติ",
+      "สมการตรีโกณมิติ",
+      "กฎของโคไซน์และกฎของไซน์"
+    ]},
+    {topic:"ลำดับและอนุกรม",indicator:"ค 1.2 ม.5/—",subs:[
+      "ลำดับจำกัดและลำดับอนันต์",
+      "ลำดับเลขคณิตและพจน์ทั่วไป",
+      "ลำดับเรขาคณิตและพจน์ทั่วไป",
+      "อนุกรมเลขคณิต — ผลบวก n พจน์แรก",
+      "อนุกรมเรขาคณิต — ผลบวก n พจน์แรก",
+      "ผลบวกอนุกรมอนันต์",
+      "การนำลำดับและอนุกรมไปใช้ (มูลค่าเงิน ค่ารายงวด)"
+    ]},
+    {topic:"เมทริกซ์",indicator:"ค 1.3 ม.5/—",subs:[
+      "เมทริกซ์และการดำเนินการ (บวก คูณด้วยสเกลาร์ คูณกัน)",
+      "เมทริกซ์สลับเปลี่ยน (Transpose)",
+      "ดีเทอร์มิแนนต์ n×n เมื่อ n ≤ 3",
+      "เมทริกซ์ผกผัน 2×2",
+      "การแก้ระบบสมการเชิงเส้นด้วยเมทริกซ์"
+    ]},
+    {topic:"หลักการนับและความน่าจะเป็น",indicator:"ค 3.2 ม.5/—",subs:[
+      "หลักการบวกและหลักการคูณ",
+      "การเรียงสับเปลี่ยนเชิงเส้น P(n,r)",
+      "การเรียงสับเปลี่ยนเชิงวงกลม",
+      "การจัดหมู่ C(n,r) และทฤษฎีบททวินาม",
+      "ความน่าจะเป็นของเหตุการณ์",
+      "การนำความน่าจะเป็นไปใช้ในชีวิตจริง"
+    ]},
+    {topic:"เวกเตอร์ในสามมิติ",indicator:"ค 2.2 ม.5/—",subs:[
+      "เวกเตอร์และการบวก ลบ คูณด้วยสเกลาร์",
+      "โมดูลัสและเวกเตอร์หน่วย",
+      "ผลคูณเชิงสเกลาร์ (Dot Product)",
+      "ผลคูณเชิงเวกเตอร์ (Cross Product)",
+      "การประยุกต์เวกเตอร์ในสามมิติ"
+    ]},
+    {topic:"จำนวนเชิงซ้อน",indicator:"ค 1.1 ม.5/—",subs:[
+      "จำนวนเชิงซ้อน a+bi และสมบัติ",
+      "การบวก ลบ คูณ หารจำนวนเชิงซ้อน",
+      "สังยุค (Conjugate) และโมดูลัส",
+      "จำนวนเชิงซ้อนในรูปเชิงขั้ว",
+      "รากที่ n ของจำนวนเชิงซ้อน",
+      "สมการพหุนามตัวแปรเดียวในจำนวนเชิงซ้อน"
+    ]},
   ],
   "ม.6":[
-    {topic:"ลิมิตและความต่อเนื่อง",indicator:"ค 4.2 ม.6/1-4",subs:["ความหมายของลิมิต","การคำนวณลิมิตแทนค่าตรง","การคำนวณลิมิตโดยแยกตัวประกอบ","ลิมิตอนันต์","ความต่อเนื่องของฟังก์ชัน"]},
-    {topic:"อนุพันธ์",indicator:"ค 4.2 ม.6/5-9",subs:["ความหมายอนุพันธ์","Power Rule และ Sum Rule","Chain Rule","อนุพันธ์ฟังก์ชันตรีโกณมิติ","อนุพันธ์ชี้กำลังและลอการิทึม","การหาค่าสูงสุด-ต่ำสุด","โจทย์อัตราการเปลี่ยนแปลง"]},
-    {topic:"ปริพันธ์",indicator:"ค 4.2 ม.6/10-13",subs:["ปริพันธ์ไม่จำกัดเขต","การแทนค่า (Substitution)","ทฤษฎีบทมูลฐาน","ปริพันธ์จำกัดเขต","การหาพื้นที่ใต้กราฟ","พื้นที่ระหว่างสองกราฟ"]},
-    {topic:"เวกเตอร์",indicator:"ค 2.2 ม.6/1-5",subs:["เวกเตอร์และการแทน","การบวกลบเวกเตอร์","เวกเตอร์หน่วยและโมดูลัส","ผลคูณจุด (Dot Product)","เวกเตอร์ในสามมิติ","การประยุกต์"]},
-    {topic:"จำนวนเชิงซ้อน",indicator:"ค 1.1 ม.6/1-5",subs:["ความหมาย a+bi","การบวก ลบ คูณ หาร","สังยุคและโมดูลัส","รูปแบบเชิงขั้ว","ทฤษฎีบทเดอมัวฟร์"]},
-    {topic:"เรขาคณิตเชิงวิเคราะห์",indicator:"ค 2.2 ม.6/6-10",subs:["ระยะสองจุดและจุดกึ่งกลาง","สมการเส้นตรง","ระยะจากจุดถึงเส้นตรง","วงกลมและสมการ","พาราโบลา","วงรีและไฮเพอร์โบลา"]},
+    {topic:"แคลคูลัส — ลิมิตและความต่อเนื่อง",indicator:"ค 4.2 ม.6/—",subs:[
+      "ความหมายของลิมิต",
+      "การคำนวณลิมิตโดยแทนค่าตรง",
+      "การคำนวณลิมิตโดยแยกตัวประกอบ",
+      "ลิมิตที่อนันต์",
+      "ความต่อเนื่องของฟังก์ชัน"
+    ]},
+    {topic:"แคลคูลัส — อนุพันธ์",indicator:"ค 4.2 ม.6/—",subs:[
+      "ความหมายของอนุพันธ์",
+      "Power Rule และ Sum Rule",
+      "Product Rule และ Quotient Rule",
+      "Chain Rule",
+      "การหาค่าสูงสุด-ต่ำสุดสัมพัทธ์",
+      "โจทย์อัตราการเปลี่ยนแปลงที่สัมพันธ์กัน"
+    ]},
+    {topic:"แคลคูลัส — ปริพันธ์",indicator:"ค 4.2 ม.6/—",subs:[
+      "ปริพันธ์ไม่จำกัดเขต (Indefinite Integral)",
+      "กฎการหาปริพันธ์พื้นฐาน",
+      "การแทนค่า (Substitution)",
+      "ทฤษฎีบทมูลฐานของแคลคูลัส",
+      "ปริพันธ์จำกัดเขต (Definite Integral)",
+      "การหาพื้นที่ใต้กราฟและระหว่างสองกราฟ"
+    ]},
+    {topic:"ดอกเบี้ยและมูลค่าของเงิน",indicator:"ค 1.3 ม.6/—",subs:[
+      "ดอกเบี้ยเดี่ยวและดอกเบี้ยทบต้น",
+      "มูลค่าปัจจุบันและมูลค่าอนาคต",
+      "ค่ารายงวด (Annuity)",
+      "การนำความรู้ไปแก้ปัญหาทางการเงิน"
+    ]},
+    {topic:"การแจกแจงความน่าจะเป็นเบื้องต้น",indicator:"ค 3.2 ม.6/—",subs:[
+      "ตัวแปรสุ่มและการแจกแจงความน่าจะเป็น",
+      "การแจกแจงเอกรูป (Uniform Distribution)",
+      "การแจกแจงทวินาม (Binomial Distribution)",
+      "การแจกแจงปกติ (Normal Distribution)",
+      "การนำการแจกแจงความน่าจะเป็นไปใช้"
+    ]},
+    {topic:"สมการพหุนามและอสมการขั้นสูง",indicator:"ค 1.3 ม.6/—",subs:[
+      "ตัวประกอบของพหุนาม",
+      "สมการพหุนามดีกรีไม่เกินสี่",
+      "อสมการพหุนาม",
+      "สมการและอสมการเศษส่วนของพหุนาม",
+      "สมการและอสมการค่าสัมบูรณ์"
+    ]},
   ],
 };
+
+// ===== GOOGLE SHEETS CONFIG =====
+// วาง Web App URL ที่ได้จาก Apps Script Deploy ตรงนี้
+const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx9i-7SjU3QZMqLuMQh0484TflgpgKKlsQiHkAZwpkmHg_tcJ3zabe02GMNZofGlYN3/exec";
+const SHEETS_ID = "1ScLPqpAU6qM8hodzjQXzqUw5_9L9N-CaMk7ab6ohaUE";
 
 // ===== STATE =====
 let GKEY="",TPASS="",studentName="",selectedGrade="",selectedTopic=null,selectedSubtopic="";
@@ -465,16 +694,91 @@ function showApp(){
 function changeKey(){localStorage.removeItem('mskey3');location.reload();}
 
 // ===== TEACHER =====
+let dashRefreshInterval = null;
+
 function openDash(){document.getElementById('passModal').style.display='flex';document.getElementById('passInput').value='';document.getElementById('passErr').textContent='';}
 function closePass(){document.getElementById('passModal').style.display='none';}
-function checkPass(){const p=document.getElementById('passInput').value;if(p===TPASS){closePass();renderDash();document.getElementById('dashModal').classList.add('open');}else{document.getElementById('passErr').textContent='❌ รหัสผ่านไม่ถูกต้อง';}}
-function closeDash(){document.getElementById('dashModal').classList.remove('open');}
+function checkPass(){
+  const p=document.getElementById('passInput').value;
+  if(p===TPASS){
+    closePass();
+    renderDash();
+    document.getElementById('dashModal').classList.add('open');
+    // Auto-refresh ทุก 30 วินาที
+    if(dashRefreshInterval) clearInterval(dashRefreshInterval);
+    dashRefreshInterval = setInterval(()=>{
+      if(document.getElementById('dashModal').classList.contains('open')) renderDash();
+    }, 30000);
+  }else{document.getElementById('passErr').textContent='❌ รหัสผ่านไม่ถูกต้อง';}
+}
+function closeDash(){
+  document.getElementById('dashModal').classList.remove('open');
+  if(dashRefreshInterval){clearInterval(dashRefreshInterval);dashRefreshInterval=null;}
+}
 function getResults(){try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]');}catch{return[];}}
-function saveResult(r){const a=getResults();a.push(r);localStorage.setItem(DB_KEY,JSON.stringify(a));}
-function clearData(){if(confirm('ล้างข้อมูลนักเรียนทั้งหมด?')){localStorage.removeItem(DB_KEY);renderDash();}}
 
-function renderDash(){
-  const R=getResults();
+async function saveResult(r){
+  // บันทึกลง localStorage (offline backup)
+  const a=getResults();a.push(r);localStorage.setItem(DB_KEY,JSON.stringify(a));
+  // ส่งไป Google Sheets (ถ้า config แล้ว)
+  if(SHEETS_WEBAPP_URL && SHEETS_WEBAPP_URL !== "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE"){
+    try{
+      await fetch(SHEETS_WEBAPP_URL,{
+        method:"POST",
+        mode:"no-cors",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          action:"addResult",
+          timestamp:new Date().toISOString(),
+          name:r.name,
+          grade:r.grade,
+          topic:r.topic,
+          subtopic:r.subtopic,
+          pct:r.pct,
+          correct:r.correct,
+          wrong:r.wrong,
+          total:r.total,
+          time:r.time,
+          date:r.date,
+          password:TPASS
+        })
+      });
+    }catch(e){console.warn("Sheets sync failed:",e);}
+  }
+}
+
+async function fetchSheetsResults(){
+  if(!SHEETS_WEBAPP_URL || SHEETS_WEBAPP_URL === "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE") return null;
+  try{
+    const url = SHEETS_WEBAPP_URL + "?action=getResults&password=" + encodeURIComponent(TPASS);
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.results || null;
+  }catch(e){console.warn("Sheets fetch failed:",e);return null;}
+}
+
+function clearData(){if(confirm('ล้างข้อมูลนักเรียนทั้งหมด? (ลบเฉพาะเครื่องนี้)')){{localStorage.removeItem(DB_KEY);renderDash();}}}
+
+async function renderDash(){
+  // แสดง loading
+  document.getElementById('summaryGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:14px;">🔄 กำลังโหลดข้อมูล...</div>';
+  
+  // ลองดึงจาก Google Sheets ก่อน ถ้าไม่ได้ใช้ localStorage
+  let R = null;
+  const sheetsConnected = SHEETS_WEBAPP_URL && SHEETS_WEBAPP_URL !== "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+  
+  if(sheetsConnected){
+    R = await fetchSheetsResults();
+    // อัปเดต sync status
+    document.getElementById('sheetsSyncStatus').textContent = R ? '✅ ซิงค์จาก Google Sheets แล้ว' : '⚠️ ใช้ข้อมูลเครื่องนี้ (Sheets offline)';
+    document.getElementById('sheetsSyncStatus').style.color = R ? 'var(--green)' : 'var(--warn)';
+  } else {
+    document.getElementById('sheetsSyncStatus').textContent = '💾 ข้อมูลเฉพาะเครื่องนี้ (ยังไม่ได้เชื่อม Sheets)';
+    document.getElementById('sheetsSyncStatus').style.color = 'var(--muted)';
+  }
+  
+  if(!R) R = getResults();
+  
   const avg=R.length?Math.round(R.reduce((s,r)=>s+r.pct,0)/R.length):0;
   const high=R.filter(r=>r.pct>=80).length;
   const low=R.filter(r=>r.pct<60).length;
@@ -484,7 +788,9 @@ function renderDash(){
     <div class="sum-card"><div class="sum-num" style="color:var(--green)">${high}</div><div class="sum-lbl">ระดับดี (≥80%)</div></div>
     <div class="sum-card"><div class="sum-num" style="color:var(--red)">${low}</div><div class="sum-lbl">ต้องพัฒนา (<60%)</div></div>`;
   const bc=document.getElementById('barChart');
-  if(!R.length){bc.innerHTML='<div style="color:var(--muted);padding:12px;font-size:14px;">ยังไม่มีข้อมูล</div>';return;}
+  if(!R.length){bc.innerHTML='<div style="color:var(--muted);padding:12px;font-size:14px;">ยังไม่มีข้อมูล</div>';
+    document.getElementById('weakGrid').innerHTML='<div style="color:var(--muted);font-size:14px;padding:8px;">ยังไม่มีข้อมูล</div>';
+    document.getElementById('stuBody').innerHTML='';return;}
   bc.innerHTML=R.map(r=>{const c=r.pct>=80?'var(--green2)':r.pct>=60?'var(--warn)':'var(--red)';return`<div class="bar-row"><div class="bar-name">${r.name}</div><div class="bar-wrap"><div class="bar-fill" style="width:${r.pct}%;background:${c};"><span class="bar-pct">${r.pct}%</span></div></div><div class="bar-level">${r.grade}</div></div>`;}).join('');
   const tc={};R.forEach(r=>(r.wrongTopics||[]).forEach(t=>{tc[t]=(tc[t]||0)+1;}));
   const sw=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,6);
@@ -681,7 +987,7 @@ async function showResult(){
   try{
     const analysis=await callAI(prompt);rmTyping();
     const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-    saveResult({name:studentName,grade:selectedGrade,topic:selectedTopic.topic,subtopic:selectedSubtopic,pct,correct,wrong,total:TOTAL_Q,wrongTopics:wrongItems.map(a=>a.q.substring(0,40)),time,date:now.toLocaleDateString('th-TH')});
+    await saveResult({name:studentName,grade:selectedGrade,topic:selectedTopic.topic,subtopic:selectedSubtopic,pct,correct,wrong,total:TOTAL_Q,wrongTopics:wrongItems.map(a=>a.q.substring(0,40)),time,date:now.toLocaleDateString('th-TH')});
     showResultScreen(pct,analysis,wrongItems);
     generateWorksheet(wrongItems);
   }catch(e){rmTyping();showResultScreen(pct,'ทำได้ดีมากครับ! ขอให้ฝึกฝนต่อไปนะครับ',wrongItems);}
@@ -773,17 +1079,20 @@ function worksheetToPDF(){
     <script>
       document.querySelectorAll('.ws-actions,.no-print').forEach(el=>el.remove());
       window.addEventListener('load',()=>{
-        setTimeout(()=>{ window.print(); },500);
+        setTimeout(()=>{ window.print(); },800);
       });
     <\/script>
   </body></html>`;
-  // Mobile-friendly: use blob URL
+  // FIX: append link to document body before clicking (prevents popup blocker)
   const blob = new Blob([htmlContent], {type:'text/html;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);  // ← FIX: ต้อง append ก่อน click
   a.click();
+  document.body.removeChild(a);  // ← ลบออกหลัง click
   setTimeout(()=>URL.revokeObjectURL(url), 5000);
 }
 
