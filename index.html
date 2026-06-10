@@ -262,7 +262,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <button class="dash-export-btn pdf-btn no-print" onclick="dashToPDF()">📄 Export PDF</button>
       <button class="dash-export-btn no-print" onclick="exportCSV()">📥 CSV</button>
       <button class="dash-export-btn no-print" onclick="clearData()">🗑 ล้างข้อมูล</button>
-      <button class="dash-close no-print" onclick="closeDash()">✕ ปิด</button>
+      <button class="dash-export-btn no-print" id="copyLinkBtn" onclick="copyStudentLink()" style="border-color:#6ee7b7;color:#059669;background:#ecfdf5;">🔗 คัดลอกลิงก์นักเรียน</button>
+    <button class="dash-close no-print" onclick="closeDash()">✕ ปิด</button>
     </div>
   </div>
   <div class="dash-wrap" id="dashContent">
@@ -414,8 +415,19 @@ const TOTAL_Q=10;
 const DB_KEY='mathscan_v3';
 
 window.onload=()=>{
-  const k=localStorage.getItem('mskey3');
-  const p=localStorage.getItem('msteacher3');
+  // รับ Key จาก URL parameter ?k=sk-ant-...
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlKey = urlParams.get('k');
+  const urlPass = urlParams.get('p');
+  
+  const k = urlKey || localStorage.getItem('mskey3');
+  const p = urlPass || localStorage.getItem('msteacher3');
+  
+  if(k && k.startsWith('sk-ant-') && k.length > 20){
+    GKEY=k; TPASS=p||'teacher1234';
+    // ถ้ามี key ใน URL ให้ซ่อน modal และเข้าระบบเลย
+    if(urlKey) { showApp(); return; }
+  }
   if(k&&k.length>10){GKEY=k;TPASS=p||'teacher1234';showApp();}
 };
 function saveKey(){
@@ -426,7 +438,14 @@ function saveKey(){
   localStorage.setItem('mskey3',k);localStorage.setItem('msteacher3',TPASS);
   showApp();
 }
-function showApp(){document.getElementById('keyModal').style.display='none';document.getElementById('app').style.display='flex';setTimeout(greetUser,300);}
+function showApp(){
+  // บันทึก key ลง localStorage เมื่อเข้าระบบ
+  if(GKEY) localStorage.setItem('mskey3', GKEY);
+  if(TPASS) localStorage.setItem('msteacher3', TPASS);
+  document.getElementById('keyModal').style.display='none';
+  document.getElementById('app').style.display='flex';
+  setTimeout(greetUser,300);
+}
 function changeKey(){localStorage.removeItem('mskey3');location.reload();}
 
 // ===== TEACHER =====
@@ -456,6 +475,20 @@ function renderDash(){
   const mx=sw[0]?.[1]||1;
   document.getElementById('weakGrid').innerHTML=sw.length?sw.map(([t,c])=>`<div class="weak-item"><div class="weak-topic">${t}</div><div class="weak-count">นักเรียนผิด ${c} คน</div><div class="weak-bar"><div class="weak-bar-fill" style="width:${Math.round(c/mx*100)}%"></div></div></div>`).join(''):'<div style="color:var(--muted);font-size:14px;padding:8px;">ยังไม่มีข้อมูล</div>';
   document.getElementById('stuBody').innerHTML=R.map((r,i)=>{const lc=r.pct>=80?'high':r.pct>=60?'mid':'low';const lt=r.pct>=80?'ดี':r.pct>=60?'ปานกลาง':'ต้องพัฒนา';return`<tr><td style="color:var(--muted)">${i+1}</td><td style="font-weight:600">${r.name}</td><td>${r.grade}</td><td style="font-size:13px">${r.subtopic}</td><td style="font-family:'Space Mono',monospace;font-weight:700;color:${r.pct>=80?'var(--green)':r.pct>=60?'var(--warn)':'var(--red)'}">${r.pct}%</td><td><span class="level-badge ${lc}">${lt}</span></td><td style="color:var(--muted);font-size:12px">${r.time}</td></tr>`;}).join('');
+}
+
+function copyStudentLink(){
+  const key = localStorage.getItem('mskey3') || GKEY;
+  const pass = localStorage.getItem('msteacher3') || TPASS;
+  const base = window.location.href.split('?')[0];
+  const link = `${base}?k=${encodeURIComponent(key)}&p=${encodeURIComponent(pass)}`;
+  navigator.clipboard.writeText(link).then(()=>{
+    const btn = document.getElementById('copyLinkBtn');
+    btn.textContent = '✅ คัดลอกแล้ว!';
+    setTimeout(()=>{ btn.textContent = '🔗 คัดลอกลิงก์นักเรียน'; }, 2000);
+  }).catch(()=>{
+    prompt('คัดลอกลิงก์นี้แล้วส่งให้นักเรียน:', link);
+  });
 }
 
 function exportCSV(){
@@ -543,13 +576,21 @@ async function loadNextQ(){
   if(qIndex>=TOTAL_Q){showResult();return;}
   addTyping();
   const lvl=['ง่าย','ปานกลาง','ยาก'][mcqLevel-1];
-  const prompt=`ครูคณิตศาสตร์ผู้เชี่ยวชาญ สร้างโจทย์เรื่อง "${selectedSubtopic}" หัวข้อหลัก "${selectedTopic.topic}" ${selectedGrade} ความยาก: ${lvl} อิงตัวชี้วัด ${selectedTopic.indicator} หลักสูตรแกนกลาง 2560
+  const prompt=`คุณเป็นครูคณิตศาสตร์ผู้เชี่ยวชาญ สร้างข้อสอบเรื่อง "${selectedSubtopic}" หัวข้อ "${selectedTopic.topic}" ระดับ ${selectedGrade} ความยาก: ${lvl}
+อิงตัวชี้วัด ${selectedTopic.indicator} หลักสูตรแกนกลาง 2560
 
-ขั้นตอน: คิดโจทย์ → คำนวณคำตอบที่ถูก → ตรวจสอบซ้ำ → สร้างตัวเลือกผิด 3 ข้อ
-กฎ: choices[ans] ต้องเป็นคำตอบที่ถูกเท่านั้น
+ทำตามขั้นตอนนี้:
+STEP 1: คิดโจทย์ที่ชัดเจน
+STEP 2: คำนวณคำตอบที่ถูกต้องทีละขั้น จนได้ผลลัพธ์สุดท้าย
+STEP 3: ตรวจสอบคำตอบอีกครั้ง
+STEP 4: สร้างตัวเลือกผิด 3 ข้อที่สมเหตุสมผลแต่ผิดจริง
+STEP 5: วางตัวเลือก 4 ข้อ กำหนด ans ให้ตรงกับคำตอบใน STEP 2
 
-ตอบ JSON เท่านั้น:
-{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีทำสั้นๆ"}`;
+ข้อบังคับเด็ดขาด: choices[ans] ต้องเป็นคำตอบที่คำนวณได้จาก STEP 2 เท่านั้น
+ตรวจสอบ: choices[${'{ans}'}] === คำตอบที่ถูก ก่อน output
+
+ตอบเฉพาะ JSON ห้ามมีข้อความอื่น:
+{"q":"โจทย์ภาษาไทยชัดเจน","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีทำทีละขั้น"}`;
   try{
     const raw=await callAI(prompt);const json=raw.match(/\{[\s\S]*\}/)?.[0];
     const q=JSON.parse(json);
@@ -667,40 +708,43 @@ async function generateWorksheet(wrongItems){
 
 function worksheetToPDF(){
   const now=new Date();
-  const wsContent=document.getElementById('worksheetCard').innerHTML;
-  const printWin=window.open('','_blank');
-  printWin.document.write(`
-    <html><head>
+  const wsBodyHTML=document.getElementById('wsBody').innerHTML;
+  const htmlContent=`<!DOCTYPE html><html><head>
     <meta charset="UTF-8">
-    <title>ใบงาน MathScan AI — ${studentName}</title>
+    <title>ใบงาน MathScan AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-      body{font-family:'Sarabun',sans-serif;padding:24px;color:#0f172a;background:white;}
-      .ws-header{background:linear-gradient(135deg,#1d6aff,#4338ca);padding:18px 22px;color:white;border-radius:8px 8px 0 0;margin-bottom:0;}
-      .ws-title{font-size:18px;font-weight:700;margin-bottom:4px;}
-      .ws-meta{font-size:12px;opacity:.85;}
-      .ws-body{border:2px solid #1d6aff;border-top:none;border-radius:0 0 8px 8px;padding:16px;}
-      .ws-item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:12px;break-inside:avoid;}
-      .ws-num{font-size:11px;font-weight:700;color:#1d6aff;margin-bottom:8px;letter-spacing:1px;}
-      .ws-q{font-size:15px;font-weight:600;margin-bottom:10px;line-height:1.7;}
-      .ws-method{background:#eff6ff;border-left:3px solid #1d6aff;padding:10px 14px;margin-bottom:8px;font-size:13px;line-height:1.8;}
-      .ws-ans{background:#ecfdf5;border-left:3px solid #10b981;padding:8px 14px;font-size:14px;font-weight:700;color:#059669;}
-      .ws-blank{background:#fff;border:1.5px dashed #c8d3e0;padding:12px 14px;margin-top:8px;font-size:13px;color:#94a3b8;font-style:italic;}
-      .no-print{display:none!important;}
-      @media print{.no-print{display:none!important;}}
+      body{font-family:'Sarabun',sans-serif;padding:20px;color:#0f172a;max-width:800px;margin:0 auto;}
+      h1{color:#1d6aff;font-size:20px;margin-bottom:4px;}
+      .meta{font-size:13px;color:#64748b;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #dde3ec;}
+      .item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:12px;page-break-inside:avoid;}
+      .num{font-size:11px;font-weight:700;color:#1d6aff;margin-bottom:6px;letter-spacing:1px;}
+      .q{font-size:15px;font-weight:600;margin-bottom:8px;line-height:1.7;}
+      .method{background:#eff6ff;border-left:3px solid #1d6aff;padding:8px 12px;margin-bottom:6px;font-size:13px;line-height:1.7;}
+      .ans{background:#ecfdf5;border-left:3px solid #10b981;padding:7px 12px;font-size:14px;font-weight:700;color:#059669;}
+      .blank{border:1px dashed #c8d3e0;padding:10px 12px;margin-top:8px;font-size:13px;color:#94a3b8;font-style:italic;}
+      .ws-actions{display:none!important;}
+      @media print{.ws-actions{display:none!important;}}
     </style>
-    </head><body>
-    <div class="ws-header">
-      <div class="ws-title">📝 ใบงานแบบฝึกหัดเฉพาะตัว — MathScan AI</div>
-      <div class="ws-meta">${studentName} | ${selectedGrade} | ${selectedSubtopic} | ${now.toLocaleDateString('th-TH')}</div>
-    </div>
-    <div class="ws-body" id="wsContent">${document.getElementById('wsBody').innerHTML}</div>
+  </head><body>
+    <h1>📝 ใบงานแบบฝึกหัดเฉพาะตัว — MathScan AI</h1>
+    <div class="meta">${studentName} | ${selectedGrade} | ${selectedSubtopic} | ${now.toLocaleDateString('th-TH')}</div>
+    ${wsBodyHTML}
     <script>
       document.querySelectorAll('.ws-actions,.no-print').forEach(el=>el.remove());
-      window.onload=()=>{window.print();}
+      window.addEventListener('load',()=>{
+        setTimeout(()=>{ window.print(); },500);
+      });
     <\/script>
-    </body></html>`);
-  printWin.document.close();
+  </body></html>`;
+  // Mobile-friendly: use blob URL
+  const blob = new Blob([htmlContent], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 5000);
 }
 
 function printWorksheet(){worksheetToPDF();}
