@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MathScan AI — สแกนจุดอ่อน สร้างเส้นทางเรียนรู้เฉพาะตัว</title>
+<title>NEXUS AI • NK × SKT • ป.1–ม.6</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Prompt:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap');
 :root{
@@ -22,12 +22,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 /* DEVICE GRID */
 .device-grid{display:flex;gap:12px;flex-wrap:wrap;margin-top:4px;}
-.device-btn{flex:1;min-width:100px;padding:14px 12px;background:var(--s2);border:2px solid var(--border);border-radius:14px;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;}
-.device-btn:hover{border-color:var(--blue);background:#eff6ff;color:var(--blue);}
+.device-btn{flex:1;min-width:110px;padding:16px 12px;background:var(--s2);border:2px solid var(--border);border-radius:14px;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;transition:all .15s;text-align:center;line-height:1.6;}
+.device-btn:hover:not(:disabled){border-color:var(--blue);background:#eff6ff;color:var(--blue);transform:translateY(-2px);}
 
 
 /* KEY MODAL */
-#keyModal{position:fixed;inset:0;background:rgba(15,23,42,0.7);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px;}
+#keyModal{position:fixed;inset:0;background:rgba(15,23,42,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;}
 .km-card{background:var(--s1);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,0.15);}
 .km-badge{display:flex;align-items:center;justify-content:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:20px;padding:5px 14px;font-size:12px;color:var(--blue);font-family:'Space Mono',monospace;letter-spacing:1px;width:fit-content;margin:0 auto 20px;}
 .km-title{font-family:'Prompt',sans-serif;color:var(--text);font-size:28px;font-weight:700;text-align:center;margin-bottom:6px;}
@@ -91,20 +91,22 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 /* SELECTORS */
 .grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;}
 .grade-btn{padding:14px 8px;background:var(--s1);border:2px solid var(--border);border-radius:11px;color:var(--text);font-family:'Prompt',sans-serif;font-size:16px;font-weight:600;text-align:center;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
-.grade-btn:hover{border-color:var(--blue);background:#eff6ff;color:var(--blue);}
+.grade-btn:hover:not(:disabled){border-color:var(--blue);background:#eff6ff;color:var(--blue);}
+.grade-btn:disabled{cursor:not-allowed;}
 .topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
 @media(max-width:460px){.topic-grid{grid-template-columns:1fr;}.grade-grid{grid-template-columns:repeat(2,1fr);}}
 .topic-btn{padding:12px 14px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:14px;text-align:left;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
-.topic-btn:hover{border-color:var(--blue);background:#eff6ff;}
+.topic-btn:hover:not(:disabled){border-color:var(--blue);background:#eff6ff;}
+.topic-btn:disabled{cursor:not-allowed;opacity:.6;}
 .topic-btn .ind{font-size:10px;color:var(--muted);display:block;margin-bottom:3px;font-family:'Space Mono',monospace;}
-.subtopic-list{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
-.subtopic-btn{padding:12px 16px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:14px;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.subtopic-list,.subtopic-grid{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
+.subtopic-btn{padding:12px 16px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text2);font-family:'Sarabun',sans-serif;font-size:var(--fs-choice);text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
 .subtopic-btn::before{content:'';width:6px;height:6px;background:var(--blue);border-radius:50%;flex-shrink:0;}
-.subtopic-btn:hover{border-color:var(--blue);background:#eff6ff;}
+.subtopic-btn:hover:not(:disabled){border-color:var(--blue);background:#eff6ff;}
 
 /* MCQ */
 .choices-wrap{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-.choice-btn{padding:13px 17px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:var(--fs-choice);text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.choice-btn{padding:13px 17px;background:var(--s1);border:2px solid var(--border);border-radius:10px;color:var(--text);font-family:'Sarabun',sans-serif;font-size:var(--fs-choice);text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);word-break:break-word;overflow-wrap:break-word;line-height:1.7;}
 .choice-btn::before{content:attr(data-label);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;min-width:22px;height:22px;background:var(--s3);border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--muted);flex-shrink:0;margin-top:2px;}
 .choice-btn:hover:not(:disabled){border-color:var(--blue);background:#eff6ff;color:var(--blue);}
 .choice-btn.ok{border-color:var(--green2);background:#ecfdf5;color:var(--green);}
@@ -223,6 +225,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .pass-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--warn),var(--gold));border:none;border-radius:9px;color:white;font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
 .pass-cancel{width:100%;padding:10px;background:transparent;border:2px solid var(--border);border-radius:9px;color:var(--muted);font-family:'Sarabun',sans-serif;font-size:13px;cursor:pointer;margin-top:8px;}
 
+/* PULSE ANIMATION */
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
 /* PRINT STYLES */
 @media print {
   body * { visibility: hidden; }
@@ -241,22 +246,54 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   background: #f8fafc;
   padding: 8px;
 }
+
+/* MathJax rendering */
+.MathJax { font-size: 1.05em !important; }
+.choice-btn .MathJax { font-size: 1em !important; }
+mjx-container { display: inline !important; vertical-align: middle; }
+mjx-container[display="true"] { display: block !important; margin: 6px 0; vertical-align: baseline; }
+.m-bub mjx-container { line-height: 1.8; }
+.choice-btn mjx-container { vertical-align: -0.15em; }
 </style>
 <script>
 MathJax = {
-  tex: { inlineMath: [['$','$'], ['\\(','\\)']] },
-  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+  tex: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    displayMath: [['$$','$$'],['\\[','\\]']],
+    processEscapes: true,
+    tags: 'ams'
+  },
+  options: {
+    skipHtmlTags: ['script','noscript','style','textarea','pre','code'],
+    ignoreHtmlClass: 'no-math',
+    processHtmlClass: 'math-content'
+  },
+  startup: {
+    typeset: false,
+    ready(){
+      MathJax.startup.defaultReady();
+      window._mathJaxReady = true;
+      // Render queued elements
+      if(window._mathQueue && window._mathQueue.length){
+        MathJax.typesetPromise(window._mathQueue).catch(()=>{});
+        window._mathQueue = [];
+      }
+    }
+  }
 };
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" async></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
 <!-- KEY MODAL (admin setup - hidden after first use) -->
 <div id="keyModal">
   <div class="km-card">
-    <div class="km-badge">🧮 AI FOR EDUCATION</div>
-    <div class="km-title"><span>MathScan</span> AI</div>
+    <div style="display:flex;justify-content:center;margin-bottom:16px;">
+      <img src="" class="nexus-logo-img" style="width:100px;height:100px;border-radius:16px;object-fit:cover;box-shadow:0 4px 20px rgba(29,106,255,0.35);" alt="NEXUS AI Logo">
+    </div>
+    <div class="km-badge">NEXUS AI FOR EDUCATION</div>
+    <div class="km-title"><span>NEXUS</span> AI</div>
     <div class="km-sub">ระบบวิเคราะห์ผู้เรียนคณิตศาสตร์ด้วย AI<br>อิงตัวชี้วัดแกนกลางการศึกษาขั้นพื้นฐาน 2560</div>
     <div class="km-label">API Key (Anthropic)</div>
     <input id="apiKeyInput" class="km-input" type="password" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')saveKey()"/>
@@ -269,11 +306,75 @@ MathJax = {
   </div>
 </div>
 
+<!-- NEXUS AI SPLASH SCREEN -->
+<div id="splashScreen" style="display:none;position:fixed;inset:0;z-index:9000;flex-direction:column;align-items:center;justify-content:center;background:#000919;overflow:hidden;">
+
+  <!-- Animated BG gradient -->
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,#071a3e 0%,#000919 100%);"></div>
+  <!-- Grid -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,200,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,255,0.05) 1px,transparent 1px);background-size:50px 50px;"></div>
+  <!-- Glow orbs -->
+  <div style="position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(0,180,255,0.08),transparent 70%);top:-100px;left:-80px;border-radius:50%;"></div>
+  <div style="position:absolute;width:350px;height:350px;background:radial-gradient(circle,rgba(180,0,255,0.06),transparent 70%);bottom:-80px;right:-60px;border-radius:50%;"></div>
+
+  <!-- MAIN CONTENT -->
+  <div style="position:relative;z-index:10;text-align:center;display:flex;flex-direction:column;align-items:center;padding:20px;">
+
+    <!-- Logo with rings -->
+    <div style="position:relative;width:160px;height:160px;margin-bottom:28px;">
+      <!-- Ring 1 -->
+      <div style="position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(0,200,255,0.5);animation:nexusSpin 3s linear infinite;"></div>
+      <!-- Ring 2 -->
+      <div style="position:absolute;inset:-24px;border-radius:50%;border:1.5px solid rgba(180,0,255,0.35);animation:nexusSpin 5s linear infinite reverse;"></div>
+      <!-- Ring 3 dotted -->
+      <div style="position:absolute;inset:-36px;border-radius:50%;border:1px dashed rgba(0,200,255,0.2);animation:nexusSpin 9s linear infinite;"></div>
+      <!-- Logo image -->
+      <img src="" class="nexus-logo-img"
+        style="width:160px;height:160px;border-radius:50%;object-fit:cover;border:3px solid rgba(0,200,255,0.7);box-shadow:0 0 28px rgba(0,200,255,0.5),0 0 56px rgba(0,200,255,0.2);display:block;"/>
+    </div>
+
+    <!-- NEXUS AI big title -->
+    <div style="font-family:'Prompt',sans-serif;font-size:48px;font-weight:800;letter-spacing:6px;line-height:1;margin-bottom:8px;background:linear-gradient(135deg,#00c8ff 0%,#ffffff 50%,#cc00ff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 12px rgba(0,200,255,0.4));">NEXUS AI</div>
+
+    <!-- Typewriter line -->
+    <div id="splashTypewriter" style="font-family:'Prompt',sans-serif;font-size:19px;font-weight:500;color:rgba(255,255,255,0.92);letter-spacing:1px;margin-bottom:10px;min-height:30px;text-shadow:0 0 20px rgba(0,200,255,0.3);"></div>
+
+    <!-- AI Innovation for Education -->
+    <div style="font-size:13px;color:rgba(0,200,255,0.85);letter-spacing:4px;text-transform:uppercase;margin-bottom:28px;font-family:'Space Mono',monospace;">AI Innovation for Education</div>
+
+    <!-- School names -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;opacity:0.65;">
+      <span style="font-size:11.5px;color:white;font-family:'Sarabun',sans-serif;">โรงเรียนมัธยมวัดหนองแขม (NK)</span>
+      <span style="color:#cc00ff;font-size:22px;font-weight:800;line-height:1;">×</span>
+      <span style="font-size:11.5px;color:white;font-family:'Sarabun',sans-serif;">สวนกุหลาบวิทยาลัย ธนบุรี (SKT)</span>
+    </div>
+
+    <!-- Loading bar -->
+    <div style="width:260px;height:3px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;margin-bottom:24px;">
+      <div id="splashBar" style="height:100%;width:0%;background:linear-gradient(90deg,#00c8ff,#cc00ff);box-shadow:0 0 10px rgba(0,200,255,0.6);border-radius:3px;transition:width .05s linear;"></div>
+    </div>
+
+
+
+    <div style="font-size:10px;color:rgba(255,255,255,0.2);letter-spacing:3px;font-family:'Space Mono',monospace;margin-bottom:28px;">CONNECTING MINDS · CREATING FUTURE LEARNING</div>
+    <!-- Enter button -->
+    <button id="splashEnterBtn" onclick="enterFromSplash()"
+      style="opacity:0;transition:opacity .5s;padding:14px 48px;background:linear-gradient(135deg,#00c8ff,#cc00ff);border:none;border-radius:50px;color:white;font-family:'Prompt',sans-serif;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 0 24px rgba(0,200,255,0.5),0 0 48px rgba(200,0,255,0.3);transform:translateY(10px);transition:opacity .5s,transform .5s,box-shadow .2s;">
+      ✦ เข้าสู่โปรแกรม ✦
+    </button>
+  </div>
+</div>
+
+<style>
+@keyframes nexusSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+</style>
+
 <!-- ROLE SELECTION SCREEN -->
-<div id="roleScreen" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0a1628 0%,#1a2744 50%,#0d1f3c 100%);z-index:5000;display:none;align-items:center;justify-content:center;flex-direction:column;">
+<div id="roleScreen" style="display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0a1628 0%,#1a2744 50%,#0d1f3c 100%);z-index:5000;align-items:center;justify-content:center;flex-direction:column;">
   <div style="text-align:center;margin-bottom:40px;">
-    <div style="font-size:42px;margin-bottom:10px;">🧮</div>
-    <div style="font-family:'Prompt',sans-serif;font-size:28px;font-weight:800;color:white;letter-spacing:-0.5px;">MathScan <span style="color:#4d9fff;">AI</span></div>
+    
+    <div style="font-family:'Prompt',sans-serif;font-size:28px;font-weight:800;color:white;letter-spacing:-0.5px;"><img src="" class="nexus-logo-img" style="width:80px;height:80px;border-radius:14px;object-fit:cover;box-shadow:0 4px 20px rgba(29,106,255,0.4);margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;" alt="NEXUS AI">
+    NEXUS <span style="color:#4d9fff;">AI</span></div>
     <div style="font-size:14px;color:#94a3b8;margin-top:6px;">คุณเข้ามาในฐานะอะไร?</div>
   </div>
   <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;padding:0 20px;">
@@ -294,7 +395,7 @@ MathJax = {
       <div style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.5;">ดู Dashboard<br>ปริ้นใบงานทั้งห้อง</div>
     </div>
   </div>
-  <div style="margin-top:32px;font-size:12px;color:#475569;">ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo</div>
+  <div style="margin-top:24px;font-size:11px;color:#334155;letter-spacing:2px;text-align:center;">NK × SKT • NEXUS AI EDUCATION TEAM</div>
 </div>
 
 <!-- TEACHER ROLE PASSWORD MODAL -->
@@ -327,7 +428,7 @@ MathJax = {
 <!-- TEACHER DASHBOARD -->
 <div id="dashModal">
   <div class="dash-topbar">
-    <div class="dash-title">📊 Teacher Dashboard — MathScan AI</div>
+    <div class="dash-title">📊 Teacher Dashboard — NEXUS AI</div>
     <div class="dash-actions-top">
       <span id="sheetsSyncStatus" style="font-size:12px;color:var(--muted);align-self:center;margin-right:4px;">💾 ข้อมูลเฉพาะเครื่องนี้</span>
       <button class="dash-export-btn no-print" onclick="renderDash()" style="border-color:#a5b4fc;color:#4338ca;background:#eef2ff;" title="รีเฟรชข้อมูลจาก Sheets">🔄 รีเฟรช</button>
@@ -349,6 +450,31 @@ MathJax = {
       <div class="chart-title">หัวข้อที่ทั้งห้องอ่อนที่สุด</div>
       <div class="weak-grid" id="weakGrid"></div>
     </div>
+    <!-- LIVE MONITOR TAB -->
+    <div class="chart-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <div class="chart-title" style="margin-bottom:0;">🔴 LIVE — นักเรียนออนไลน์ขณะนี้</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="liveStatus" style="font-size:11px;color:var(--muted);">ออฟไลน์</span>
+          <button onclick="toggleLivePoll()" id="livePollBtn"
+            style="padding:6px 14px;background:#1d6aff;color:white;border:none;border-radius:7px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">
+            ▶ เปิด Live
+          </button>
+        </div>
+      </div>
+      <!-- Legend -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:11px;color:var(--muted);">
+        <span>● น้ำเงิน = กำลังทำ</span>
+        <span style="color:#059669;">● เขียว = ผ่าน (≥80%)</span>
+        <span style="color:#d97706;">● เหลือง = กลาง (60-79%)</span>
+        <span style="color:#dc2626;">● แดง = ต้องพัฒนา</span>
+        <span style="color:#f97316;">🆘 = ต้องการความช่วยเหลือ</span>
+      </div>
+      <div id="liveDashContainer" style="max-height:360px;overflow-y:auto;">
+        <div style="color:var(--muted);text-align:center;padding:20px;font-size:14px;">กด "เปิด Live" เพื่อดูความคืบหน้าแบบ Real-time</div>
+      </div>
+    </div>
+
     <div class="chart-card" style="overflow-x:auto;">
       <div class="chart-title" style="margin-bottom:14px;">รายละเอียดนักเรียนทุกคน</div>
       <table class="stu-table" id="stuTable">
@@ -363,10 +489,10 @@ MathJax = {
 <div id="app">
   <div class="topbar">
     <div class="tb-logo">
-      <div class="tb-icon">🧮</div>
+      <div class="tb-icon" style="background:none;padding:0;overflow:hidden;"><img src="" class="nexus-logo-img" style="width:36px;height:36px;border-radius:9px;object-fit:cover;box-shadow:0 2px 8px rgba(29,106,255,0.3);" alt="NEXUS AI Logo"></div>
       <div>
-        <div class="tb-name">MathScan AI</div>
-        <div class="tb-sub">สแกนจุดอ่อน สร้างเส้นทางเรียนรู้เฉพาะตัว</div>
+        <div class="tb-name">NEXUS AI</div>
+        <div class="tb-sub">NEXUS AI • NK × SKT • ป.1–ม.6</div>
       </div>
     </div>
     <div class="tb-right">
@@ -431,6 +557,185 @@ MathJax = {
 <script>
 // ===== CURRICULUM (อิงตัวชี้วัด ว9/2560 สสวท.) =====
 const CURRICULUM = {
+
+  "ป.1":[
+    {topic:"จำนวนนับ 1–100 และ 0",indicator:"ค 1.1 ป.1",subs:[
+      "การนับทีละ 1 และทีละ 10 จำนวนนับไม่เกิน 100",
+      "การอ่านและเขียนตัวเลขฮินดูอารบิก ตัวเลขไทย",
+      "การแสดงจำนวนในรูปส่วนย่อย–ส่วนรวม (part-whole)",
+      "การเปรียบเทียบจำนวนและเครื่องหมาย = ≠ > <",
+      "การเรียงลำดับจำนวน"
+    ]},
+    {topic:"การบวกและการลบจำนวนนับ 1–100",indicator:"ค 1.1 ป.1",subs:[
+      "ความหมายของการบวกและการลบ",
+      "การหาผลบวกและผลลบ",
+      "ความสัมพันธ์ของการบวกและการลบ",
+      "การแก้โจทย์ปัญหาการบวกและการลบ",
+      "การสร้างโจทย์ปัญหาพร้อมหาคำตอบ"
+    ]},
+    {topic:"การวัดความยาวและน้ำหนัก",indicator:"ค 2.1 ป.1",subs:[
+      "การวัดความยาวเป็นเซนติเมตรและเมตร",
+      "การเปรียบเทียบความยาว",
+      "การวัดน้ำหนักเป็นกิโลกรัมและขีด",
+      "การเปรียบเทียบน้ำหนัก"
+    ]},
+    {topic:"รูปเรขาคณิต",indicator:"ค 2.2 ป.1",subs:[
+      "รูปสามเหลี่ยม รูปสี่เหลี่ยม วงกลม วงรี",
+      "ทรงสี่เหลี่ยมมุมฉาก ทรงกลม ทรงกระบอก กรวย",
+      "ลักษณะและสมบัติของรูปเรขาคณิต"
+    ]},
+    {topic:"เวลาและการนำเสนอข้อมูล",indicator:"ค 2.1 / ค 3.1 ป.1",subs:[
+      "ช่วงเวลาในแต่ละวัน (เช้า สาย เที่ยง บ่าย เย็น)",
+      "จำนวนวันและชื่อวันในสัปดาห์",
+      "การอ่านแผนภูมิรูปภาพ (1 รูป แทน 1 หน่วย)"
+    ]},
+  ],
+  "ป.2":[
+    {topic:"จำนวนนับไม่เกิน 1,000 และ 0",indicator:"ค 1.1 ป.2",subs:[
+      "การนับทีละ 2 ทีละ 5 ทีละ 10 ทีละ 100",
+      "จำนวนคู่ จำนวนคี่",
+      "หลัก ค่าของเลขโดด และการเขียนในรูปกระจาย",
+      "การเปรียบเทียบและเรียงลำดับจำนวน"
+    ]},
+    {topic:"การบวก ลบ คูณ หาร จำนวนนับไม่เกิน 1,000",indicator:"ค 1.1 ป.2",subs:[
+      "การบวกและการลบ",
+      "ความหมายการคูณและการหาร",
+      "ความสัมพันธ์การคูณและการหาร",
+      "การบวก ลบ คูณ หารระคน",
+      "การแก้โจทย์ปัญหา 2 ขั้นตอน"
+    ]},
+    {topic:"การวัดและเวลา",indicator:"ค 2.1 ป.2",subs:[
+      "การวัดความยาวเป็นเมตรและเซนติเมตร",
+      "การวัดน้ำหนักเป็นกิโลกรัมและกรัม",
+      "การวัดปริมาตรและความจุเป็นลิตร",
+      "การบอกเวลาเป็นนาฬิกาและนาที",
+      "การอ่านปฏิทิน"
+    ]},
+    {topic:"แบบรูปและการนำเสนอข้อมูล",indicator:"ค 1.2 / ค 3.1 ป.2",subs:[
+      "แบบรูปของจำนวนที่เพิ่มขึ้นหรือลดลงทีละเท่า ๆ กัน",
+      "การอ่านแผนภูมิรูปภาพ (1 รูป แทน 2, 5, 10 หน่วย)"
+    ]},
+  ],
+  "ป.3":[
+    {topic:"จำนวนนับไม่เกิน 100,000 และเศษส่วน",indicator:"ค 1.1 ป.3",subs:[
+      "การอ่านและเขียนจำนวนนับไม่เกิน 100,000",
+      "หลัก ค่าประจำหลัก และการเขียนในรูปกระจาย",
+      "เศษส่วนที่ตัวเศษน้อยกว่าหรือเท่ากับตัวส่วน",
+      "การเปรียบเทียบเศษส่วน",
+      "การบวกและการลบเศษส่วนที่ตัวส่วนเท่ากัน"
+    ]},
+    {topic:"การบวก ลบ คูณ หาร จำนวนนับไม่เกิน 100,000",indicator:"ค 1.1 ป.3",subs:[
+      "การบวกและการลบ",
+      "การคูณ การหารยาวและการหารสั้น",
+      "การบวก ลบ คูณ หารระคน",
+      "การแก้โจทย์ปัญหา 2 ขั้นตอน",
+      "แบบรูปของจำนวนที่เกิดจากการคูณ การหาร"
+    ]},
+    {topic:"การวัด",indicator:"ค 2.1 ป.3",subs:[
+      "ความยาว — เซนติเมตร มิลลิเมตร เมตร กิโลเมตร",
+      "น้ำหนัก — กิโลกรัม กรัม เมตริกตัน",
+      "ปริมาตรและความจุ — ลิตรและมิลลิลิตร",
+      "การเลือกใช้เครื่องมือวัดที่เหมาะสม",
+      "การแก้โจทย์ปัญหาเกี่ยวกับการวัด"
+    ]},
+    {topic:"รูปเรขาคณิตและสมมาตร",indicator:"ค 2.2 ป.3",subs:[
+      "รูปที่มีแกนสมมาตรและจำนวนแกนสมมาตร",
+      "ลักษณะของรูปหลายเหลี่ยม วงกลม วงรี"
+    ]},
+    {topic:"สถิติ — แผนภูมิและตาราง",indicator:"ค 3.1 ป.3",subs:[
+      "การเขียนแผนภูมิรูปภาพ",
+      "การเขียนตารางทางเดียวจากข้อมูลที่เป็นจำนวนนับ",
+      "การใช้ข้อมูลจากแผนภูมิและตารางแก้โจทย์ปัญหา"
+    ]},
+  ],
+  "ป.4":[
+    {topic:"จำนวนนับที่มากกว่า 100,000 เศษส่วน และทศนิยม",indicator:"ค 1.1 ป.4",subs:[
+      "การอ่านและเขียนจำนวนนับที่มากกว่า 100,000",
+      "เศษส่วนแท้ เศษเกิน จำนวนคละ และความสัมพันธ์",
+      "เศษส่วนที่เท่ากัน เศษส่วนอย่างต่ำ",
+      "ทศนิยมไม่เกิน 3 ตำแหน่ง",
+      "การเปรียบเทียบและเรียงลำดับทศนิยม"
+    ]},
+    {topic:"การบวก ลบ คูณ หาร — เศษส่วนและทศนิยม",indicator:"ค 1.1 ป.4",subs:[
+      "การประมาณผลลัพธ์ของการบวก ลบ คูณ หาร",
+      "การบวกและการลบเศษส่วนและจำนวนคละ",
+      "การบวกและการลบทศนิยมไม่เกิน 3 ตำแหน่ง",
+      "การแก้โจทย์ปัญหา 2 ขั้นตอน"
+    ]},
+    {topic:"การวัดและรูปสี่เหลี่ยมมุมฉาก",indicator:"ค 2.1 / ค 2.2 ป.4",subs:[
+      "ความสัมพันธ์ระหว่างหน่วยความยาวและน้ำหนัก",
+      "ระนาบ จุด เส้นตรง รังสี ส่วนของเส้นตรง",
+      "มุมและชนิดของมุม",
+      "ชนิดและสมบัติของรูปสี่เหลี่ยมมุมฉาก",
+      "ความยาวรอบรูปและพื้นที่รูปสี่เหลี่ยมมุมฉาก"
+    ]},
+    {topic:"แบบรูปและสถิติ",indicator:"ค 1.2 / ค 3.1 ป.4",subs:[
+      "แบบรูปของจำนวนที่เกิดจากการคูณ การหาร",
+      "แผนภูมิแท่ง และตารางสองทาง",
+      "การใช้ข้อมูลจากแผนภูมิและตารางแก้โจทย์ปัญหา"
+    ]},
+  ],
+  "ป.5":[
+    {topic:"เศษส่วน ทศนิยม และร้อยละ",indicator:"ค 1.1 ป.5",subs:[
+      "การคูณและการหารเศษส่วนและจำนวนคละ",
+      "การคูณและการหารทศนิยม",
+      "ร้อยละหรือเปอร์เซ็นต์ — การอ่าน เขียน แปลง",
+      "การแก้โจทย์ปัญหาร้อยละไม่เกิน 2 ขั้นตอน"
+    ]},
+    {topic:"บัญญัติไตรยางศ์และการวัดมุม",indicator:"ค 1.1 / ค 2.1 ป.5",subs:[
+      "การแก้โจทย์ปัญหาโดยใช้บัญญัติไตรยางศ์",
+      "การวัดและสร้างมุมโดยใช้โพรแทรกเตอร์",
+      "ความยาวรอบรูปและพื้นที่รูปสี่เหลี่ยมด้านขนาน",
+      "ปริมาตรและความจุของทรงสี่เหลี่ยมมุมฉาก"
+    ]},
+    {topic:"รูปเรขาคณิตสองมิติและปริซึม",indicator:"ค 2.2 ป.5",subs:[
+      "เส้นขนานและเส้นตั้งฉาก",
+      "การสร้างเส้นขนาน",
+      "ชนิดและสมบัติของรูปสี่เหลี่ยม",
+      "การสร้างรูปสี่เหลี่ยม",
+      "ลักษณะและส่วนต่าง ๆ ของปริซึม"
+    ]},
+    {topic:"สถิติ — กราฟเส้นและแผนภูมิ",indicator:"ค 3.1 ป.5",subs:[
+      "การอ่านกราฟเส้น",
+      "การเขียนแผนภูมิแท่งจากข้อมูลจำนวนนับ",
+      "การใช้ข้อมูลจากกราฟและแผนภูมิแก้โจทย์ปัญหา"
+    ]},
+  ],
+  "ป.6":[
+    {topic:"ห.ร.ม. ค.ร.น. และอัตราส่วน",indicator:"ค 1.1 ป.6",subs:[
+      "ตัวประกอบ จำนวนเฉพาะ การแยกตัวประกอบ",
+      "ห.ร.ม. ของจำนวนนับไม่เกิน 3 จำนวน",
+      "ค.ร.น. ของจำนวนนับไม่เกิน 3 จำนวน",
+      "การแก้โจทย์ปัญหา ห.ร.ม. และ ค.ร.น.",
+      "อัตราส่วน อัตราส่วนที่เท่ากัน และมาตราส่วน"
+    ]},
+    {topic:"เศษส่วน ทศนิยม และร้อยละขั้นสูง",indicator:"ค 1.1 ป.6",subs:[
+      "การบวก ลบ คูณ หารระคนเศษส่วนและจำนวนคละ 2–3 ขั้นตอน",
+      "การหารทศนิยมที่ตัวหารและผลหารเป็นทศนิยม",
+      "การแก้โจทย์ปัญหาทศนิยม 3 ขั้นตอน (รวมการแลกเงิน)",
+      "การแก้โจทย์ปัญหาอัตราส่วนและร้อยละ 2–3 ขั้นตอน"
+    ]},
+    {topic:"สมการเชิงเส้นและพื้นที่",indicator:"ค 1.3 / ค 2.1 ป.6",subs:[
+      "สมการเชิงเส้นที่มีตัวไม่ทราบค่าหนึ่งตัว",
+      "การแก้สมการโดยใช้สมบัติของการเท่ากัน",
+      "ความยาวรอบรูปและพื้นที่รูปหลายเหลี่ยม",
+      "ความยาวรอบรูปและพื้นที่วงกลม",
+      "ปริมาตรของรูปเรขาคณิตสามมิติที่ประกอบด้วยทรงสี่เหลี่ยมมุมฉาก"
+    ]},
+    {topic:"รูปเรขาคณิต — สามเหลี่ยม วงกลม และรูปคลี่",indicator:"ค 2.2 ป.6",subs:[
+      "ชนิดและสมบัติของรูปสามเหลี่ยม",
+      "การสร้างรูปสามเหลี่ยม",
+      "ส่วนต่าง ๆ ของวงกลม การสร้างวงกลม",
+      "รูปเรขาคณิตสามมิติ — ทรงกลม ทรงกระบอก กรวย พีระมิด",
+      "รูปคลี่ของทรงกระบอก กรวย ปริซึม พีระมิด"
+    ]},
+    {topic:"สถิติ — แผนภูมิวงกลมและทิศ",indicator:"ค 3.1 ป.6",subs:[
+      "การอ่านแผนภูมิรูปวงกลมและใช้แก้โจทย์ปัญหา",
+      "ทิศ การบอกตำแหน่งโดยใช้ทิศ",
+      "การอ่านแผนผัง การเขียนแผนผัง",
+      "การเขียนแผนผังแสดงเส้นทางการเดินทาง"
+    ]},
+  ],
   "ม.1":[
     {topic:"จำนวนตรรกยะ",indicator:"ค 1.1 ม.1/1",subs:[
       "จำนวนเต็มบวก จำนวนเต็มลบ ศูนย์ และสมบัติ",
@@ -704,7 +1009,7 @@ const CURRICULUM = {
 
 // ===== GOOGLE SHEETS CONFIG =====
 // วาง Web App URL ที่ได้จาก Apps Script Deploy ตรงนี้
-const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx9i-7SjU3QZMqLuMQh0484TflgpgKKlsQiHkAZwpkmHg_tcJ3zabe02GMNZofGlYN3/exec";
+const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxibZ_hfujcbyuoZxRU8HZfq9kMxnWhImCpCJSa5Xaczhq1fG2G48MC5_msfGMcKPM/exec";
 const SHEETS_ID = "1ScLPqpAU6qM8hodzjQXzqUw5_9L9N-CaMk7ab6ohaUE";
 
 // ===== STATE =====
@@ -727,16 +1032,76 @@ window.onload=()=>{
   if(k && k.length > 20){
     GKEY=k; TPASS=p||'teacher1234';
     DB_KEY = 'mathscan_' + (TPASS||'default');
-    // มีลิงก์พร้อม key — แสดง Role Selection
-    if(urlMode==='teacher'){
-      // ลิงก์ครูตรง → ถามรหัสผ่านทันที
-      showRoleScreen(); enterAsTeacher(); return;
-    }
-    showRoleScreen(); return;
+    // แสดง Splash แล้วค่อยเข้า
+    showSplash(()=>{
+      if(urlMode==='teacher'){ showRoleScreen(); enterAsTeacher(); }
+      else { showRoleScreen(); }
+    });
+    return;
   }
-  // ไม่มี key — แสดง setup modal
+  // ไม่มี key — แสดง splash สั้น ๆ แล้ว setup modal
+  showSplash(()=>{ /* keyModal ยังแสดงอยู่ */ }, true);
 };
 
+let _splashOnDone = null;
+
+function splashEnter(){
+  const splash = document.getElementById('splashScreen');
+  splash.style.transition = 'opacity .6s ease';
+  splash.style.opacity = '0';
+  setTimeout(()=>{
+    splash.style.display = 'none';
+    splash.style.opacity = '1';
+    splash.style.transition = '';
+    if(_splashOnDone) _splashOnDone();
+  }, 600);
+}
+
+function showSplash(onDone, keepModal=false){
+  _splashOnDone = onDone;
+  const splash = document.getElementById('splashScreen');
+  splash.style.display = 'flex';
+  if(!keepModal) document.getElementById('keyModal').style.display='none';
+
+  // Typewriter
+  const twEl = document.getElementById('splashTypewriter');
+  const fullMsg = 'Welcome to NEXUS AI';
+  let ci = 0;
+  const tw = setInterval(()=>{
+    if(ci <= fullMsg.length){ if(twEl) twEl.textContent = fullMsg.substring(0,ci); ci++; }
+    else { clearInterval(tw); }
+  }, 75);
+
+  // Progress bar to 100% then show button
+  const bar = document.getElementById('splashBar');
+  let prog = 0;
+  const barInt = setInterval(()=>{
+    prog = Math.min(100, prog + (prog < 60 ? 3 : prog < 90 ? 1.5 : 0.8));
+    if(bar) bar.style.width = prog + '%';
+    if(prog >= 100){
+      clearInterval(barInt);
+      const btn = document.getElementById('splashEnterBtn');
+      if(btn){
+        btn.style.display = 'block';
+        btn.style.opacity = '0';
+        btn.style.transition = 'opacity .6s ease';
+        requestAnimationFrame(()=>requestAnimationFrame(()=>{ btn.style.opacity='1'; }));
+      }
+    }
+  }, 35);
+}
+
+function enterFromSplash(){
+  const splash=document.getElementById('splashScreen');
+  const btn=document.getElementById('splashEnterBtn');
+  if(btn){btn.style.opacity='0.5';btn.disabled=true;}
+  splash.style.transition='opacity .6s ease';
+  splash.style.opacity='0';
+  setTimeout(()=>{
+    splash.style.display='none';splash.style.opacity='1';splash.style.transition='';
+    if(window._splashOnDone) window._splashOnDone();
+  },600);
+}
 function showRoleScreen(){
   document.getElementById('keyModal').style.display='none';
   const rs = document.getElementById('roleScreen');
@@ -769,6 +1134,8 @@ function checkRolePass(){
     document.getElementById('rolePassModal').style.display='none';
     document.getElementById('roleScreen').style.display='none';
     document.getElementById('app').style.display='flex';
+    // ตรวจสอบ DB_KEY ก่อน render
+    if(!DB_KEY || DB_KEY==='mathscan_v3') DB_KEY='mathscan_'+(TPASS||'default');
     renderDash();
     document.getElementById('dashModal').classList.add('open');
     if(dashRefreshInterval) clearInterval(dashRefreshInterval);
@@ -794,6 +1161,8 @@ function showApp(){
   if(TPASS) localStorage.setItem('msteacher3', TPASS);
   DB_KEY = 'mathscan_' + (TPASS||'default');
   document.getElementById('keyModal').style.display='none';
+  const _splash=document.getElementById('splashScreen');
+  if(_splash) _splash.style.display='none';
   showRoleScreen();
 }
 function changeKey(){localStorage.removeItem('mskey3');location.reload();}
@@ -819,8 +1188,214 @@ function checkPass(){
 function closeDash(){
   document.getElementById('dashModal').classList.remove('open');
   if(dashRefreshInterval){clearInterval(dashRefreshInterval);dashRefreshInterval=null;}
+  stopLivePoll();
+  document.getElementById('liveStatus').textContent='ออฟไลน์';
+  const btn=document.getElementById('livePollBtn');
+  if(btn){btn.textContent='▶ เปิด Live';btn.style.background='#1d6aff';}
+}
+
+function toggleLivePoll(){
+  const btn = document.getElementById('livePollBtn');
+  const status = document.getElementById('liveStatus');
+  if(livePollInterval){
+    stopLivePoll();
+    status.textContent='ออฟไลน์';
+    btn.textContent='▶ เปิด Live';btn.style.background='#1d6aff';
+  } else {
+    startLivePoll();
+    status.textContent='● กำลัง poll ทุก 5 วินาที';status.style.color='#059669';
+    btn.textContent='⏹ ปิด Live';btn.style.background='#dc2626';
+  }
 }
 function getResults(){try{return JSON.parse(localStorage.getItem(DB_KEY)||'[]');}catch{return[];}}
+
+// ===== LIVE PROGRESS PUSH =====
+function pushLiveProgress(){
+  const sessionId = window._sessionId || (window._sessionId = Date.now().toString(36));
+  const now = new Date();
+  const payload = {
+    action: 'liveProgress',
+    password: TPASS,
+    sessionId,
+    name: studentName,
+    grade: selectedGrade,
+    topic: selectedTopic ? selectedTopic.topic : '',
+    subtopic: selectedSubtopic,
+    qIndex: qIndex,
+    total: TOTAL_Q,
+    correct: correct,
+    wrong: wrong,
+    pct: Math.round(correct / Math.max(qIndex,1) * 100),
+    status: qIndex >= TOTAL_Q ? 'done' : 'active',
+    lastUpdate: now.toISOString(),
+    time: now.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})
+  };
+
+  // เก็บ localStorage สำหรับ Live Dashboard ที่ไม่มี Sheets
+  // ใช้ key ที่ share กับ teacher (ถ้าเปิดในแท็บเดียวกัน)
+  try{
+    if(!window._liveStudents) window._liveStudents = {};
+    if(payload.status === 'active'){
+      window._liveStudents[sessionId] = payload;
+    } else {
+      // ทำเสร็จแล้ว — ลบออกจาก live
+      delete window._liveStudents[sessionId];
+    }
+    // เขียนลง localStorage ให้ teacher tab อ่านได้
+    const liveKey = 'nexus_live_' + TPASS;
+    const allLive = JSON.parse(localStorage.getItem(liveKey)||'{}');
+    if(payload.status === 'active'){
+      allLive[sessionId] = payload;
+    } else {
+      delete allLive[sessionId];
+    }
+    localStorage.setItem(liveKey, JSON.stringify(allLive));
+  }catch(e){}
+
+  // ส่งไป Google Sheets ถ้ามี
+  if(!SHEETS_WEBAPP_URL || SHEETS_WEBAPP_URL.includes('YOUR_')) return;
+  fetch(SHEETS_WEBAPP_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{});
+}
+
+// ===== LIVE DASHBOARD IN TEACHER PANEL =====
+let livePollInterval = null;
+
+function startLivePoll(){
+  if(livePollInterval) clearInterval(livePollInterval);
+  // โหลด _liveStudents จาก localStorage ก่อนเลย
+  try{
+    const liveKey = 'nexus_live_' + TPASS;
+    const stored = JSON.parse(localStorage.getItem(liveKey)||'{}');
+    // กรอง session เก่า (เกิน 30 นาที) ออก
+    const cutoff = Date.now() - 30*60*1000;
+    Object.keys(stored).forEach(k=>{
+      if(stored[k].lastUpdate && new Date(stored[k].lastUpdate).getTime() < cutoff){
+        delete stored[k];
+      }
+    });
+    window._liveStudents = stored;
+  }catch(e){ window._liveStudents = {}; }
+  renderLiveDash();
+  livePollInterval = setInterval(()=>{
+    // อัปเดต _liveStudents จาก localStorage ทุก poll
+    try{
+      const liveKey = 'nexus_live_' + TPASS;
+      window._liveStudents = JSON.parse(localStorage.getItem(liveKey)||'{}');
+    }catch(e){}
+    renderLiveDash();
+  }, 3000); // poll ทุก 3 วินาที
+}
+function stopLivePoll(){
+  if(livePollInterval){ clearInterval(livePollInterval); livePollInterval=null; }
+}
+
+async function fetchLiveData(){
+  if(!SHEETS_WEBAPP_URL || SHEETS_WEBAPP_URL.includes('YOUR_')) return null;
+  try{
+    // ใช้ POST + mode:cors แทน GET เพื่อหลีกเลี่ยง CORS บน GitHub Pages
+    const res = await fetch(SHEETS_WEBAPP_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        action: 'getLive',
+        password: TPASS
+      })
+    });
+    if(!res.ok) return null;
+    const data = await res.json();
+    return data.live || null;
+  }catch(e){
+    // fallback: ลอง GET แบบ no-cors
+    try{
+      const url = SHEETS_WEBAPP_URL + '?action=getLive&password=' + encodeURIComponent(TPASS);
+      const res2 = await fetch(url, {method:'GET', mode:'cors'});
+      if(!res2.ok) return null;
+      const data2 = await res2.json();
+      return data2.live || null;
+    }catch(e2){ return null; }
+  }
+}
+
+async function renderLiveDash(){
+  const container = document.getElementById('liveDashContainer');
+  if(!container) return;
+
+  // ดึง live data จาก Sheets (ถ้าเชื่อมอยู่)
+  const live = await fetchLiveData();
+
+  // ===== แหล่งข้อมูล live =====
+  // ถ้าไม่มี Sheets → ใช้ window._liveStudents (localStorage-based)
+  // window._liveStudents เก็บ session ที่ยัง active อยู่
+  let students = live || Object.values(window._liveStudents || {});
+
+  // *** แสดงเฉพาะ "กำลังทำ" เท่านั้น — ไม่แสดงคนที่ทำเสร็จแล้ว ***
+  students = students.filter(s => s.status === 'active');
+
+  if(!students.length){
+    container.innerHTML = `<div style="text-align:center;padding:30px 20px;">
+      <div style="font-size:32px;margin-bottom:10px;">📡</div>
+      <div style="font-size:14px;font-weight:600;color:var(--text2);margin-bottom:6px;">ยังไม่มีนักเรียนออนไลน์ขณะนี้</div>
+      <div style="font-size:12px;color:var(--muted);">นักเรียนที่กำลังทำแบบทดสอบจะปรากฏที่นี่แบบ Real-time</div>
+    </div>`;
+    return;
+  }
+
+  // เรียงตาม needHelp ก่อน แล้วตาม qIndex
+  students.sort((a,b)=>{
+    const ah = a.wrong > a.correct && a.qIndex > 2;
+    const bh = b.wrong > b.correct && b.qIndex > 2;
+    if(ah && !bh) return -1;
+    if(bh && !ah) return 1;
+    return (b.qIndex||0) - (a.qIndex||0);
+  });
+
+  const now = new Date();
+  container.innerHTML = students.map(s=>{
+    const prog = Math.round((s.qIndex||0)/(s.total||10)*100);
+    const needHelp = s.wrong > s.correct && s.qIndex > 2;
+    // คำนวณเวลาที่ผ่านไป
+    let elapsed = '';
+    if(s.lastUpdate){
+      const diff = Math.round((now - new Date(s.lastUpdate))/1000);
+      elapsed = diff < 60 ? `${diff}วิที่แล้ว` : `${Math.round(diff/60)}นาทีที่แล้ว`;
+    }
+    const borderCol = needHelp ? '#f97316' : '#1d6aff';
+    const bgCol = needHelp ? '#fff7ed' : '#f0f6ff';
+
+    return `<div style="background:${bgCol};border:2px solid ${borderCol};border-radius:12px;padding:12px 14px;margin-bottom:8px;transition:all .3s;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${needHelp ? '<span style="font-size:16px;">🆘</span>' : '<span style="width:8px;height:8px;background:#1d6aff;border-radius:50%;display:inline-block;animation:pulse 1.5s infinite;"></span>'}
+          <span style="font-weight:700;font-size:14px;color:var(--text);">${s.name}</span>
+          <span style="font-size:11px;color:var(--muted);background:var(--s2);border:1px solid var(--border);border-radius:4px;padding:1px 6px;">${s.grade}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="background:#1d6aff;color:white;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;">● กำลังทำ</span>
+          <span style="font-size:11px;color:var(--muted);">${elapsed}</span>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">📖 ${s.subtopic||s.topic||'-'}</div>
+      <!-- Progress -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <div style="flex:1;height:10px;background:#dde3ec;border-radius:5px;overflow:hidden;">
+          <div style="width:${prog}%;height:100%;background:#1d6aff;border-radius:5px;transition:width .6s ease;"></div>
+        </div>
+        <span style="font-size:12px;color:var(--text2);font-weight:600;white-space:nowrap;">${s.qIndex||0}/${s.total||10} ข้อ</span>
+      </div>
+      <!-- Stats -->
+      <div style="display:flex;gap:14px;font-size:12px;">
+        <span style="color:#059669;font-weight:600;">✅ ถูก ${s.correct||0}</span>
+        <span style="color:#dc2626;font-weight:600;">❌ ผิด ${s.wrong||0}</span>
+        ${needHelp ? '<span style="color:#f97316;font-weight:700;">⚠️ ต้องการความช่วยเหลือ!</span>' : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
 
 async function saveResult(r){
   // บันทึกลง localStorage (offline backup)
@@ -901,6 +1476,8 @@ async function renderDash(){
   const sw=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const mx=sw[0]?.[1]||1;
   document.getElementById('weakGrid').innerHTML=sw.length?sw.map(([t,c])=>`<div class="weak-item"><div class="weak-topic">${t}</div><div class="weak-count">นักเรียนผิด ${c} คน</div><div class="weak-bar"><div class="weak-bar-fill" style="width:${Math.round(c/mx*100)}%"></div></div></div>`).join(''):'<div style="color:var(--muted);font-size:14px;padding:8px;">ยังไม่มีข้อมูล</div>';
+  // เก็บข้อมูลไว้ใน window เพื่อให้ printStudentWorksheet ใช้ได้
+  window._dashResults = R;
   document.getElementById('stuBody').innerHTML=R.map((r,i)=>{
     const lc=r.pct>=80?'high':r.pct>=60?'mid':'low';
     const lt=r.pct>=80?'ดี':r.pct>=60?'ปานกลาง':'ต้องพัฒนา';
@@ -963,9 +1540,15 @@ function exportCSV(){
 }
 
 async function printStudentWorksheet(idx){
-  const R = getResults();
+  // ตรวจสอบ API Key ก่อน
+  if(!GKEY || GKEY.length < 20){
+    alert('ไม่พบ API Key\nกรุณารีเฟรชหน้าเว็บและใส่ API Key ใหม่ครับ');
+    return;
+  }
+  // ใช้ข้อมูลจาก Dashboard ที่โหลดล่าสุด (รองรับทั้ง localStorage และ Sheets)
+  const R = window._dashResults || getResults();
   const r = R[idx];
-  if(!r){ alert('ไม่พบข้อมูลนักเรียน'); return; }
+  if(!r){ alert('ไม่พบข้อมูลนักเรียน (idx='+idx+', total='+R.length+')'); return; }
 
   // ปรับจำนวนข้อตามคะแนน
   let numQ=10, qNote='(ต้องพัฒนา — 10 ข้อ)';
@@ -992,6 +1575,16 @@ async function printStudentWorksheet(idx){
   try{
     const weak = (r.wrongTopics||[]).slice(0,3).join('; ') || 'ทบทวนเนื้อหาทั่วไป';
 
+    const wsNeedsGraph = isGeoTopic(r.subtopic, r.topic||'');
+    const wsSvgGuide = wsNeedsGraph ? `
+4. ถ้าโจทย์เกี่ยวกับสถิติหรือเรขาคณิต ให้ใส่ field "svgParams" เพิ่มเติม เช่น:
+   - แผนภูมิแท่ง: {"type":"bar_chart","labels":["ป้าย1","ป้าย2"],"values":[10,20],"title":"หัวข้อ"}
+   - แผนภูมิวงกลม: {"type":"pie_chart","labels":["ก","ข","ค"],"values":[30,20,10],"title":"หัวข้อ"}
+   - กราฟเส้น: {"type":"line_graph","labels":["ม.ค","ก.พ","มี.ค"],"values":[10,15,12],"title":"หัวข้อ"}
+   - ฮิสโทแกรม: {"type":"histogram","intervals":["40-44","45-49"],"freqs":[6,10],"title":"หัวข้อ"}
+   - วงกลม: {"type":"circle","r":5} | สี่เหลี่ยม: {"type":"rectangle","w":6,"h":4}
+   ใส่ค่าจากโจทย์จริงเท่านั้น` : '';
+
     const wsPrompt=`สร้างแบบฝึกหัด ${numQ} ข้อ สำหรับนักเรียน ${r.grade} ชื่อ ${r.name} เรื่อง "${r.subtopic}" (${r.topic})
 จุดอ่อนที่พบ: ${weak}
 
@@ -999,40 +1592,78 @@ ${levelDist}
 
 กฎสำคัญ:
 1. ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย
-2. ห้ามใส่ field "ans" หรือ "method" หรือ "svg" ทุกกรณี — ใบงานนี้ไม่มีเฉลย
-3. แต่ละ object มีเฉพาะ 3 field เท่านั้น: {"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทย"}
+2. ห้ามใส่ field "ans" หรือ field เฉลย — ใบงานนี้ไม่มีเฉลย
+3. แต่ละ object มี field: num, level, q และ svgParams (ถ้ามีภาพ)${wsSvgGuide}
 
-ตัวอย่าง output ที่ถูกต้อง:
-[{"num":1,"level":"พื้นฐาน","q":"จงหาค่า x จาก 2x+3=11"},{"num":2,"level":"พื้นฐาน","q":"..."}]`;
+ตัวอย่าง: [{"num":1,"level":"พื้นฐาน","q":"โจทย์...","svgParams":{"type":"bar_chart","labels":["จ","อ","พ"],"values":[12,15,10],"title":"หัวข้อ"}}]
 
-    // ใช้ callAI ซึ่งมี GKEY อยู่แล้ว
-    const raw = await callAI(wsPrompt);
+เริ่มต้น response ด้วย [ ทันที`;
+
+        // ใช้ callAI พร้อม max_tokens สูงขึ้นสำหรับใบงาน
+    const raw = await callAI(wsPrompt, 2000, true);
     let exercises = null;
 
-    // วิธี 1
-    const m = raw.match(/\[[\s\S]*\]/);
-    if(m){ try{ exercises=JSON.parse(m[0]); }catch(e){} }
-    // วิธี 2: ลบ SVG แล้ว parse
-    if(!exercises){
-      const cleaned=raw.replace(/<svg[\s\S]*?<\/svg>/gi,'').replace(/```json/g,'').replace(/```/g,'').trim();
-      const m2=cleaned.match(/\[[\s\S]*\]/);
-      if(m2){ try{ exercises=JSON.parse(m2[0]); }catch(e){} }
-    }
-    if(!exercises || exercises.length < 3) throw new Error('parse failed');
+    // วิธี 1: หา JSON array โดยตรง
+    try{
+      const m = raw.match(/\[[\s\S]*\]/);
+      if(m) exercises = JSON.parse(m[0]);
+    }catch(e){}
 
-    // กรองเฉพาะ 3 field
-    exercises = exercises.map(ex=>({num:ex.num||0, level:ex.level||'', q:ex.q||''}));
+    // วิธี 2: ลบ markdown/svg แล้ว parse
+    if(!exercises || !Array.isArray(exercises)){
+      try{
+        const cleaned = raw.replace(/```json/g,'').replace(/```/g,'')
+          .replace(/<svg[\s\S]*?<\/svg>/gi,'').trim();
+        const m2 = cleaned.match(/\[[\s\S]*\]/);
+        if(m2) exercises = JSON.parse(m2[0]);
+      }catch(e){}
+    }
+
+    // วิธี 3: retry ด้วย prompt ที่ง่ายขึ้น
+    if(!exercises || !Array.isArray(exercises) || exercises.length < 3){
+      const simplePrompt = `สร้างแบบฝึกหัดคณิตศาสตร์ ${numQ} ข้อ ระดับ ${r.grade} เรื่อง "${r.subtopic}"
+ตอบเป็น JSON array เท่านั้น: [{"num":1,"level":"พื้นฐาน","q":"โจทย์"},{"num":2,"level":"พื้นฐาน","q":"โจทย์"}]`;
+      try{
+        const raw2 = await callAI(simplePrompt, 1500, true);
+        const m3 = raw2.match(/\[[\s\S]*\]/);
+        if(m3) exercises = JSON.parse(m3[0]);
+      }catch(e){}
+    }
+
+    // วิธี 4: ดึง object ทีละก้อน (สำรอง)
+    if(!exercises||!Array.isArray(exercises)||exercises.length<2){
+      try{
+        const objs=[];
+        const re=/\{"num"\s*:\s*(\d+)[^}]*"q"\s*:\s*"([^"]+)"/g;
+        let m;
+        while((m=re.exec(raw||''))!==null) objs.push({num:parseInt(m[1]),level:'พื้นฐาน',q:m[2]});
+        if(objs.length>=2) exercises=objs;
+      }catch(e){}
+    }
+
+    if(!exercises || !Array.isArray(exercises) || exercises.length < 2) throw new Error('parse failed');
+
+    exercises = exercises.map((ex,i)=>({num:ex.num||i+1, level:ex.level||'พื้นฐาน', q:ex.q||'', svgParams:ex.svgParams||null})).filter(ex=>ex.q);
 
     // สร้าง HTML ใบงาน
     const now = new Date();
     const levelColors={'พื้นฐาน':'#059669','ประยุกต์':'#d97706','สูง':'#dc2626'};
     const writingLns=Array(6).fill('').map(()=>'<div style="border-bottom:1.5px solid #c8d3e0;height:28px;margin-bottom:3px;"></div>').join('');
-    const itemsHTML = exercises.map(ex=>`
-      <div class="item">
+    const itemsHTML = exercises.map(ex=>{
+      // วาด SVG ถ้ามี svgParams
+      const svgCode = ex.svgParams ? buildSVGFromParams(ex.svgParams) : null;
+      const svgBlock = svgCode
+        ? `<div style="margin:8px 0 10px;padding:10px;background:#f8fafc;border:1px solid #dde3ec;border-radius:8px;text-align:center;page-break-inside:avoid;">
+             <div style="font-size:10px;color:#64748b;margin-bottom:6px;font-weight:600;letter-spacing:1px;">📊 ภาพประกอบโจทย์</div>
+             ${svgCode}
+           </div>` : '';
+      return `<div class="item">
         <div class="num">ข้อที่ ${ex.num} <span style="background:${levelColors[ex.level]||'#64748b'};color:white;padding:1px 8px;border-radius:10px;font-size:10px;margin-left:6px;">${ex.level}</span></div>
         <div class="q">${ex.q}</div>
+        ${svgBlock}
         <div style="padding:8px 4px 4px;">${writingLns}</div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 
     const scoreColor = r.pct>=80?'#059669':r.pct>=60?'#d97706':'#dc2626';
     const htmlContent=`<!DOCTYPE html><html><head>
@@ -1066,17 +1697,13 @@ ${levelDist}
         </div>
       </div>
       ${itemsHTML}
-      <div class="footer">สร้างโดย MathScan AI • ครูแซม คณิตศาสตร์ตรงจุด ติด TurBo • อิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560</div>
-      <script>window.addEventListener('load',()=>{setTimeout(()=>{window.print();},600);});<\/script>
-    </body></html>`;
+      <div class="footer">สร้างโดย NEXUS AI EDUCATION TEAM • โรงเรียนมัธยมวัดหนองแขม × สวนกุหลาบวิทยาลัย ธนบุรี • อิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560</div>
+      </body>` + '<scr'+'ipt>window.addEventListener(\'load\',()=>{setTimeout(()=>{window.print();},600);});<\/scr'+'ipt>' + `
+    </html>`;
 
     if(document.body.contains(overlay)) document.body.removeChild(overlay);
-    const blob = new Blob([htmlContent],{type:'text/html;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href=url; a.target='_blank'; a.rel='noopener';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url),5000);
+    // ใช้ _exportWorksheet ที่รองรับทั้งมือถือและ desktop
+    _exportWorksheet(r.name, r.grade, r.subtopic, itemsHTML);
 
   }catch(e){
     console.error('printStudentWorksheet error:', e);
@@ -1090,15 +1717,38 @@ function dashToPDF(){
 }
 
 // ===== CHAT =====
+// ===== MATH RENDER HELPER =====
+function renderMath(el){
+  if(!el) return;
+  const _try = (n) => {
+    if(window._mathJaxReady && window.MathJax){
+      MathJax.typesetPromise([el]).catch(()=>{});
+    } else if(n > 0){
+      setTimeout(()=>_try(n-1), 600);
+    } else {
+      if(!window._mathQueue) window._mathQueue=[];
+      if(!window._mathQueue.includes(el)) window._mathQueue.push(el);
+    }
+  };
+  _try(5); // retry สูงสุด 5 ครั้ง ทุก 600ms
+}
+
+function _processLatex(html){
+  // แปลง ** bold ** → <strong>
+  // รักษา $...$ ไม่ให้ถูก escape โดย innerHTML
+  return html
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+}
+
 function addMsg(role,html){
   const box=document.getElementById('messages');
   const w=document.createElement('div');w.className='msg '+role;
   const av=document.createElement('div');av.className='m-av';av.textContent=role==='ai'?'🤖':'👤';
   const bub=document.createElement('div');bub.className='m-bub';
-  bub.innerHTML=html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  bub.innerHTML=_processLatex(html);
   w.appendChild(av);w.appendChild(bub);box.appendChild(w);box.scrollTop=box.scrollHeight;
-  // Render LaTeX
-  if(window.MathJax) MathJax.typesetPromise([bub]).catch(()=>{});
+  renderMath(bub);
 }
 function addTyping(){const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';w.id='typing';w.innerHTML='<div class="m-av">🤖</div><div class="m-bub"><div class="typing"><span></span><span></span><span></span></div></div>';box.appendChild(w);box.scrollTop=box.scrollHeight;}
 function rmTyping(){const t=document.getElementById('typing');if(t)t.remove();}
@@ -1110,14 +1760,23 @@ function addGrid(type,items,onSelect){
   const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';
   const av=document.createElement('div');av.className='m-av';av.textContent='🤖';
   const bub=document.createElement('div');bub.className='m-bub';
-  const grid=document.createElement('div');grid.className=type+'-grid'||type+'-list';
+  const grid=document.createElement('div');
+  grid.className=type+'-grid';
   items.forEach(item=>{
     const btn=document.createElement('button');
     btn.className=type+'-btn';
-    if(type==='grade')btn.textContent=item;
-    else if(type==='topic')btn.innerHTML=`<span class="ind">${item.indicator}</span>${item.topic}`;
+    if(type==='grade') btn.textContent=item;
+    else if(type==='topic') btn.innerHTML=`<span class="ind">${item.indicator}</span>${item.topic}`;
+    else if(type==='device') btn.innerHTML=item; // emoji + text
     else btn.textContent=item;
-    btn.onclick=()=>{grid.querySelectorAll('button').forEach(b=>b.disabled=true);onSelect(item);};
+    btn.onclick=(e)=>{
+      e.stopPropagation();
+      // disable ทุกปุ่มใน grid นี้
+      grid.querySelectorAll('button').forEach(b=>{b.disabled=true;b.style.opacity='0.5';});
+      // highlight ที่เลือก
+      btn.style.opacity='1';btn.style.borderColor='var(--blue)';btn.style.background='#eff6ff';
+      onSelect(item);
+    };
     grid.appendChild(btn);
   });
   bub.appendChild(grid);w.appendChild(av);w.appendChild(bub);box.appendChild(w);box.scrollTop=box.scrollHeight;
@@ -1125,7 +1784,7 @@ function addGrid(type,items,onSelect){
 
 function greetUser(){
   phase='device';
-  addMsg('ai','สวัสดีครับ 👋 ยินดีต้อนรับสู่ **MathScan AI**\nระบบวิเคราะห์ผู้เรียนวิชาคณิตศาสตร์ด้วยปัญญาประดิษฐ์\nอ้างอิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560\n\nก่อนเริ่ม กรุณาเลือกว่าขณะนี้คุณใช้อุปกรณ์ใดอยู่ครับ 📱💻');
+  addMsg('ai','สวัสดีครับ 👋 ยินดีต้อนรับสู่ **NEXUS AI**\nระบบวิเคราะห์ผู้เรียนวิชาคณิตศาสตร์ด้วยปัญญาประดิษฐ์\nอ้างอิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560\n\nก่อนเริ่ม กรุณาเลือกว่าขณะนี้คุณใช้อุปกรณ์ใดอยู่ครับ 📱💻');
   setTimeout(()=>{
     addGrid('device',['📱 มือถือ','📟 แท็บเล็ต','💻 คอมพิวเตอร์'],dev=>{
       if(dev.includes('มือถือ'))deviceType='mobile';
@@ -1186,20 +1845,8 @@ async function sendText(){
   }
 }
 
-// ===== GEOMETRY DETECTOR =====
-const GEO_KEYWORDS = [
-  'เรขาคณิต','รูปร่าง','รูปสามเหลี่ยม','รูปสี่เหลี่ยม','วงกลม','วงรี','ปริซึม','ทรงกระบอก',
-  'พีระมิด','กรวย','ทรงกลม','ทรงสี่เหลี่ยม','ความคล้าย','พีทาโกรัส','ทฤษฎีบท','เส้นขนาน',
-  'มุม','เส้นตรง','รังสี','ส่วนของเส้นตรง','ความสมมาตร','แกนสมมาตร','การแปลง','เลื่อนขนาน',
-  'สะท้อน','หมุน','การสร้าง','คอร์ด','เส้นสัมผัส','พาราโบลา','วงรี','ไฮเพอร์โบลา',
-  'เวกเตอร์','อัตราส่วนตรีโกณมิติ','sin','cos','tan','พื้นที่ผิว','ปริมาตร','พื้นที่',
-  'ความยาวรอบรูป','ระยะห่าง','มิติ','แผนภาพเวนน์','เซต'
-];
-
-function isGeoTopic(subtopic, topicName){
-  const txt = (subtopic + ' ' + topicName).toLowerCase();
-  return GEO_KEYWORDS.some(k => txt.includes(k.toLowerCase()));
-}
+// ===== GEOMETRY SVG ENGINE =====
+// สร้าง SVG จาก parameter ที่ AI ส่งมา — ถูกต้อง 100% เพราะคำนวณเอง
 
 function addSVGtoMessage(svgCode){
   if(!svgCode || svgCode.length < 30) return;
@@ -1208,11 +1855,463 @@ function addSVGtoMessage(svgCode){
   const av = document.createElement('div'); av.className = 'm-av'; av.textContent = '🤖';
   const bub = document.createElement('div'); bub.className = 'm-bub';
   bub.style.cssText = 'padding:10px 12px;background:white;border:2px solid var(--border);border-radius:14px;';
-  // Sanitize: only allow <svg> tag
   const clean = svgCode.trim();
   if(!clean.startsWith('<svg')) return;
   bub.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-family:'Space Mono',monospace;letter-spacing:1px;">📐 ภาพประกอบโจทย์</div><div class="svg-wrap">${clean}</div>`;
   w.appendChild(av); w.appendChild(bub); box.appendChild(w); box.scrollTop = box.scrollHeight;
+}
+
+// ===== SVG BUILDERS — คำนวณ geometry จริง =====
+
+// วาดรูปสามเหลี่ยม พร้อมป้าย side a,b,c และมุม
+function svgTriangle(a,b,c, label=''){
+  // ใช้ law of cosines หา coordinates
+  const scale = 160 / Math.max(a,b,c);
+  const A = {x:20, y:160};
+  const B = {x:20+a*scale, y:160};
+  const cosC = (a*a+b*b-c*c)/(2*a*b);
+  const C = {x:20+b*scale*cosC, y:160-b*scale*Math.sqrt(1-cosC*cosC)};
+  const [ax,ay,bx,by,cx,cy] = [A.x,A.y,B.x,B.y,C.x,C.y];
+  return `<svg viewBox="0 0 200 185" xmlns="http://www.w3.org/2000/svg" style="max-width:220px">
+    <polygon points="${ax},${ay} ${bx},${by} ${cx},${cy}" fill="#eff6ff" stroke="#1d6aff" stroke-width="2"/>
+    <text x="${(ax+bx)/2}" y="${ay+16}" text-anchor="middle" font-size="12" fill="#1d6aff" font-family="sans-serif">${a}</text>
+    <text x="${(bx+cx)/2+8}" y="${(by+cy)/2}" font-size="12" fill="#1d6aff" font-family="sans-serif">${c}</text>
+    <text x="${(ax+cx)/2-14}" y="${(ay+cy)/2}" font-size="12" fill="#1d6aff" font-family="sans-serif">${b}</text>
+    <text x="${ax-14}" y="${ay+4}" font-size="11" fill="#334155">A</text>
+    <text x="${bx+4}" y="${by+4}" font-size="11" fill="#334155">B</text>
+    <text x="${cx-8}" y="${cy-6}" font-size="11" fill="#334155">C</text>
+    ${label?`<text x="100" y="178" text-anchor="middle" font-size="11" fill="#64748b">${label}</text>`:''}
+  </svg>`;
+}
+
+// วาดรูปสี่เหลี่ยม/สี่เหลี่ยมผืนผ้า
+function svgRect(w,h, label=''){
+  const scale = Math.min(160/w, 110/h);
+  const W=w*scale, H=h*scale, ox=20, oy=20;
+  return `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" style="max-width:220px">
+    <rect x="${ox}" y="${oy}" width="${W}" height="${H}" fill="#eff6ff" stroke="#1d6aff" stroke-width="2"/>
+    <text x="${ox+W/2}" y="${oy+H+16}" text-anchor="middle" font-size="12" fill="#1d6aff">${w}</text>
+    <text x="${ox-14}" y="${oy+H/2+4}" font-size="12" fill="#1d6aff">${h}</text>
+    ${label?`<text x="100" y="152" text-anchor="middle" font-size="11" fill="#64748b">${label}</text>`:''}
+  </svg>`;
+}
+
+// วาดวงกลม พร้อมรัศมี
+function svgCircle(r, label=''){
+  const scale = Math.min(80/r, 80/r);
+  const R=r*scale, cx=100, cy=80;
+  return `<svg viewBox="0 0 200 170" xmlns="http://www.w3.org/2000/svg" style="max-width:220px">
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="#eff6ff" stroke="#1d6aff" stroke-width="2"/>
+    <line x1="${cx}" y1="${cy}" x2="${cx+R}" y2="${cy}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4"/>
+    <text x="${cx+R/2}" y="${cy-6}" text-anchor="middle" font-size="12" fill="#dc2626">r = ${r}</text>
+    <circle cx="${cx}" cy="${cy}" r="3" fill="#1d6aff"/>
+    <text x="${cx+4}" y="${cy+14}" font-size="11" fill="#334155">O</text>
+    ${label?`<text x="100" y="162" text-anchor="middle" font-size="11" fill="#64748b">${label}</text>`:''}
+  </svg>`;
+}
+
+// วาดแผนภาพเวนน์ 2 เซต
+function svgVenn(setA, setB, intersect, labelA='A', labelB='B'){
+  const aOnly = setA.filter(x=>!intersect.includes(x));
+  const bOnly = setB.filter(x=>!intersect.includes(x));
+  return `<svg viewBox="0 0 280 160" xmlns="http://www.w3.org/2000/svg" style="max-width:300px">
+    <rect x="10" y="10" width="260" height="140" rx="8" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="260" y="24" text-anchor="end" font-size="10" fill="#94a3b8">U</text>
+    <circle cx="100" cy="80" r="55" fill="rgba(29,106,255,0.12)" stroke="#1d6aff" stroke-width="2"/>
+    <circle cx="180" cy="80" r="55" fill="rgba(220,38,38,0.10)" stroke="#dc2626" stroke-width="2"/>
+    <text x="68" y="34" text-anchor="middle" font-size="13" font-weight="700" fill="#1d6aff">${labelA}</text>
+    <text x="212" y="34" text-anchor="middle" font-size="13" font-weight="700" fill="#dc2626">${labelB}</text>
+    <text x="68" y="82" text-anchor="middle" font-size="11" fill="#1d4e7a">${aOnly.slice(0,4).join(', ')}</text>
+    <text x="140" y="82" text-anchor="middle" font-size="11" fill="#334155">${intersect.slice(0,3).join(', ')}</text>
+    <text x="212" y="82" text-anchor="middle" font-size="11" fill="#7a1d1d">${bOnly.slice(0,4).join(', ')}</text>
+  </svg>`;
+}
+
+// วาดสามเหลี่ยมมุมฉาก + ป้าย Pythagorean
+function svgRightTriangle(a, b, c, label=''){
+  const scale = 130 / Math.max(a,b);
+  const A={x:20,y:150}, B={x:20+a*scale,y:150}, C={x:20,y:150-b*scale};
+  // right angle mark
+  const sq=10;
+  return `<svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" style="max-width:220px">
+    <polygon points="${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}" fill="#eff6ff" stroke="#1d6aff" stroke-width="2"/>
+    <polyline points="${A.x+sq},${A.y} ${A.x+sq},${A.y-sq} ${A.x},${A.y-sq}" fill="none" stroke="#1d6aff" stroke-width="1.5"/>
+    <text x="${(A.x+B.x)/2}" y="${A.y+16}" text-anchor="middle" font-size="12" fill="#1d6aff">${a}</text>
+    <text x="${C.x-16}" y="${(A.y+C.y)/2}" font-size="12" fill="#1d6aff">${b}</text>
+    <text x="${(B.x+C.x)/2+8}" y="${(B.y+C.y)/2}" font-size="12" fill="#dc2626">${c}</text>
+    ${label?`<text x="100" y="174" text-anchor="middle" font-size="11" fill="#64748b">${label}</text>`:''}
+  </svg>`;
+}
+
+// วาดรูปทรงกระบอก
+function svgCylinder(r, h, label=''){
+  const scale = Math.min(60/r, 100/h);
+  const R=r*scale*0.8, H=h*scale*0.6, cx=100, top=30;
+  return `<svg viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg" style="max-width:220px">
+    <ellipse cx="${cx}" cy="${top}" rx="${R}" ry="${R*0.35}" fill="#eff6ff" stroke="#1d6aff" stroke-width="2"/>
+    <rect x="${cx-R}" y="${top}" width="${R*2}" height="${H}" fill="#dbeafe" stroke="#1d6aff" stroke-width="2"/>
+    <ellipse cx="${cx}" cy="${top+H}" rx="${R}" ry="${R*0.35}" fill="#bfdbfe" stroke="#1d6aff" stroke-width="2"/>
+    <line x1="${cx+R+4}" y1="${top}" x2="${cx+R+4}" y2="${top+H}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4"/>
+    <text x="${cx+R+12}" y="${top+H/2+4}" font-size="11" fill="#dc2626">h=${h}</text>
+    <line x1="${cx}" y1="${top}" x2="${cx+R}" y2="${top}" stroke="#059669" stroke-width="1.5" stroke-dasharray="4"/>
+    <text x="${cx+R/2}" y="${top-6}" text-anchor="middle" font-size="11" fill="#059669">r=${r}</text>
+    ${label?`<text x="100" y="172" text-anchor="middle" font-size="11" fill="#64748b">${label}</text>`:''}
+  </svg>`;
+}
+
+// วาดการแปลง (translation, reflection, rotation) แบบง่าย
+function svgTransform(type, label=''){
+  const shapes = {
+    translation: `<polygon points="30,120 70,120 70,80 30,80" fill="#dbeafe" stroke="#1d6aff" stroke-width="2"/>
+      <polygon points="110,100 150,100 150,60 110,60" fill="#fef3c7" stroke="#d97706" stroke-width="2" stroke-dasharray="5"/>
+      <line x1="70" y1="100" x2="110" y2="80" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr)"/>
+      <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker></defs>
+      <text x="90" y="115" text-anchor="middle" font-size="11" fill="#64748b">เลื่อนขนาน</text>`,
+    reflection: `<polygon points="40,130 80,130 80,70 40,70" fill="#dbeafe" stroke="#1d6aff" stroke-width="2"/>
+      <line x1="100" y1="30" x2="100" y2="155" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5"/>
+      <polygon points="160,130 120,130 120,70 160,70" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+      <text x="100" y="168" text-anchor="middle" font-size="11" fill="#64748b">สะท้อน</text>`,
+    rotation: `<polygon points="100,80 130,130 70,130" fill="#dbeafe" stroke="#1d6aff" stroke-width="2"/>
+      <polygon points="100,80 140,80 140,50 100,50" fill="#fef3c7" stroke="#d97706" stroke-width="2" stroke-dasharray="5"/>
+      <circle cx="100" cy="80" r="3" fill="#dc2626"/>
+      <path d="M120,65 A25,25 0 0,1 115,95" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="4"/>
+      <text x="100" y="155" text-anchor="middle" font-size="11" fill="#64748b">หมุน</text>`
+  };
+  return `<svg viewBox="0 0 200 175" xmlns="http://www.w3.org/2000/svg" style="max-width:220px">
+    ${shapes[type]||shapes.translation}
+    ${label?`<text x="100" y="172" text-anchor="middle" font-size="10" fill="#94a3b8">${label}</text>`:''}
+  </svg>`;
+}
+
+// ===== DISPATCH: เลือก SVG ที่ถูกต้องจาก svgParams ของ AI =====
+function buildSVGFromParams(p){
+  if(!p || !p.type) return null;
+  try{
+    switch(p.type){
+      // เรขาคณิต
+      case 'triangle':       return svgTriangle(p.a||3, p.b||4, p.c||5, p.label||'');
+      case 'right_triangle': return svgRightTriangle(p.a||3, p.b||4, p.c||5, p.label||'');
+      case 'rectangle':      return svgRect(p.w||6, p.h||4, p.label||'');
+      case 'square':         return svgRect(p.s||5, p.s||5, p.label||'');
+      case 'circle':         return svgCircle(p.r||5, p.label||'');
+      case 'cylinder':       return svgCylinder(p.r||3, p.h||6, p.label||'');
+      case 'venn':           return svgVenn(p.setA||[], p.setB||[], p.intersect||[], p.labelA||'A', p.labelB||'B');
+      case 'translation':    return svgTransform('translation', p.label||'');
+      case 'reflection':     return svgTransform('reflection', p.label||'');
+      case 'rotation':       return svgTransform('rotation', p.label||'');
+      // สถิติ
+      case 'bar_chart':      return svgBarChart(p.labels||[], p.values||[], p.title||'');
+      case 'pie_chart':      return svgPieChart(p.labels||[], p.values||[], p.title||'');
+      case 'pictograph':     return svgPictograph(p.labels||[], p.values||[], p.unit||1, p.title||'');
+      case 'line_graph':     return svgLineGraph(p.labels||[], p.values||[], p.title||'');
+      case 'stem_leaf':      return svgStemLeaf(p.data||[], p.title||'');
+      case 'histogram':      return svgHistogram(p.intervals||[], p.freqs||[], p.title||'');
+      case 'box_plot':       return svgBoxPlot(p.min||0, p.q1||25, p.median||50, p.q3||75, p.max||100, p.title||'');
+      case 'dot_plot':       return svgDotPlot(p.data||[], p.title||'');
+      case 'prob_tree':      return svgProbTree(p.branches||[], p.title||'');
+      default: return null;
+    }
+  }catch(e){ console.warn('SVG build error:',e); return null; }
+}
+
+// ===== STATISTICS SVG BUILDERS =====
+const STAT_COLORS=['#1d6aff','#dc2626','#059669','#d97706','#7c3aed','#0891b2','#be185d','#65a30d'];
+
+// แผนภูมิแท่ง (Bar Chart) — แนวตั้ง
+function svgBarChart(labels, values, title){
+  const n=labels.length; if(!n) return null;
+  const W=280, H=180, pad={t:30,r:16,b:50,l:36};
+  const chartW=W-pad.l-pad.r, chartH=H-pad.t-pad.b;
+  const maxV=Math.max(...values,1);
+  const barW=Math.min(36, chartW/n*0.65);
+  const gap=(chartW-barW*n)/(n+1);
+
+  let bars='', xlabels='', gridlines='';
+  // grid lines
+  [0,0.25,0.5,0.75,1].forEach(f=>{
+    const y=pad.t+chartH*(1-f);
+    const val=Math.round(maxV*f);
+    gridlines+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="${pad.l-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${val}</text>`;
+  });
+  values.forEach((v,i)=>{
+    const bh=chartH*(v/maxV);
+    const x=pad.l+gap+i*(barW+gap);
+    const y=pad.t+chartH-bh;
+    bars+=`<rect x="${x}" y="${y}" width="${barW}" height="${bh}" fill="${STAT_COLORS[i%STAT_COLORS.length]}" rx="3"/>
+    <text x="${x+barW/2}" y="${y-4}" text-anchor="middle" font-size="10" fill="#334155" font-weight="600">${v}</text>`;
+    const lbl=labels[i].length>5?labels[i].substring(0,5)+'…':labels[i];
+    xlabels+=`<text x="${x+barW/2}" y="${H-pad.b+14}" text-anchor="middle" font-size="10" fill="#334155">${lbl}</text>`;
+  });
+  // axes
+  const axes=`<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t+chartH}" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="${pad.l}" y1="${pad.t+chartH}" x2="${W-pad.r}" y2="${pad.t+chartH}" stroke="#94a3b8" stroke-width="1.5"/>`;
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    ${gridlines}${axes}${bars}${xlabels}
+  </svg>`;
+}
+
+// แผนภูมิวงกลม (Pie Chart) — คำนวณ arc จริง
+function svgPieChart(labels, values, title){
+  const n=labels.length; if(!n) return null;
+  const total=values.reduce((a,b)=>a+b,0); if(!total) return null;
+  const cx=110, cy=100, r=72;
+  const W=280, H=210;
+
+  let slices='', legend='';
+  let startAngle=-Math.PI/2;
+  values.forEach((v,i)=>{
+    const frac=v/total;
+    const angle=frac*2*Math.PI;
+    const endAngle=startAngle+angle;
+    const x1=cx+r*Math.cos(startAngle), y1=cy+r*Math.sin(startAngle);
+    const x2=cx+r*Math.cos(endAngle),   y2=cy+r*Math.sin(endAngle);
+    const large=angle>Math.PI?1:0;
+    const mid=startAngle+angle/2;
+    const pct=Math.round(frac*100);
+    const col=STAT_COLORS[i%STAT_COLORS.length];
+    slices+=`<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${large},1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${col}" stroke="white" stroke-width="2"/>`;
+    if(pct>=5){
+      const tx=cx+(r*0.65)*Math.cos(mid), ty=cy+(r*0.65)*Math.sin(mid);
+      slices+=`<text x="${tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle" font-size="10" font-weight="700" fill="white">${pct}%</text>`;
+    }
+    // legend
+    const lx=190, ly=30+i*22;
+    const lbl=labels[i].length>8?labels[i].substring(0,8)+'…':labels[i];
+    legend+=`<rect x="${lx}" y="${ly-9}" width="12" height="12" fill="${col}" rx="2"/>
+    <text x="${lx+16}" y="${ly+1}" font-size="10" fill="#334155">${lbl} (${v})</text>`;
+    startAngle=endAngle;
+  });
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    ${slices}${legend}
+    <text x="${cx}" y="${H-4}" text-anchor="middle" font-size="9" fill="#94a3b8">รวม ${total}</text>
+  </svg>`;
+}
+
+// แผนภูมิรูปภาพ (Pictograph) — แสดง emoji แทนค่า
+function svgPictograph(labels, values, unit, title){
+  const n=labels.length; if(!n) return null;
+  const rowH=34, padL=80, padT=30, W=280;
+  const H=padT+n*rowH+30;
+  const maxIcons=8;
+  const maxV=Math.max(...values,1);
+  const scale=maxV>maxIcons?maxV/maxIcons:1;
+
+  let rows='';
+  values.forEach((v,i)=>{
+    const y=padT+i*rowH;
+    const icons=Math.round(v/scale);
+    const lbl=labels[i].length>8?labels[i].substring(0,8):labels[i];
+    rows+=`<text x="${padL-4}" y="${y+18}" text-anchor="end" font-size="11" fill="#334155" font-weight="600">${lbl}</text>`;
+    for(let k=0;k<icons;k++){
+      rows+=`<text x="${padL+4+k*26}" y="${y+20}" font-size="18">🟦</text>`;
+    }
+    rows+=`<text x="${padL+4+icons*26+4}" y="${y+20}" font-size="10" fill="#64748b">(${v})</text>`;
+  });
+
+  return `<svg viewBox="0 0 ${W} ${Math.max(H,100)}" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    ${rows}
+    <text x="${padL}" y="${H-6}" font-size="9" fill="#94a3b8">🟦 = ${unit} หน่วย</text>
+  </svg>`;
+}
+
+// กราฟเส้น (Line Graph)
+function svgLineGraph(labels, values, title){
+  const n=labels.length; if(n<2) return null;
+  const W=280, H=170, pad={t:28,r:16,b:46,l:36};
+  const chartW=W-pad.l-pad.r, chartH=H-pad.t-pad.b;
+  const maxV=Math.max(...values,1);
+  const minV=Math.min(...values,0);
+  const range=maxV-minV||1;
+  const xStep=chartW/(n-1);
+
+  const pts=values.map((v,i)=>{
+    const x=pad.l+i*xStep;
+    const y=pad.t+chartH*(1-(v-minV)/range);
+    return {x,y,v};
+  });
+
+  let gridlines='', polyline='', dots='', xlabels='';
+  [0,0.5,1].forEach(f=>{
+    const y=pad.t+chartH*(1-f);
+    const val=Math.round(minV+range*f);
+    gridlines+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="${pad.l-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${val}</text>`;
+  });
+  polyline=`<polyline points="${pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')}" fill="none" stroke="#1d6aff" stroke-width="2.5" stroke-linejoin="round"/>`;
+  pts.forEach(({x,y,v},i)=>{
+    dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="#1d6aff" stroke="white" stroke-width="1.5"/>
+    <text x="${x.toFixed(1)}" y="${(y-8).toFixed(1)}" text-anchor="middle" font-size="9" fill="#1d6aff" font-weight="700">${v}</text>`;
+    const lbl=labels[i].length>4?labels[i].substring(0,4):labels[i];
+    xlabels+=`<text x="${x.toFixed(1)}" y="${H-pad.b+14}" text-anchor="middle" font-size="9" fill="#334155">${lbl}</text>`;
+  });
+  const axes=`<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t+chartH}" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="${pad.l}" y1="${pad.t+chartH}" x2="${W-pad.r}" y2="${pad.t+chartH}" stroke="#94a3b8" stroke-width="1.5"/>`;
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    ${gridlines}${axes}${polyline}${dots}${xlabels}
+  </svg>`;
+}
+
+// แผนภาพต้น-ใบ (Stem-and-Leaf)
+function svgStemLeaf(data, title){
+  // data = [{stem:'2', leaves:'3 5 7'}, ...]
+  if(!data.length) return null;
+  const W=240, rowH=22, padT=30, padL=50;
+  const H=padT+data.length*rowH+20;
+  let rows='';
+  data.forEach((row,i)=>{
+    const y=padT+i*rowH+16;
+    rows+=`<text x="${padL-8}" y="${y}" text-anchor="end" font-size="12" font-weight="700" fill="#1d6aff">${row.stem}</text>`;
+    rows+=`<text x="${padL+4}" y="${y}" font-size="12" fill="#334155" font-family="monospace">${row.leaves}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${Math.max(H,80)}" xmlns="http://www.w3.org/2000/svg" style="max-width:260px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    <line x1="${padL}" y1="${padT-4}" x2="${padL}" y2="${H-10}" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="${padL-20}" y="${padT-8}" font-size="9" fill="#94a3b8" text-anchor="middle">ต้น</text>
+    <text x="${padL+30}" y="${padT-8}" font-size="9" fill="#94a3b8">ใบ</text>
+    ${rows}
+  </svg>`;
+}
+
+// ฮิสโทแกรม (Histogram)
+function svgHistogram(intervals, freqs, title){
+  const n=intervals.length; if(!n) return null;
+  const W=280, H=180, pad={t:28,r:16,b:46,l:36};
+  const chartW=W-pad.l-pad.r, chartH=H-pad.t-pad.b;
+  const maxF=Math.max(...freqs,1);
+  const barW=chartW/n;
+
+  let bars='', xlabels='', gridlines='';
+  [0,0.5,1].forEach(f=>{
+    const y=pad.t+chartH*(1-f);
+    gridlines+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="${pad.l-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#94a3b8">${Math.round(maxF*f)}</text>`;
+  });
+  freqs.forEach((f,i)=>{
+    const bh=chartH*(f/maxF);
+    const x=pad.l+i*barW;
+    const y=pad.t+chartH-bh;
+    bars+=`<rect x="${x+1}" y="${y}" width="${barW-2}" height="${bh}" fill="${STAT_COLORS[0]}" opacity="0.85"/>
+    <text x="${x+barW/2}" y="${y-4}" text-anchor="middle" font-size="9" fill="#334155">${f}</text>`;
+    if(intervals[i]){
+      xlabels+=`<text x="${x+barW/2}" y="${H-pad.b+14}" text-anchor="middle" font-size="8" fill="#334155">${intervals[i]}</text>`;
+    }
+  });
+  const axes=`<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${pad.t+chartH}" stroke="#94a3b8" stroke-width="1.5"/>
+    <line x1="${pad.l}" y1="${pad.t+chartH}" x2="${W-pad.r}" y2="${pad.t+chartH}" stroke="#94a3b8" stroke-width="1.5"/>`;
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    ${gridlines}${axes}${bars}${xlabels}
+  </svg>`;
+}
+
+// แผนภาพกล่อง (Box Plot)
+function svgBoxPlot(minV, q1, median, q3, maxV, title){
+  const W=280, H=110, pad={l:30,r:16,t:28,b:24};
+  const chartW=W-pad.l-pad.r;
+  const range=maxV-minV||1;
+  const sc=v=>pad.l+chartW*(v-minV)/range;
+  const mid=60;
+  const bh=28;
+
+  const [xMin,xQ1,xMed,xQ3,xMax]=[sc(minV),sc(q1),sc(median),sc(q3),sc(maxV)];
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    <!-- whiskers -->
+    <line x1="${xMin}" y1="${mid}" x2="${xQ1}" y2="${mid}" stroke="#64748b" stroke-width="2"/>
+    <line x1="${xQ3}" y1="${mid}" x2="${xMax}" y2="${mid}" stroke="#64748b" stroke-width="2"/>
+    <line x1="${xMin}" y1="${mid-8}" x2="${xMin}" y2="${mid+8}" stroke="#64748b" stroke-width="2"/>
+    <line x1="${xMax}" y1="${mid-8}" x2="${xMax}" y2="${mid+8}" stroke="#64748b" stroke-width="2"/>
+    <!-- box -->
+    <rect x="${xQ1}" y="${mid-bh/2}" width="${xQ3-xQ1}" height="${bh}" fill="#dbeafe" stroke="#1d6aff" stroke-width="2"/>
+    <!-- median -->
+    <line x1="${xMed}" y1="${mid-bh/2}" x2="${xMed}" y2="${mid+bh/2}" stroke="#dc2626" stroke-width="2.5"/>
+    <!-- labels -->
+    <text x="${xMin}" y="${mid+bh/2+12}" text-anchor="middle" font-size="9" fill="#64748b">${minV}</text>
+    <text x="${xQ1}" y="${mid+bh/2+12}" text-anchor="middle" font-size="9" fill="#1d6aff">Q1=${q1}</text>
+    <text x="${xMed}" y="${mid-bh/2-4}" text-anchor="middle" font-size="9" fill="#dc2626">Med=${median}</text>
+    <text x="${xQ3}" y="${mid+bh/2+12}" text-anchor="middle" font-size="9" fill="#1d6aff">Q3=${q3}</text>
+    <text x="${xMax}" y="${mid+bh/2+12}" text-anchor="middle" font-size="9" fill="#64748b">${maxV}</text>
+  </svg>`;
+}
+
+// แผนภาพจุด (Dot Plot)
+function svgDotPlot(data, title){
+  if(!data.length) return null;
+  // data = [3,3,4,5,5,5,6,...] หรือ numbers
+  const freq={};
+  data.forEach(v=>{ freq[v]=(freq[v]||0)+1; });
+  const vals=Object.keys(freq).map(Number).sort((a,b)=>a-b);
+  const maxF=Math.max(...Object.values(freq));
+  const W=260, dotR=7, padL=30, padT=20;
+  const H=padT+maxF*dotR*2.2+30;
+
+  const span=vals[vals.length-1]-vals[0]||1;
+  const chartW=W-padL*2;
+  let dots='', xlabels='';
+  vals.forEach(v=>{
+    const x=padL+chartW*(v-vals[0])/span;
+    const cnt=freq[v];
+    for(let k=0;k<cnt;k++){
+      const y=H-28-k*dotR*2.2;
+      dots+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${dotR-1}" fill="#1d6aff" opacity="0.85"/>`;
+    }
+    xlabels+=`<text x="${x.toFixed(1)}" y="${H-12}" text-anchor="middle" font-size="10" fill="#334155">${v}</text>`;
+  });
+  const axis=`<line x1="${padL}" y1="${H-22}" x2="${W-padL}" y2="${H-22}" stroke="#94a3b8" stroke-width="1.5"/>`;
+
+  return `<svg viewBox="0 0 ${W} ${Math.max(H,80)}" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    ${axis}${dots}${xlabels}
+  </svg>`;
+}
+
+// ต้นไม้ความน่าจะเป็น (Probability Tree)
+function svgProbTree(branches, title){
+  // branches = [{label:'H', p:'1/2', sub:[{label:'H',p:'1/2'},{label:'T',p:'1/2'}]}, ...]
+  if(!branches.length) return null;
+  const W=280, H=160;
+  const startX=30, midX=130, endX=240;
+
+  let lines='', texts='';
+  const n1=branches.length;
+  branches.forEach((b,i)=>{
+    const y1=40+i*(H-40)/(n1);
+    lines+=`<line x1="${startX}" y1="${H/2}" x2="${midX}" y2="${y1}" stroke="#1d6aff" stroke-width="1.5"/>`;
+    texts+=`<text x="${(startX+midX)/2-8}" y="${(H/2+y1)/2-4}" font-size="10" fill="#dc2626">${b.p||''}</text>`;
+    texts+=`<circle cx="${midX}" cy="${y1}" r="4" fill="#1d6aff"/>`;
+    texts+=`<text x="${midX+7}" y="${y1+4}" font-size="11" font-weight="600" fill="#0f172a">${b.label||''}</text>`;
+    if(b.sub){
+      const n2=b.sub.length;
+      b.sub.forEach((s,j)=>{
+        const y2=20+j*(H-30)/(n2);
+        lines+=`<line x1="${midX}" y1="${y1}" x2="${endX}" y2="${y2}" stroke="#059669" stroke-width="1.5"/>`;
+        texts+=`<text x="${(midX+endX)/2-8}" y="${(y1+y2)/2-4}" font-size="10" fill="#059669">${s.p||''}</text>`;
+        texts+=`<circle cx="${endX}" cy="${y2}" r="3" fill="#059669"/>`;
+        texts+=`<text x="${endX+6}" y="${y2+4}" font-size="10" fill="#334155">${s.label||''}</text>`;
+      });
+    }
+  });
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#fff;border-radius:8px;">
+    ${title?`<text x="${W/2}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#0f172a">${title}</text>`:''}
+    <circle cx="${startX}" cy="${H/2}" r="5" fill="#1d6aff"/>
+    ${lines}${texts}
+  </svg>`;
+}
+
+function isGeoTopic(subtopic, topicName){
+  const txt=(subtopic+' '+topicName).toLowerCase();
+  return /เรขา|รูปสาม|รูปสี่|วงกลม|ปริซึม|ทรง|พีทาโก|พื้นที่|ปริมาตร|ความยาว|มุม|แปลง|สะท้อน|หมุน|เลื่อน|สร้าง|คล้าย|เซต|เวนน์|สถิติ|แผนภูมิ|แผนภาพ|ความน่าจะ|ข้อมูล|ฮิสโท|กราฟ|ต้นใบ|กล่อง|วงกลม|รูปภาพ/.test(txt);
 }
 
 // ===== QUIZ =====
@@ -1229,19 +2328,39 @@ async function loadNextQ(){
   const lvl=['ง่าย','ปานกลาง','ยาก'][mcqLevel-1];
   const needsGeo = isGeoTopic(selectedSubtopic, selectedTopic.topic);
 
-  // SVG เฉพาะโจทย์เซต/เวนน์ที่ชัดเจนเท่านั้น (ไม่ทำทุก geo เพราะ token overflow)
-  const isVenn = (selectedSubtopic+selectedTopic.topic).match(/เซต|เวนน์|ยูเนียน|อินเตอร์|แผนภาพ/i);
-  const needsSVG = isVenn;
+  // ตรวจว่าเป็นหัวข้อเรขาคณิตหรือสถิติหรือไม่
+  const needsSVG = isGeoTopic(selectedSubtopic, selectedTopic.topic);
 
+  // ถ้าเป็นเรขา/สถิติ ให้ AI ส่ง svgParams — JS จะวาดเองถูกต้อง 100%
   const geoExtra = needsSVG ? `
-ให้สร้าง SVG แผนภาพเวนน์ประกอบโจทย์ ใส่ใน field "svg" ของ JSON
-กฎ SVG: viewBox="0 0 280 180", ใช้ fill none stroke="#1d6aff" strokeWidth="2" สำหรับวงกลม, ข้อความ font-size="12" fill="#0f172a"
-วาดวงกลม A และ B แสดงส่วนที่ซ้อน สมาชิกของแต่ละเซตตามโจทย์จริง ไม่ต้องมี background
-SVG ต้องสั้นกระชับ ความยาวรวมไม่เกิน 600 ตัวอักษร` : '';
+ให้ใส่ field "svgParams" ใน JSON โดยเลือก type ที่ตรงกับโจทย์จริงเท่านั้น:
+
+=== เรขาคณิต ===
+- สามเหลี่ยมทั่วไป: {"type":"triangle","a":ด้าน_a,"b":ด้าน_b,"c":ด้าน_c,"label":"..."}
+- สามเหลี่ยมมุมฉาก: {"type":"right_triangle","a":ขา_a,"b":ขา_b,"c":ด้านตรง,"label":"..."}
+- สี่เหลี่ยมผืนผ้า: {"type":"rectangle","w":กว้าง,"h":ยาว,"label":"..."}
+- สี่เหลี่ยมจตุรัส: {"type":"square","s":ด้าน,"label":"..."}
+- วงกลม: {"type":"circle","r":รัศมี,"label":"..."}
+- ทรงกระบอก: {"type":"cylinder","r":รัศมี,"h":สูง,"label":"..."}
+- แผนภาพเวนน์: {"type":"venn","setA":[สมาชิก],"setB":[สมาชิก],"intersect":[ส่วนร่วม],"labelA":"A","labelB":"B"}
+- การเลื่อนขนาน: {"type":"translation"} | สะท้อน: {"type":"reflection"} | หมุน: {"type":"rotation"}
+
+=== สถิติ ===
+- แผนภูมิแท่ง: {"type":"bar_chart","labels":["ม.ค.","ก.พ.",...],"values":[12,8,...],"title":"หัวข้อ"}
+- แผนภูมิวงกลม: {"type":"pie_chart","labels":["ชอบ","ไม่ชอบ",...],"values":[30,20,...],"title":"หัวข้อ"}
+- แผนภูมิรูปภาพ: {"type":"pictograph","labels":["จ.","อ.",...],"values":[3,5,...],"unit":1,"title":"หัวข้อ"}
+- กราฟเส้น: {"type":"line_graph","labels":["ม.ค.","ก.พ.",...],"values":[10,15,...],"title":"หัวข้อ"}
+- แผนภาพต้น-ใบ: {"type":"stem_leaf","data":[{"stem":"2","leaves":"3 5 7"},{"stem":"3","leaves":"1 4 6"}],"title":"..."}
+- ฮิสโทแกรม: {"type":"histogram","intervals":["1-5","6-10",...],"freqs":[4,7,...],"title":"..."}
+- แผนภาพกล่อง: {"type":"box_plot","min":10,"q1":25,"median":40,"q3":55,"max":80,"title":"..."}
+- แผนภาพจุด: {"type":"dot_plot","data":[3,3,4,5,5,5,6,7],"title":"..."}
+- ต้นไม้ความน่าจะเป็น: {"type":"prob_tree","branches":[{"label":"H","p":"1/2","sub":[{"label":"H","p":"1/2"},{"label":"T","p":"1/2"}]},{"label":"T","p":"1/2","sub":[...]}],"title":"..."}
+
+ใส่ค่าจากโจทย์จริงเท่านั้น ห้ามประดิษฐ์ค่า` : '';
 
   const jsonTemplate = needsSVG
-    ? \`{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น","svg":"<svg ...>...</svg>"}\`
-    : \`{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น"}\`;
+    ? '{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น","svgParams":{"type":"bar_chart","labels":["..."],"values":[...],"title":"..."}}'
+    : '{"q":"โจทย์ภาษาไทย","choices":["ก. ...","ข. ...","ค. ...","ง. ..."],"ans":0,"explain":"วิธีแก้ทีละขั้น"}';
 
   const prompt=`คุณคือครูคณิตศาสตร์ระดับผู้เชี่ยวชาญ จงสร้างข้อสอบวิชาคณิตศาสตร์
 
@@ -1260,6 +2379,7 @@ SVG ต้องสั้นกระชับ ความยาวรวมไ
 ${geoExtra}
 ข้อกำหนดสำคัญ: ค่า choices[ans] ต้องเป็นคำตอบที่ถูกต้องเท่านั้น
 ภาษา: ใช้ภาษาไทยที่ถูกต้องตามหลักภาษา เป็นทางการ ชัดเจน
+สัญลักษณ์คณิต: ใช้ LaTeX ล้อมด้วย $...$ เสมอ เช่น $\\frac{x^2}{25}+\\frac{y^2}{9}=1$ หรือ $x=3$ — ห้ามเขียนสัญลักษณ์ดิบโดยไม่มี $ 
 
 ตอบเฉพาะ JSON เท่านั้น ห้ามมีข้อความอื่น:
 ${jsonTemplate}`;
@@ -1271,8 +2391,8 @@ ${jsonTemplate}`;
     const jsonStr=cleaned.match(/\{[\s\S]*\}/)?.[0];
     if(!jsonStr) throw new Error('no json');
     // ถ้า SVG ยาวเกินให้ตัดออกก่อน parse เพื่อป้องกัน JSON พัง
-    const safe=jsonStr.replace(/"svg"\s*:\s*"<svg[\s\S]*?<\/svg>"/,'"svg":""');
-    const q=JSON.parse(safe);
+    // Parse ปกติ — ไม่ต้องกรอง svg แล้วเพราะ AI ส่ง svgParams แทน
+    const q=JSON.parse(jsonStr);
     if(!q.q||!Array.isArray(q.choices)||q.choices.length!==4||typeof q.ans!=='number'||q.ans<0||q.ans>3)throw new Error('invalid json structure');
     rmTyping();showMCQ(q);
   }catch(e){
@@ -1295,8 +2415,12 @@ ${jsonTemplate}`;
 function showMCQ(q){
   const em=['🟢','🟡','🔴'][mcqLevel-1];
   addMsg('ai',`${em} **ข้อที่ ${qIndex+1}/${TOTAL_Q}**\n\n${q.q}`);
-  // แสดง SVG ถ้ามี
-  if(q.svg && q.svg.trim().startsWith('<svg')){
+  // วาด SVG จาก svgParams ที่ถูกต้อง (ไม่ใช้ AI-generated SVG)
+  if(q.svgParams){
+    const svgCode = buildSVGFromParams(q.svgParams);
+    if(svgCode) addSVGtoMessage(svgCode);
+  } else if(q.svg && q.svg.trim().startsWith('<svg')){
+    // fallback สำหรับ venn ที่ AI ส่งมาโดยตรง
     addSVGtoMessage(q.svg);
   }
   const box=document.getElementById('messages');const w=document.createElement('div');w.className='msg ai';
@@ -1309,6 +2433,8 @@ function showMCQ(q){
     btn.onclick=()=>selectAnswer(i,q,cw);cw.appendChild(btn);
   });
   bub.appendChild(cw);w.appendChild(av);w.appendChild(bub);box.appendChild(w);box.scrollTop=box.scrollHeight;
+  // Render LaTeX in choices — ใช้ helper ที่ queue ได้
+  renderMath(bub);
 }
 
 async function selectAnswer(chosen,q,cw){
@@ -1319,7 +2445,10 @@ async function selectAnswer(chosen,q,cw){
   answers.push({correct:isOk,q:q.q,chosen,correctIdx:q.ans,chosenText:q.choices[chosen],correctText:q.choices[q.ans]});
   if(isOk){correct++;consCorrect++;consWrong=0;addMsg('ai',`✅ **ถูกต้องครับ** ${q.explain}`);if(consCorrect>=2&&mcqLevel<3){mcqLevel++;consCorrect=0;}}
   else{wrong++;consWrong++;consCorrect=0;addMsg('ai',`❌ **ยังไม่ถูกต้องครับ** คำตอบที่ถูกต้องคือ ${q.choices[q.ans]}\n\n${q.explain}`);if(consWrong>=2&&mcqLevel>1){mcqLevel--;consWrong=0;}}
-  qIndex++;updateProgress();await delay(800);loadNextQ();
+  qIndex++;updateProgress();
+  // Push live progress ไปครู
+  pushLiveProgress();
+  await delay(800);loadNextQ();
 }
 
 // ===== RESULT =====
@@ -1381,150 +2510,289 @@ async function generateWorksheet(wrongItems, scorePct){
   const weak=wrongItems.length?wrongItems.slice(0,3).map(a=>a.q.substring(0,50)).join('; '):'ทบทวนเนื้อหาทั่วไป';
   const levelDist=numQ===5?'- ข้อที่ 1-3: ระดับพื้นฐาน\n- ข้อที่ 4-5: ระดับประยุกต์':numQ===7?'- ข้อที่ 1-3: ระดับพื้นฐาน\n- ข้อที่ 4-6: ระดับประยุกต์\n- ข้อที่ 7: ระดับสูง':'- ข้อที่ 1-4: ระดับพื้นฐาน\n- ข้อที่ 5-8: ระดับประยุกต์\n- ข้อที่ 9-10: ระดับสูง';
 
-  const prompt=`สร้างแบบฝึกหัด ${numQ} ข้อ สำหรับนักเรียน ${selectedGrade} เรื่อง "${selectedSubtopic}" (${selectedTopic.topic})
+  const needsWsGraph = isGeoTopic(selectedSubtopic, selectedTopic ? selectedTopic.topic : '');
+
+  const svgParamsGuide = needsWsGraph ? `
+4. ถ้าโจทย์เกี่ยวกับสถิติหรือเรขาคณิต ให้ใส่ field "svgParams" เพิ่มเติม เช่น:
+   - แผนภูมิแท่ง: {"type":"bar_chart","labels":["จ","อ","พ","พฤ","ศ"],"values":[12,15,10,18,14],"title":"หัวข้อ"}
+   - แผนภูมิวงกลม: {"type":"pie_chart","labels":["ฟุตบอล","บาส","วอลเลย์"],"values":[30,20,10],"title":"หัวข้อ"}
+   - กราฟเส้น: {"type":"line_graph","labels":["ม.ค","ก.พ","มี.ค"],"values":[10,15,12],"title":"หัวข้อ"}
+   - แผนภาพต้น-ใบ: {"type":"stem_leaf","data":[{"stem":"2","leaves":"3 5 7"},{"stem":"3","leaves":"1 4"}],"title":"หัวข้อ"}
+   - ฮิสโทแกรม: {"type":"histogram","intervals":["40-44","45-49","50-54"],"freqs":[6,10,14],"title":"หัวข้อ"}
+   - แผนภาพกล่อง: {"type":"box_plot","min":10,"q1":25,"median":40,"q3":55,"max":80,"title":"หัวข้อ"}
+   - วงกลม: {"type":"circle","r":5} | สี่เหลี่ยม: {"type":"rectangle","w":6,"h":4} | สามเหลี่ยมมุมฉาก: {"type":"right_triangle","a":3,"b":4,"c":5}
+   - แผนภาพเวนน์: {"type":"venn","setA":[1,2,3,4],"setB":[3,4,5,6],"intersect":[3,4],"labelA":"A","labelB":"B"}
+   ใส่ค่าจากโจทย์จริงเท่านั้น ถ้าโจทย์ไม่ต้องการภาพ ไม่ต้องใส่ svgParams` : '';
+
+  const prompt=`สร้างแบบฝึกหัด ${numQ} ข้อ สำหรับนักเรียน ${selectedGrade} เรื่อง "${selectedSubtopic}" (${selectedTopic ? selectedTopic.topic : ''})
 จุดอ่อนที่พบ: ${weak}
 
 ${levelDist}
 
 กฎสำคัญ:
 1. ตอบเป็น JSON array เท่านั้น ห้ามมีข้อความนำหน้าหรือต่อท้าย
-2. ห้ามใส่ field "ans" หรือ "method" หรือ "svg" ทุกกรณี
-3. แต่ละ object มีเฉพาะ 3 field: {"num":1,"level":"พื้นฐาน","q":"โจทย์ภาษาไทย"}
+2. ห้ามใส่ field "ans" หรือ field เฉลย ทุกกรณี — ใบงานไม่มีเฉลย
+3. แต่ละ object มี field: num, level, q และ svgParams (ถ้ามีภาพประกอบ)${svgParamsGuide}
 
-ตัวอย่าง: [{"num":1,"level":"พื้นฐาน","q":"จงหาค่า x จากสมการ 2x+3=11"},{"num":2,"level":"พื้นฐาน","q":"..."}]`;
+ตัวอย่าง (มีภาพ): [{"num":1,"level":"พื้นฐาน","q":"จากแผนภูมิแท่ง จงหาจำนวนนักเรียนที่ชอบวิชาคณิตศาสตร์","svgParams":{"type":"bar_chart","labels":["คณิต","วิทย์","ภาษาไทย"],"values":[25,18,22],"title":"วิชาที่ชอบ"}}]
+ตัวอย่าง (ไม่มีภาพ): [{"num":1,"level":"พื้นฐาน","q":"จงหาค่า x จากสมการ 2x+3=11"}]
+
+เริ่มต้น response ด้วย [ ทันที`;
 
   try{
-    const raw=await callAI(prompt);
-
-    // หา JSON array — ลองหลายวิธี
+    const raw=await callAI(prompt, 2000, true);
     let exercises = null;
 
     // วิธี 1: หา [...] ตรง ๆ
-    const arrMatch = raw.match(/\[[\s\S]*\]/);
-    if(arrMatch){
-      try{ exercises = JSON.parse(arrMatch[0]); }catch(e1){}
+    try{ const m1=raw.match(/\[[\s\S]*\]/); if(m1) exercises=JSON.parse(m1[0]); }catch(e){}
+
+    // วิธี 2: ลบ markdown/svg แล้ว parse
+    if(!exercises||!Array.isArray(exercises)){
+      try{
+        const cleaned=raw.replace(/```json/g,'').replace(/```/g,'').replace(/<svg[\s\S]*?<\/svg>/gi,'').trim();
+        const m2=cleaned.match(/\[[\s\S]*\]/);
+        if(m2) exercises=JSON.parse(m2[0]);
+      }catch(e){}
     }
 
-    // วิธี 2: ลบ SVG/HTML ที่อาจแทรกอยู่แล้ว parse ใหม่
-    if(!exercises){
-      const cleaned = raw
-        .replace(/<svg[\s\S]*?<\/svg>/gi,'""')
-        .replace(/```json/g,'').replace(/```/g,'').trim();
-      const m2 = cleaned.match(/\[[\s\S]*\]/);
-      if(m2){ try{ exercises = JSON.parse(m2[0]); }catch(e2){} }
+    // วิธี 3: retry ง่าย ๆ
+    if(!exercises||!Array.isArray(exercises)||exercises.length<2){
+      try{
+        const r2=await callAI(`สร้างแบบฝึกหัด ${numQ} ข้อ เรื่อง "${selectedSubtopic}" ระดับ ${selectedGrade} ตอบ JSON array: [{"num":1,"level":"พื้นฐาน","q":"โจทย์"}]`,1500, true);
+        const m3=r2.match(/\[[\s\S]*\]/);
+        if(m3) exercises=JSON.parse(m3[0]);
+      }catch(e){}
     }
 
-    // วิธี 3: ดึง objects ทีละอันแล้ว assemble
-    if(!exercises){
-      const objs = [];
-      const re = /\{[^{}]*"num"\s*:\s*\d+[^{}]*\}/g;
-      let m;
-      while((m=re.exec(raw))!==null){
-        try{ objs.push(JSON.parse(m[0])); }catch(e){}
-      }
-      if(objs.length>=5) exercises = objs;
+    // วิธี 4: ดึง object ทีละก้อน (สำรอง)
+    if(!exercises||!Array.isArray(exercises)||exercises.length<2){
+      try{
+        const objs=[];
+        const re=/\{"num"\s*:\s*(\d+)[^}]*"q"\s*:\s*"([^"]+)"/g;
+        let m;
+        while((m=re.exec(raw))!==null) objs.push({num:parseInt(m[1]),level:'พื้นฐาน',q:m[2]});
+        if(objs.length>=2) exercises=objs;
+      }catch(e){}
     }
 
-    if(!exercises || !Array.isArray(exercises) || exercises.length < 3) throw new Error('parse failed');
+    if(!exercises || !Array.isArray(exercises) || exercises.length < 2) throw new Error('parse failed');
 
-    // กรอง field ที่ไม่ต้องการออก (เช่น svg)
-    exercises = exercises.map(ex => ({
-      num: ex.num || 0,
-      level: ex.level || '',
-      q: ex.q || '',
-      method: ex.method || '',
-      ans: ex.ans || ''
-    }));
-
-    exercises=exercises.map(ex=>({num:ex.num||0,level:ex.level||'',q:ex.q||''}));
+    exercises=exercises.map((ex,i)=>({num:ex.num||i+1,level:ex.level||'พื้นฐาน',q:ex.q||'',svgParams:ex.svgParams||null})).filter(ex=>ex.q);
     exerciseData=exercises;
     const levelColors={'พื้นฐาน':'#059669','ประยุกต์':'#d97706','สูง':'#dc2626'};
     const writingLines=Array(6).fill('').map(()=>'<div style="border-bottom:1.5px solid #c8d3e0;height:28px;margin-bottom:3px;"></div>').join('');
-    body.innerHTML=exercises.map(ex=>`
-      <div class="ws-item">
+    body.innerHTML=exercises.map(ex=>{
+      // วาด SVG ถ้ามี svgParams
+      const svgHtml = ex.svgParams ? (()=>{
+        const svgCode = buildSVGFromParams(ex.svgParams);
+        return svgCode
+          ? `<div style="margin:10px 0 12px;padding:10px;background:#f8fafc;border:1px solid #dde3ec;border-radius:8px;text-align:center;">
+               <div style="font-size:10px;color:#64748b;margin-bottom:6px;font-weight:600;letter-spacing:1px;">📊 ภาพประกอบโจทย์</div>
+               ${svgCode}
+             </div>`
+          : '';
+      })() : '';
+      return `<div class="ws-item">
         <div class="ws-num">
           ข้อที่ ${ex.num}
           <span style="background:${levelColors[ex.level]||'#64748b'};color:white;padding:1px 8px;border-radius:10px;font-size:10px;margin-left:6px;">${ex.level}</span>
         </div>
-        <div class="ws-q">${ex.q}</div>
-        <div style="padding:10px 6px 4px;">${writingLines}</div>
-      </div>`).join('');
+        <div class="ws-q" data-latex="1">${ex.q}</div>
+        ${svgHtml}
+        <div style="padding:6px 6px 4px;">${writingLines}</div>
+      </div>`;
+    }).join('');
+    // render LaTeX ใน wsBody ทันที
+    renderMath(body);
   }catch(e){
     console.error('Worksheet error:',e);
     body.innerHTML='<div style="color:var(--red);padding:16px;font-size:14px;">⚠️ ไม่สามารถสร้างแบบฝึกหัดได้ กรุณากดปุ่ม "ลองใหม่" ด้านล่างครับ</div><button onclick="generateWorksheet([])" style="margin:0 16px 16px;padding:10px 20px;background:var(--blue);color:white;border:none;border-radius:8px;cursor:pointer;font-family:Sarabun,sans-serif;font-size:14px;font-weight:700;">🔄 ลองใหม่</button>';
   }
 }
 
-function worksheetToPDF(){
-  const now=new Date();
-  const wsBodyHTML=document.getElementById('wsBody').innerHTML;
-  const htmlContent=`<!DOCTYPE html><html><head>
-    <meta charset="UTF-8">
-    <title>ใบงาน MathScan AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-      body{font-family:'Sarabun',sans-serif;padding:20px;color:#0f172a;max-width:800px;margin:0 auto;}
-      h1{color:#1d6aff;font-size:20px;margin-bottom:4px;}
-      .meta{font-size:13px;color:#64748b;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #dde3ec;}
-      .item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:12px;page-break-inside:avoid;}
-      .num{font-size:11px;font-weight:700;color:#1d6aff;margin-bottom:6px;letter-spacing:1px;}
-      .q{font-size:15px;font-weight:600;margin-bottom:8px;line-height:1.7;}
-      .method{background:#eff6ff;border-left:3px solid #1d6aff;padding:8px 12px;margin-bottom:6px;font-size:13px;line-height:1.7;}
-      .ans{background:#ecfdf5;border-left:3px solid #10b981;padding:7px 12px;font-size:14px;font-weight:700;color:#059669;}
-      .blank{border:1px dashed #c8d3e0;padding:10px 12px;margin-top:8px;font-size:13px;color:#94a3b8;font-style:italic;}
-      .ws-actions{display:none!important;}
-      @media print{.ws-actions{display:none!important;}}
-    </style>
-  </head><body>
-    <h1>📝 ใบงานแบบฝึกหัดเฉพาะตัว — MathScan AI</h1>
-    <div class="meta">${studentName} | ${selectedGrade} | ${selectedSubtopic} | ${now.toLocaleDateString('th-TH')}</div>
-    ${wsBodyHTML}
-    <script>
-      document.querySelectorAll('.ws-actions,.no-print').forEach(el=>el.remove());
-      window.addEventListener('load',()=>{
-        setTimeout(()=>{ window.print(); },800);
-      });
-    <\/script>
-  </body></html>`;
-  // FIX: append link to document body before clicking (prevents popup blocker)
-  const blob = new Blob([htmlContent], {type:'text/html;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.target = '_blank';
-  a.rel = 'noopener';
-  document.body.appendChild(a);  // ← FIX: ต้อง append ก่อน click
-  a.click();
-  document.body.removeChild(a);  // ← ลบออกหลัง click
-  setTimeout(()=>URL.revokeObjectURL(url), 5000);
+// ===== WORKSHEET EXPORT — รองรับมือถือ + คอมพิวเตอร์ =====
+function _buildWSHtml(name, grade, subtopic, wsBodyHTML){
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('th-TH');
+  // ใช้ string concat แทน template literal เพื่อป้องกัน script-tag ปิด main script
+  const SC = '<'+'script>';
+  const SE = '<'+'/script>';
+  const mjConfig = SC
+    + 'MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"]],'
+    + 'processEscapes:true},options:{skipHtmlTags:["script","noscript","style","textarea"]},'
+    + 'startup:{typeset:false,ready:function(){MathJax.startup.defaultReady();'
+    + 'setTimeout(function(){MathJax.typesetPromise();},400);}}};'
+    + SE;
+  const mjSrc = SC + ' src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" crossorigin="anonymous" async>' + SE;
+  const printScript = SC
+    + 'window.addEventListener("load",function(){'
+    + 'var t=0,iv=setInterval(function(){t++;'
+    + 'if(window.MathJax&&window.MathJax.typesetPromise){'
+    + 'MathJax.typesetPromise().then(function(){window._mjDone=true;});'
+    + 'clearInterval(iv);}if(t>30)clearInterval(iv);},350);});'
+    + SE;
+  const css = '<style>'
+    + '*{margin:0;padding:0;box-sizing:border-box;}'
+    + 'body{font-family:"Sarabun",sans-serif;background:#fff;color:#0f172a;padding:20px 24px;max-width:800px;margin:0 auto;}'
+    + '.hdr{border-bottom:3px solid #1d6aff;padding-bottom:12px;margin-bottom:20px;}'
+    + '.hdr h1{color:#1d6aff;font-size:19px;margin-bottom:6px;}'
+    + '.tags{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;margin-top:6px;}'
+    + '.tags span{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:2px 10px;color:#334155;}'
+    + '.ws-item,.item{border:1px solid #dde3ec;border-radius:8px;padding:14px;margin-bottom:14px;page-break-inside:avoid;}'
+    + '.ws-num,.num{font-size:11px;font-weight:700;color:#1d6aff;letter-spacing:1px;margin-bottom:8px;}'
+    + '.ws-q,.q{font-size:15px;font-weight:600;margin-bottom:10px;line-height:1.9;}'
+    + 'div[style*="border-bottom"]{border-bottom:1.5px solid #c8d3e0;height:28px;margin-bottom:3px;}'
+    + '.footer{margin-top:20px;font-size:11px;color:#94a3b8;text-align:center;border-top:1px solid #dde3ec;padding-top:10px;}'
+    + '.print-bar{position:fixed;bottom:0;left:0;right:0;background:#1d6aff;padding:10px 16px;display:flex;gap:10px;justify-content:center;z-index:999;}'
+    + '.print-bar button{padding:10px 28px;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;font-family:"Sarabun",sans-serif;}'
+    + '.btn-print{background:white;color:#1d6aff;}'
+    + '.btn-close{background:rgba(255,255,255,0.2);color:white;}'
+    + '.ws-actions,.no-print{display:none!important;}'
+    + '@media print{@page{margin:12mm;size:A4;}body{padding:0;font-size:13px;}.print-bar{display:none!important;}}'
+    + '</style>';
+
+  return '<!DOCTYPE html><html lang="th"><head>'
+    + '<meta charset="UTF-8">'
+    + '<meta name="viewport" content="width=device-width,initial-scale=1">'
+    + '<title>ใบงาน — ' + name + '</title>'
+    + '<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">'
+    + mjConfig
+    + mjSrc
+    + css
+    + '</head><body>'
+    + '<div class="hdr"><h1>📝 ใบงานแบบฝึกหัดเฉพาะตัว — NEXUS AI</h1>'
+    + '<div class="tags"><span>👤 ' + name + '</span><span>📚 ' + grade + '</span>'
+    + '<span>📖 ' + subtopic + '</span><span>📅 ' + dateStr + '</span></div></div>'
+    + wsBodyHTML
+    + '<div class="footer">NEXUS AI EDUCATION TEAM • NK × SKT • อิงตัวชี้วัดหลักสูตรแกนกลาง พ.ศ. 2560</div>'
+    + '<div class="print-bar">'
+    + '<button class="btn-print" onclick="window.print()">🖨️ พิมพ์ / บันทึก PDF</button>'
+    + '<button class="btn-close" onclick="var pb=this.parentNode;if(pb)pb.style.display=\'none\'">✕ ปิด</button>'
+    + '</div>'
+    + printScript
+    + '</body></html>';
 }
 
-function printWorksheet(){worksheetToPDF();}
+function worksheetToPDF(){
+  // รอ MathJax render เสร็จก่อน export
+  const body = document.getElementById('wsBody');
+  if(!body || body.innerHTML.includes('AI กำลังสร้าง')){
+    alert('ยังไม่มีใบงาน กรุณารอ AI สร้างให้เสร็จก่อนครับ'); return;
+  }
+  // re-render MathJax แล้วค่อย export
+  const doExport = () => {
+    const wsBodyHTML = document.getElementById('wsBody').innerHTML;
+    _exportWorksheet(studentName, selectedGrade, selectedSubtopic, wsBodyHTML);
+  };
+  if(window._mathJaxReady && window.MathJax){
+    MathJax.typesetPromise([body]).then(doExport).catch(doExport);
+  } else {
+    doExport();
+  }
+}
+
+function printWorksheet(){ worksheetToPDF(); }
+
+function _exportWorksheet(name, grade, subtopic, wsBodyHTML){
+  const html = _buildWSHtml(name, grade, subtopic, wsBodyHTML);
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+
+  if(isMobile){
+    // มือถือ: download file แล้วเปิดใน browser ได้เลย
+    const fname = ('ใบงาน_' + name + '_' + subtopic).replace(/[^\u0E00-\u0E7Fa-zA-Z0-9_]/g,'_').substring(0,50) + '.html';
+    const a = document.createElement('a');
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(()=>{
+      URL.revokeObjectURL(url);
+      alert('ดาวน์โหลดเสร็จแล้ว ✅\nเปิดไฟล์ที่โหลดมา แล้วกดปุ่ม\n"🖨️ พิมพ์ / บันทึก PDF" ครับ');
+    }, 500);
+  } else {
+    // Desktop: เปิดหน้าต่างใหม่ พร้อมปุ่ม print
+    const win = window.open('', '_blank', 'width=860,height=700');
+    if(win){
+      win.document.write(html);
+      win.document.close();
+      // auto-print หลัง 1 วินาที
+      setTimeout(()=>{ try{ win.focus(); win.print(); }catch(e){} }, 1000);
+    } else {
+      // popup ถูก block → download แทน
+      const a = document.createElement('a');
+      a.href = url; a.download = 'ใบงาน_nexus_ai.html';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(()=>URL.revokeObjectURL(url), 5000);
+      alert('Popup ถูกบล็อก\nไฟล์ถูกดาวน์โหลดแล้ว เปิดแล้วกด Ctrl+P เพื่อพิมพ์ครับ');
+    }
+  }
+}
 
 function restart(){
   document.getElementById('resultScreen').classList.remove('active');
   document.getElementById('chatScreen').classList.add('active');
   document.getElementById('messages').innerHTML='';
   document.getElementById('progBar').style.width='0%';
-  phase='intro';qIndex=0;correct=0;wrong=0;selectedGrade='';selectedTopic=null;selectedSubtopic='';
+  phase='device';qIndex=0;correct=0;wrong=0;selectedGrade='';selectedTopic=null;selectedSubtopic='';
   mcqLevel=1;consCorrect=0;consWrong=0;answers=[];exerciseData='';
   greetUser();
 }
 
 // ===== API =====
-async function callAI(prompt, maxTok=1000){
-  const res=await fetch("https://api.anthropic.com/v1/messages",{
+async function callAI(prompt, maxTok=1000, forceJSON=false){
+  const body = {
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: maxTok,
+    messages: [{role:"user", content: prompt}]
+  };
+  if(forceJSON){
+    // system prompt บังคับ JSON
+    body.system = "Respond with valid JSON only. No markdown fences, no explanation.";
+    // prefill: บังคับขึ้นต้นด้วย [ ทันที (assistant turn)
+    body.messages.push({role:"assistant", content:"["});
+  }
+  const res = await fetch("https://api.anthropic.com/v1/messages",{
     method:"POST",
-    headers:{"Content-Type":"application/json","x-api-key":GKEY,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
-    body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:maxTok,messages:[{role:"user",content:prompt}]})
+    headers:{
+      "Content-Type":"application/json",
+      "x-api-key":GKEY,
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"
+    },
+    body: JSON.stringify(body)
   });
-  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||"HTTP "+res.status);}
-  const data=await res.json();if(data.error)throw new Error(data.error.message);
-  return data.content[0].text;
+  if(!res.ok){
+    const e=await res.json().catch(()=>({}));
+    throw new Error(e?.error?.message||"HTTP "+res.status);
+  }
+  const data=await res.json();
+  if(data.error) throw new Error(data.error.message);
+  // ถ้าใช้ prefill ต้อง prepend "[" กลับไป
+  const text = data.content[0].text;
+  return forceJSON ? '[' + text : text;
 }
 function delay(ms){return new Promise(r=>setTimeout(r,ms));}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendText();}}
 function autoH(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+</script>
+<script>
+// NEXUS AI Logo — โหลดแบบ async เพื่อไม่บล็อก browser
+(function(){
+  // ใช้ inline SVG เป็น placeholder ก่อน
+  const LOGO_SVG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="16" fill="%231d6aff"/><text x="50" y="62" text-anchor="middle" font-size="40" fill="white">N</text></svg>';
+  
+  function applyLogo(src){
+    document.querySelectorAll('img.nexus-logo-img').forEach(function(el){ el.src=src; });
+    const si=document.getElementById('splashLogo'); if(si) si.src=src;
+    const km=document.querySelector('.km-logo-img'); if(km) km.src=src;
+    const tb=document.querySelector('.tb-icon-img'); if(tb) tb.src=src;
+    window._NEXUS_LOGO=src;
+  }
+  
+  // ใส่ placeholder ก่อนทันที
+  document.addEventListener('DOMContentLoaded',function(){ applyLogo(LOGO_SVG); });
+  window._NEXUS_LOGO=LOGO_SVG;
+})();
 </script>
 </body>
 </html>
